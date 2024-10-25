@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="web icon" href="../assets/images/logo.png">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+
+    <!-- Line Awesome -->
+    <link rel= "stylesheet" href= "https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" >
+
+    <!-- My Style -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+
+</head>
+<body class="dashboard">
+
+    <!-- Sidebar Start -->
+    <aside class="minimize shadow-sm">
+        <div class="container-fluid p-0 d-flex flex-column justify-content-between">
+            <div class="sidebar-header p-3 gap-3">
+                <img src="../assets/images/logo.png" alt="" draggable="false">
+                <div class="logo-text" draggable="false">
+                    <h3 class="mb-0">
+                        BALI INTI <br>
+                        MEDIKA
+                    </h3>
+                    <p class="mb-0">
+                        Health Insurance<br> 
+                        Services in Bali
+                    </p>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <ul class="p-0 m-0">
+                    <li>
+                        <a class="d-flex align-items-center gap-3 ps-4 py-3 active" href="#">
+                            <i class="las la-stream fs-4"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="d-flex align-items-center gap-3 ps-4 py-3" href="#">
+                            </i><i class="las la-hotel fs-4"></i>
+                            <span>Hotels</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="d-flex align-items-center gap-3 ps-4 py-3" href="#">
+                            <i class="las la-hospital fs-4"></i>
+                            <span>Hospitals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="d-flex align-items-center gap-3 ps-4 py-3" href="#">
+                            <i class="las la-users-cog fs-4"></i>
+                            <span>Admins</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-extramenu">
+                <ul class="p-0 m-0">
+                    <li>
+                        <a href="#" class="d-flex align-items-center gap-3 ps-4 py-3">
+                            <i class="las la-user-circle fs-4"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="#" class="d-flex align-items-center gap-3 ps-4 py-3">
+                            <i class="las la-sign-out-alt fs-4"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    <!-- Sidebar End -->
+
+    <!-- Main Container Start -->
+    <div class="main-container">
+        <!-- Floating Menu Start -->
+        <div class="floating-btn position-fixed d-flex m-3 gap-3">
+            <button class="p-2 rounded floating-btn shadow-sm" id="btn-menu">
+                <i class="las la-bars fs-3"></i>
+            </button>
+            <button class="p-2 rounded floating-btn shadow-sm" id="btn-mode">
+                <i class="las la-moon fs-3"></i>
+            </button>
+            <button class="p-2 rounded floating-btn shadow-sm" id="btn-scan" data-bs-toggle="modal" data-bs-target="#scannerModal">
+                <i class="las la-qrcode fs-3"></i>
+            </button>
+        </div>
+        <!-- Floating Menu End -->
+
+        <!-- Scan Modal Start -->
+        <div class="modal fade" id="scannerModal" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content overflow-hidden">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">QR SCANNER</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0 d-flex flex-column justify-content-center">
+                        <video class="m-0" id="qrScanner"></video>
+                        <input class="border border-1 rounded my-3 mx-5 px-2 text-center" readonly type="text" placeholder="Scan your QR please!" id="qrData">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Scan Modal End -->
+
+        <!-- Main Start -->
+        <main>
+            <div class="container-md container-fluid py-3">
+                <div class="content-header mt-2 d-lg-flex flex-lg-row align-items-center justify-content-between">
+                    <h1 class="mb-0 mt-5">Hello, Reza Haryanto</h1>
+                    <div class="d-flex flex-lg-column justify-content-between align-items-end p-0 mt-1">
+                        <h3 class="my-0">Dashboard</h3>
+                        <button class="rounded-pill px-2 py-1 mt-3 d-flex align-items-center gap-1" id="btn-notification" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotification">
+                            <i class="las la-bell fs-5"></i>
+                            Notification
+                            <span class="bg-danger text-white rounded-circle p-1" id="totalNotification">10</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNotification">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title">Notifications</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                    ...
+                    </div>
+                </div>
+
+                <div class="content-body py-3">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam est nisi velit corporis officia eaque, suscipit culpa cum nulla sit necessitatibus perspiciatis dolorum perferendis eos tenetur tempore. Repellendus officiis, cum necessitatibus doloribus odit dolores temporibus ad perspiciatis, atque aperiam sequi voluptates rem commodi excepturi minus quo velit tempore numquam repellat! Cum saepe ipsum, unde nisi accusamus ex corporis quos reiciendis deserunt voluptas voluptatibus nulla quas adipisci dolor ab eligendi esse possimus! Sed, vel libero? Quisquam iste aut magni accusantium consequuntur animi, iusto quidem tenetur, eligendi soluta suscipit dolorum perferendis laboriosam? Vel autem fuga porro aliquid enim, delectus nobis? Debitis, aut quo provident earum iusto explicabo porro quidem optio nihil alias? Ipsam laborum vel alias voluptas blanditiis enim eveniet hic perferendis. Nihil dolorem, debitis officiis blanditiis quam cupiditate obcaecati voluptate, accusantium corporis expedita earum, rem possimus quo? Magni, adipisci sequi facilis magnam doloremque ducimus exercitationem quaerat sit omnis est velit similique nobis. Amet omnis quaerat voluptatum dolor? Maiores, aut magni? Id placeat facilis sint cum distinctio eius minus delectus veniam, iusto reiciendis inventore omnis qui corporis illum, dolores perspiciatis praesentium non nemo dicta harum. Quisquam officia ex, minima necessitatibus reprehenderit quibusdam suscipit quasi iste deleniti quaerat fugiat dicta. Blanditiis, quidem! Obcaecati illum, numquam necessitatibus culpa qui quasi impedit cum error non nobis magnam quas pariatur tempora atque beatae, nisi quia expedita maiores similique suscipit illo mollitia excepturi ullam! Voluptate laborum consequuntur, aperiam laudantium recusandae autem minima a! Accusantium, nostrum quibusdam! A aperiam illum laborum saepe, sunt voluptates sequi ipsum laboriosam. Ullam eligendi nihil, odit repellat aperiam fuga totam velit quos, sapiente commodi adipisci voluptatum atque, veritatis eum beatae nesciunt officia esse laudantium assumenda enim voluptatibus eius animi non dolor. Pariatur, placeat corporis cupiditate officiis esse sit sapiente veritatis reiciendis sequi eos suscipit mollitia id enim, voluptates quo magnam provident doloribus ipsam exercitationem! Excepturi ducimus praesentium dolor reiciendis impedit, illo laudantium voluptate neque perferendis officia debitis reprehenderit unde quisquam repudiandae laborum rerum ipsam, inventore officiis accusamus expedita sint deleniti iusto. Recusandae quos ducimus eum, eius qui laboriosam et. Ipsam obcaecati tempore velit vel aperiam voluptatum vitae tenetur non, quo sed nesciunt autem. Perspiciatis doloribus quod libero, nesciunt pariatur omnis molestiae atque facere vero. Quam iste sapiente molestias? Vero non fugiat provident tempore asperiores quaerat ratione et soluta perferendis magni voluptates blanditiis culpa molestias animi exercitationem facere consectetur, ad amet nesciunt sequi repellat. Dolore, amet. At autem harum tenetur consequatur totam, libero cumque laborum culpa sed temporibus sit quae reprehenderit labore necessitatibus ab nulla placeat repellat omnis vitae odio reiciendis. Explicabo ipsum doloribus tempore blanditiis porro, accusamus dignissimos sapiente, nisi officiis consequuntur quidem. Dolore, est vero. Maiores, nisi! Reprehenderit reiciendis ipsam nobis consequuntur fugit, laudantium modi quasi illo magnam ad explicabo delectus aliquid? Aperiam itaque dolore assumenda voluptas voluptate ratione modi error sunt perspiciatis velit, similique fugit molestias quam repellendus expedita. In amet adipisci, ratione minima quaerat facere dolore laudantium neque voluptatem! Pariatur harum reprehenderit placeat, voluptates eum veniam corporis amet quis delectus eius, asperiores consequuntur maiores! A ea quibusdam veniam porro recusandae sequi architecto corrupti dolores, repellat accusamus adipisci unde ut fuga necessitatibus voluptatem odio sit officiis quaerat enim cupiditate quas tempora? Numquam a optio eveniet voluptates modi autem blanditiis voluptatibus! Repellat perspiciatis molestias accusantium officia magnam soluta in ad nisi odio quam delectus exercitationem, quas repudiandae fugit dolore nobis, hic rerum dolorem earum iure. Est quos delectus facilis explicabo, esse non qui id magnam sed ea blanditiis temporibus harum officiis, itaque illo suscipit. Libero atque autem labore necessitatibus eaque commodi maxime molestias tempore quaerat ullam delectus perspiciatis reprehenderit fugiat alias dolores optio, numquam temporibus excepturi consequuntur magni assumenda. Eaque, consectetur alias nulla reiciendis modi voluptatum porro odio ex culpa dolores ea quas tempore placeat veritatis maxime molestiae incidunt. Necessitatibus natus qui quibusdam nostrum placeat quae sapiente veritatis eius, quo tempora enim ab sunt vel pariatur dignissimos, possimus, et non? Esse dignissimos nam veniam voluptatem laboriosam? Laboriosam, aperiam possimus ab quo, id minima labore consequuntur praesentium est error recusandae repellendus accusantium necessitatibus debitis libero sequi ipsum corporis perspiciatis iure. Nobis consectetur laborum perferendis a saepe facere tempore nam cupiditate, repudiandae similique nostrum quia nemo. Mollitia eius sed possimus esse, sequi expedita cupiditate quod, delectus aperiam iure beatae aut autem! Voluptas, architecto delectus accusamus officiis sequi distinctio est cumque doloremque exercitationem suscipit praesentium reprehenderit soluta assumenda veniam natus, facere quo incidunt! Facere harum iure accusantium, debitis dolor aspernatur vero, excepturi dolores consectetur facilis magni veniam corporis, aliquid libero ipsum praesentium suscipit impedit minima. Aperiam consectetur sunt ipsa molestiae omnis perferendis dolorum, debitis ullam fugiat, exercitationem temporibus aut, ex totam neque at consequatur. Esse minima deleniti earum in rerum! Labore quae adipisci quod, delectus possimus nam est quos deleniti! Porro, totam nostrum deleniti at neque nisi debitis harum? Animi veritatis quibusdam cupiditate? Non eos architecto, quia possimus tempora qui quasi, odio, ducimus numquam et at voluptate illum laudantium dolore eum asperiores reprehenderit fugiat dicta! Suscipit aperiam blanditiis aliquid eum eveniet voluptatibus officia maxime, rerum unde corrupti, non facilis ab fugit. Libero ut odit non dolores maxime ducimus quaerat? Quae adipisci perspiciatis hic reiciendis molestias. Unde, dolorum. Ea consectetur nihil, cumque excepturi totam eveniet magnam quaerat assumenda rerum necessitatibus eum natus, praesentium perspiciatis est dolorum accusantium beatae repellendus odit debitis tempora culpa voluptate. Eos rem magni praesentium distinctio accusantium porro voluptates odio fugiat, laudantium minus illum voluptate quo necessitatibus quisquam rerum quaerat delectus repudiandae voluptas nesciunt veritatis consectetur repellat quae quasi labore? Voluptas laudantium error quos molestiae amet magni perspiciatis. Ad, minima quaerat delectus veniam sed animi accusamus fuga sint natus quibusdam fugiat commodi nostrum tempore exercitationem debitis sapiente esse magni cum aliquid. Cumque exercitationem mollitia maiores consequatur eum adipisci saepe tempore, ipsum nemo accusantium deserunt alias veritatis rem deleniti aut ducimus! Soluta adipisci dolorum eligendi autem quas! Vero perspiciatis nihil ducimus expedita distinctio numquam quia, culpa id iste dolorum fugiat eaque eveniet cum error autem facere? Mollitia eaque modi earum a voluptates dolorem tenetur facere, tempore quos, ipsum nisi iste, cum assumenda consectetur aperiam hic! Consectetur placeat doloremque saepe eligendi molestias dicta ad ab.
+                </div>
+            </div>
+        </main>
+        <!-- Main End -->
+    
+    
+        <!-- Footer Start -->
+        <footer>
+            <div class="container-md">
+                
+            </div>
+        </footer>
+        <!-- Footer End -->
+    </div>
+    <!-- Main Container -->
+
+
+    <!-- Bootstrap -->
+    <script src="../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Fontawesome -->
+    <script src="https://kit.fontawesome.com/1a07ed5a89.js" crossorigin="anonymous"></script>
+
+    <!-- Instascan -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+    <!-- My Script -->
+    <script src="../assets/js/script.js"></script>
+
+</body>
+</html>
