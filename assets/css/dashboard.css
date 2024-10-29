@@ -239,7 +239,7 @@ option:hover:focus {
 }
 
 .dashboard aside.maximize .sidebar-header img {
-    width: 80px;
+    width: 80px;    
     transition: var(--transition1);
 }
 
@@ -254,14 +254,15 @@ option:hover:focus {
     user-select: none;
 }
 
-.sidebar-header h3 {
-    font-weight: var(--fwmedium);
+.sidebar-header h4 {
+    font-weight: var(--fwbold);
     line-height: 24px;
+    font-size: 20px;
 }
 
 .sidebar-header p {
     font-weight: var(--fwnormal);
-    font-size: 14px;
+    font-size: 12px;
     line-height: 18px;
 }
 

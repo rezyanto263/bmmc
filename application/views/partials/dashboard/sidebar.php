@@ -4,13 +4,13 @@
         <div class="sidebar-header p-3 gap-3">
             <img src="<?= base_url('assets/images/logo.png') ?>" alt="" draggable="false">
             <div class="logo-text" draggable="false">
-                <h3 class="mb-0">
+                <h4 class="mb-0">
                     BALI MITRA <br>
                     MEDICAL CENTER
-                </h3>
+                </h4>
                 <p class="mb-0">
-                    Health Insurance<br> 
-                    Services in Bali
+                    Health Insurance Service<br> 
+                    Provider in Bali
                 </p>
             </div>
         </div>
