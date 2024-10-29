@@ -5,16 +5,16 @@
                 <div class="login-design col-6 d-none d-lg-flex gap-3 flex-lg-column justify-content-center align-items-center py-5">
                     <h3 class="fw-bold mb-4 text-white">WELCOME TO</h3>
                     <img class="" src="../assets/images/logo.png" alt="">
-                    <h5 class="text-white mb-4">BALI INTI MEDIKA</h5>
+                    <h5 class="text-white mb-4">BALI MITRA MEDICAL CENTER</h5>
                     <p class="text-white text-center mx-5 mb-4">
-                        At Bali Inti Medika, your health is our priority. We provide comprehensive health insurance services tailored to meet the unique needs of our clients, ensuring peace of mind and quality care when you need it most.
+                        At BMMC (Bali Mitra Medical Center), your health is our priority. We provide comprehensive health insurance services tailored to meet the unique needs of our clients, ensuring peace of mind and quality care when you need it most.
                     </p>
                     <div class="login-contact d-flex align-items-center gap-2 text-white mt-5">
                         <i class="las la-phone"></i>
                         <span>(0361) 480085</span>
                         <span class="border border-right-1 border-white h-100 mx-2"></span>
                         <i class="las la-envelope"></i>
-                        <span>baliintimedika@gmail.com</span>
+                        <span>bmmc@gmail.com</span>
                     </div>
                 </div>
                 <div class="login-form col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center p-md-5 px-4 py-5">

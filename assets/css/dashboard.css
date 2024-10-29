@@ -50,7 +50,7 @@ body.dashboard {
     .dashboard aside {
         position: absolute;
         background: transparent !important;
-        backdrop-filter: blur(8px) saturate(150%) brightness(90%);
+        backdrop-filter: blur(20px) saturate(150%) brightness(90%);
     }
 
     .dashboard.dark aside {

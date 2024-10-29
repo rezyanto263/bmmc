@@ -5,8 +5,8 @@
             <img src="<?= base_url('assets/images/logo.png') ?>" alt="" draggable="false">
             <div class="logo-text" draggable="false">
                 <h3 class="mb-0">
-                    BALI INTI <br>
-                    MEDIKA
+                    BALI MITRA <br>
+                    MEDICAL CENTER
                 </h3>
                 <p class="mb-0">
                     Health Insurance<br> 
