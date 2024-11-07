@@ -72,3 +72,7 @@ $route['dashboard/getAllUnconnectedHospitalAdminsDatas'] = 'dashboard/Admins/get
 $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedCompanyAdminsDatas';
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
+
+// Route baru untuk tampilan profil pengguna
+$route['profile'] = 'user/User/profile';
+$route['company/dashboard'] = 'company/dashboard';
