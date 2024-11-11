@@ -2,7 +2,7 @@
     <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
     <button type="button" class="btn-primary w-100 my-3 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
         <i class="las la-plus-circle fs-4"></i>    
-        ADD COMPANY
+        ADD EMPLOYEE
     </button>
     <table id="companiesTable" class="table" style="width:100%">
         <thead>
@@ -35,7 +35,7 @@
         <div class="modal-content">
             <form id="addCompanyForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
-                    <h1 class="modal-title fs-4">ADD COMPANY</h1>
+                    <h1 class="modal-title fs-4">ADD EMPLOYEE</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
@@ -44,7 +44,7 @@
                             <div class="imgContainer">
                                 <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
                             </div>
-                            <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD LOGO</label>
+                            <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD PHOTO PROFILE</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyLogo" class="imgFile" id="addImgFile" hidden>
                         </div>
                         <div class="col-12">
@@ -81,14 +81,6 @@
                                 <input class="form-control" type="text" placeholder="Address" name="companyAddress">
                             </div>
                         </div>
-                        <div class="col-12">   
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Coordinate">
-                                    <i class="las la-map-marker fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate">
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -107,7 +99,7 @@
         <div class="modal-content">
             <form id="editCompanyForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
-                    <h1 class="modal-title fs-4">EDIT COMPANY</h1>
+                    <h1 class="modal-title fs-4">EDIT EMPLOYEE</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
@@ -117,7 +109,7 @@
                             <div class="imgContainer">
                                 <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
                             </div>
-                            <label class="btn-warning mt-3 text-center w-50" for="addimgFile">UPLOAD LOGO</label>
+                            <label class="btn-warning mt-3 text-center w-50" for="addimgFile">UPLOAD PHOTO PROFILE</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyLogo" class="imgFile" id="editImgFile" hidden>
                         </div>
                         <div class="col-12">
@@ -154,18 +146,6 @@
                                 <input class="form-control" type="text" placeholder="Address" name="companyAddress">
                             </div>
                         </div>
-                        <div class="col-12">
-                            <input class="form-check-input" type="checkbox" id="newCoordinateCheck" data-bs-toggle="tooltip" data-bs-title="Change Coordinate Checkbox">
-                            <label class="form-check-label">Change coordinate?</label>
-                        </div>
-                        <div class="col-12" id="changeCoordinateInput">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Coordinate">
-                                    <i class="las la-map-marker fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate">
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -184,12 +164,12 @@
             <form id="deleteCompanyForm">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">
-                        DELETE COMPANY
+                        DELETE Employee
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    Are you sure want to delete <span class="fw-bold" id="companyName"></span> company?
+                    Are you sure want to delete <span class="fw-bold" id="companyName"></span> Employee?
                     <input type="number" id="companyId" name="companyId" hidden>
                 </div>
                 <div class="modal-footer border-0">
