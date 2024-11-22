@@ -76,3 +76,4 @@ $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesD
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User/profile';
 $route['company/dashboard'] = 'company/dashboard';
+$route['landing'] = 'user/landing/Landing';
