@@ -2,12 +2,12 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard extends CI_Controller {
+class Hospital extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'hospitals')) {
+        if ($this->session->userdata('adminRole') != ('hospital')) {
             redirect('dashboard');
         }
 
@@ -18,17 +18,17 @@ class Dashboard extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Hospitals',
-            'subtitle' => 'Hospitals',
+            'title' => 'BIM Dashboard | Hospital',
+            'subtitle' => 'Hospital',
             'contentType' => 'dashboard'
         );
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/hospitals/sidebar',
+            'sidebar' => 'partials/dashboard/sidebar',
             'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/hospitals/contentHeader',
-            'contentBody' => 'hospitals/Dashboard',
+            'contentHeader' => 'partials/dashboard/contentHeader',
+            'contentBody' => 'hospitals/Hospital',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
@@ -38,7 +38,5 @@ class Dashboard extends CI_Controller {
     }
 
 }
-
-/* End of file Company.php */
 
 ?>

@@ -8,7 +8,7 @@ class Companies extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
+        if ($this->session->userdata('adminRole') != ('admin') && $this->session->userdata('adminRole') != ('company')) {
             redirect('dashboard');
         }
 

@@ -7,7 +7,7 @@ class History extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'hospitals')) {
+        if ($this->session->userdata('adminRole') != ('hospital')) {
             redirect('dashboard');
         }
 
@@ -24,9 +24,9 @@ class History extends CI_Controller {
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/hospitals/sidebar',
+            'sidebar' => 'partials/dashboard/sidebar',
             'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/hospitals/contentHeader',
+            'contentHeader' => 'partials/dashboard/contentHeader',
             'contentBody' => 'hospitals/History',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'

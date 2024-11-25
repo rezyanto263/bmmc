@@ -7,11 +7,11 @@ class Doctors extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'hospitals')) {
+        if ($this->session->userdata('adminRole') != ('hospital')) {
             redirect('dashboard');
         }
 
-        $this->load->model('M_hospitals');
+        $this->load->model('M_doctors');
     }    
 
     public function index()
@@ -24,9 +24,9 @@ class Doctors extends CI_Controller {
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/hospitals/sidebar',
+            'sidebar' => 'partials/dashboard/sidebar',
             'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/hospitals/contentHeader',
+            'contentHeader' => 'partials/dashboard/contentHeader',
             'contentBody' => 'hospitals/Doctors',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
@@ -36,10 +36,10 @@ class Doctors extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getAllHospitalsDatas() {
-        $hospitalsDatas = $this->M_hospitals->getAllHospitalsDatas();
+    public function getAllDoctors() {
+        $doctorsDatas = $this->M_doctors->getAllDoctorsDatas();
         $datas = array(
-            'data' => $hospitalsDatas
+            'data' => $doctorsDatas
         );
 
         echo json_encode($datas);
