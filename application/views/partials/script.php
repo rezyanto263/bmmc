@@ -40,4 +40,10 @@
     
 <?php endif; ?>
 
+<?php if ($contentType == 'user'): ?>
+    
+    <script defer src="<?= base_url('assets/js/user.js') ?>"></script>
+    
+<?php endif; ?>
+
 <script defer src="<?= base_url('assets/js/alert.js') ?>"></script>
