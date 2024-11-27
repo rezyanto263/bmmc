@@ -464,9 +464,10 @@ $('#deleteHospitalForm').on('submit', function(e) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
                 $('#deleteHospitalModal').modal('hide');
+                reloadTableData(hospitalsTable)
                 displayAlert('delete success');
             }
-        }
+        },
     });
 });
 
@@ -664,6 +665,7 @@ $('#deleteCompanyForm').on('submit', function(e) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
                 $('#deleteCompanyModal').modal('hide');
+                reloadTableData(companiesTable);
                 displayAlert('delete success');
             }
         }

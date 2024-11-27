@@ -117,7 +117,7 @@
                             <div class="imgContainer">
                                 <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
                             </div>
-                            <label class="btn-warning mt-3 text-center w-50" for="addimgFile">UPLOAD LOGO</label>
+                            <label class="btn-warning mt-3 text-center w-50" for="editImgFile">UPLOAD LOGO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyLogo" class="imgFile" id="editImgFile" hidden>
                         </div>
                         <div class="col-12">
@@ -193,8 +193,8 @@
                     <input type="number" id="companyId" name="companyId" hidden>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="deleteCompanyButton">DELETE</button>
+                    <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn-danger" id="deleteCompanyButton">DELETE</button>
                 </div>
             </form>
         </div>
