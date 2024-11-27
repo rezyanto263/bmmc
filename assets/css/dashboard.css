@@ -44,7 +44,7 @@ body.dashboard {
         pointer-events: all;
         z-index: 1;
         position: relative;
-        margin-left: 240px;
+        margin-left: 280px;
     }
 
     .dashboard aside {
