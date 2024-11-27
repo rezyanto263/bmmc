@@ -77,3 +77,6 @@ $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesD
 $route['profile'] = 'user/User/profile';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
+
+
+$route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';

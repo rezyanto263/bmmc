@@ -33,13 +33,21 @@ class AuthDashboard extends CI_Controller {
                 );
                 $this->session->set_userdata($sessionDatas);
 
-                redirect('dashboard');
+                if ($adminDatas['adminRole'] === 'admin') {
+                    redirect('dashboard');
+                } elseif ($adminDatas['adminRole'] === 'company') {
+                    redirect('company/dashboard');
+                }
             }
         }
 
         // Check Session
         if ($this->session->userdata('adminRole')) {
-            redirect('dashboard');
+            if ($this->session->userdata('adminRole') === 'admin') {
+                redirect('dashboard');
+            } elseif ($this->session->userdata('adminRole') === 'company') {
+                redirect('company/dashboard');
+            }
         }
 
         $datas = array(
@@ -110,8 +118,11 @@ class AuthDashboard extends CI_Controller {
                     'adminRole' => $adminDatas['adminRole']
                 );
                 $this->session->set_userdata($sessionDatas);
-
-                redirect('dashboard');
+                if ($adminDatas['adminRole'] === 'admin') {
+                    redirect('dashboard');
+                } elseif ($adminDatas['adminRole'] === 'company') {
+                    redirect('company/dashboard');
+                }
             } else {
                 $this->session->set_flashdata('flashdata', 'wrong password');
                 redirect('dashboard/login');
