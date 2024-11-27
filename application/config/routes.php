@@ -78,5 +78,6 @@ $route['profile'] = 'user/User/profile';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
+$route['company/employee/getAllEmployeesData'] = 'company/Employee/getAllEmployeesData';
 
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';

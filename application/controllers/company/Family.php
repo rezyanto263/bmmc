@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Billing extends CI_Controller {
+class Family extends CI_Controller {
 
     public function __construct()
     {
@@ -16,7 +16,7 @@ class Billing extends CI_Controller {
     {
         $datas = array(
             'title' => 'BIM Dashboard | Companies',
-            'subtitle' => 'Billing',
+            'subtitle' => 'Family',
             'contentType' => 'dashboard'
         );
 
@@ -25,7 +25,7 @@ class Billing extends CI_Controller {
             'sidebar' => 'partials/company/sidebar',
             'floatingMenu' => 'partials/dashboard/floatingMenu',
             'contentHeader' => 'partials/company/contentHeader',
-            'contentBody' => 'company/Billing',
+            'contentBody' => 'company/Family',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
