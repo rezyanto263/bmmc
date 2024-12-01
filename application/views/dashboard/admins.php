@@ -39,7 +39,7 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4 gx-3">
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Full Name">
                                     <i class="las la-user-cog fs-4"></i>

@@ -16,14 +16,14 @@
         </div>
         <div class="sidebar-menu">
             <ul class="p-0 m-0">
-                <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Dashboard'?'active':''; ?>" href="<?= base_url('dashboard') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Dashboard">
-                        <i class="las la-stream fs-4"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
                 <?php if ($this->session->userdata('adminRole') == 'admin' || $this->session->userdata('adminRole') == 'company') : ?>
-                <li>
+                    <li>
+                        <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Dashboard'?'active':''; ?>" href="<?= base_url('dashboard') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Dashboard">
+                            <i class="las la-stream fs-4"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Companies'?'active':''; ?>" href="<?= base_url('dashboard/companies') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Companies">
                         <i class="las la-building fs-4"></i>
                     <span>Companies</span>
@@ -52,7 +52,7 @@
                 <?php if ($this->session->userdata('adminRole') == 'hospital') : ?>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Hospital'?'active':''; ?>" href="<?= base_url('hospitals/Hospital') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Hospital">
-                        <i class="las la-hospital fs-4"></i>
+                        <i class="las la-stream fs-4"></i>
                         <span>Hospital</span>
                     </a>
                 </li>
