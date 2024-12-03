@@ -810,3 +810,51 @@ $('#deleteDoctorForm').on('submit', function(e) {
         }
     });
 });
+
+// CRUD History Health Hospital
+var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {data: 'pHolderName'},
+        {data: 'companyAddress'},
+        {data: 'doctorDateOfBirth'},
+        {data: 'doctorSpecialization'},
+        {
+            data: 'doctorStatus',
+            render: function(data, type, row) {
+                return capitalizeWords(data);
+            }
+        },
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editDoctorModal">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteDoctorModal">
+                        <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ],
+    columnDefs: [
+        {width: '180px', target: 4}
+    ]
+}));

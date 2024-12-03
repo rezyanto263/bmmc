@@ -73,6 +73,7 @@ $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getA
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
 $route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoctorsDatas';
+$route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/Histories/getHospitalHistoriesDatas';
 
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User/profile';
@@ -81,3 +82,4 @@ $route['landing'] = 'user/landing/Landing';
 
 // Hospital
 $route['hospitals/doctors'] = 'hospitals/doctors';
+$route['hospitals/hHistories'] = 'hospitals/hHistories';
