@@ -36,7 +36,5 @@ class Hospital extends CI_Controller {
         $this->load->vars($datas);
         $this->load->view('master', $partials);
     }
-
 }
-
 ?>

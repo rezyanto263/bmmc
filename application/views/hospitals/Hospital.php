@@ -27,5 +27,44 @@
 
 <!-- button edit -->
 <div class="d-grid gap-2 col-6 mx-auto">
-  <button class="btn btn-primary" type="button">Edit</button>
+  <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#editHospitalModal">Edit</button>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editHospitalModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <form id="editHospitalForm">
+                <div class="modal-header border-0">
+                    <h1 class="modal-title fs-4">Edit Rumah Sakit</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body border-0">
+                    <input type="text" id="HospitalEIN" name="HospitalEIN" hidden>
+                    <div class="row gy-4">
+                        <!-- Nama Rumah Sakit -->
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Nama Rumah Sakit">
+                                    <i class="las la-hospital fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Nama Rumah Sakit" name="HospitalName" value="RSUD Kota Medan">
+                            </div>
+                        </div>
+                        <!-- Alamat Rumah Sakit -->
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Alamat Rumah Sakit">
+                                    <i class="las la-map fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Alamat Rumah Sakit" name="HospitalAddress" value="Jl. Sudirman No.123">
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 d-flex flex-column align-items-stretch">
+                              <button type="button" class="btn btn-danger mb-2" data-bs-dismiss="modal">BATAL</button>
+                              <button type="submit" class="btn btn-primary" id="editButton">SIMPAN</button>
+                        </div>
+            </form>
+        </div>
+    </div>
 </div>
