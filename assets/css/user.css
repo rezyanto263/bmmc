@@ -41,48 +41,94 @@ body {
 
 .sec2 h2 {
     margin-top: 30px;
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 26px; /* Membesarkan ukuran judul */
+    margin-bottom: 15px;
     color: #2b3e9a;
+    border-bottom: 2px solid #00AFEF; /* Garis biru tipis di bawah teks */
+    padding-bottom: 10px; /* Memberikan ruang agar garis tidak terlalu dekat dengan teks */
+    display: inline-block; /* Membatasi lebar garis hanya sepanjang teks */
 }
+
 
 .sec2 p {
-    font-size: 20px;
+    font-size: 22px; /* Membesarkan ukuran font paragraf */
     line-height: 1.8;
+    text-align: justify; /* Menyebar teks secara rata */
+    margin-bottom: 20px; /* Memberi ruang lebih di bawah paragraf */
 }
 
-.layoutInformasi{
-    display: grid; 
-    grid-template-columns: 1fr 0.7fr;
-    gap: 3px;
-}
-
-.graphicInformation{
+.layoutInformasi {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-.giImg{
-    width: 80%;
-    height: 100%;
+.information {
+    flex: 1;
+    max-width: 50%; /* Maksimal setengah lebar layar */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.information h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.information p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.graphicInformation {
+    flex: 1;
+    max-width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center; /* Gambar di tengah */
+}
+
+.giImg {
+    width: 70%; /* Memperkecil ukuran gambar */
+    height: auto;
     object-fit: cover;
+    margin-top: 20px; /* Memberikan jarak di atas gambar */
 }
 
-@media only screen and (max-width: 800px){
-    .sec2{
+@media only screen and (max-width: 800px) {
+    .sec2 {
         padding: 20px 20px;
     }
-    .layoutInformasi{
+
+    .layoutInformasi {
         grid-template-columns: none;
         display: block;
     }
-    .sec2Btn{
+
+    .information, .graphicInformation {
+        max-width: 100%;
+        flex: 1;
+    }
+
+    .sec2Btn {
         margin: 0 0 20px 0;
     }
-    .giImg{
-        width: 100%;
-        height: 100%;
+
+    .giImg {
+        width: 80%; /* Gambar sedikit lebih besar di layar kecil */
+        height: auto;
         object-fit: cover;
+    }
+
+    .sec2 h2 {
+        font-size: 1.8em; /* Ukuran font lebih besar pada judul di layar kecil */
+    }
+
+    .sec2 p {
+        font-size: 1.2em; /* Ukuran font lebih besar di layar kecil */
     }
 }
 
@@ -110,10 +156,6 @@ body {
     padding: 20px 60px 10px 60px;
 }
 
-/*section5*/
-.sec5{
-
-}
 
 /*section6*/
 .sec6{

@@ -19,7 +19,7 @@ class User extends CI_Controller {
         $datas = array(
             'title' => 'BIM | User',
             'subtitle' => 'User',
-            'contentType' => 'user'
+            'contentType' => 'profile'
         );
 
         $partials = array(
