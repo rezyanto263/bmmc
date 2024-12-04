@@ -669,3 +669,149 @@ $('#deleteCompanyForm').on('submit', function(e) {
         }
     });
 });
+
+// Employees CRUD
+var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'company/Employee/getAllEmployeesDatas', // base URL diubah
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {data: 'policyholderNIN'},
+        {data: 'policyholderName'},
+        {data: 'policyholderEmail'},
+        {data: 'policyholderAddress'},
+        {data: 'policyholderBirth'},
+        {data: 'policyholderGender'},
+        {data: 'policyholderStatus'},
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#viewEmployeeModal">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editEmployeeModal">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteEmployeeModal">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ],
+    columnDefs: [
+        {width: '240px', target: 8}
+    ]
+}));
+
+$('#addEmployeeModal').on('shown.bs.modal', function() {
+    // Tambahkan kode jika memerlukan dropdown atau elemen interaktif lainnya
+});
+
+$('#addEmployeeButton, #editEmployeeButton, #deleteEmployeeButton').on('click', function() {
+    reloadTableData(employeesTable);
+});
+
+// Add Data Employee
+$('#addEmployeeForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Employee/addEmployee', // base URL diubah
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addEmployeeModal').modal('hide');
+                reloadTableData(employeesTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addEmployeeForm', res.errors);
+            }
+        }
+    });
+});
+
+// Edit Data Employee
+$('#employeesTable').on('click', '.btn-edit', function() {
+    var data = employeesTable.row($(this).parents('tr')).data();
+    $('#editEmployeeForm [name="policyholderNIN"]').val(data.policyholderNIN);
+    $('#editEmployeeForm [name="policyholderName"]').val(data.policyholderName);
+    $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
+    $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
+    $('#editEmployeeForm [name="policyholderAddress"]').val(data.policyholderAddress);
+    $('#editEmployeeForm [name="policyholderBirth"]').val(data.policyholderBirth);
+    $('#editEmployeeForm [name="policyholderGender"]').val(data.policyholderGender);
+    $('#editEmployeeForm [name="policyholderStatus"]').val(data.policyholderStatus);
+});
+
+$('#editEmployeeForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Employee/editEmployee', // base URL diubah
+        method: 'POST',
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#editEmployeeModal').modal('hide');
+                reloadTableData(employeesTable);
+                displayAlert('edit success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#editEmployeeForm', res.errors);
+            }
+        }
+    });
+});
+
+// Delete Employee
+$('#employeesTable').on('click', '.btn-delete', function() {
+    var data = employeesTable.row($(this).parents('tr')).data();
+    $('#deleteEmployeeForm #employeeName').html(data.policyholderName);
+    $('#deleteEmployeeForm #policyholderNIN').val(data.policyholderNIN);
+});
+
+$('#deleteEmployeeForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Employee/deleteEmployee', // base URL diubah
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#deleteEmployeeModal').modal('hide');
+                reloadTableData(employeesTable);
+                displayAlert('delete success');
+            }
+        }
+    });
+});
