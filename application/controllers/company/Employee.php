@@ -12,10 +12,21 @@ class Employee extends CI_Controller {
         }
 
         $this->load->model('M_employee');
+        $adminId = $this->session->userdata('adminId');
+        $companyData = $this->M_employee->getCompanyByAdminId($adminId);
     }
 
     public function index()
     {
+        $company = array(
+            'companyId' => $this->session->userdata('companyId'),
+            'companyName' => $this->session->userdata('companyName'),
+            'companyLogo' => $this->session->userdata('companyLogo'),
+            'companyPhone' => $this->session->userdata('companyPhone'),
+            'companyAddress' => $this->session->userdata('companyAddress'),
+            'companyCoordinate' => $this->session->userdata('companyCoordinate')
+        );
+
         $datas = array(
             'title' => 'BIM Dashboard | Companies',
             'subtitle' => 'Employee',
@@ -37,11 +48,12 @@ class Employee extends CI_Controller {
     }
 
     public function getAllEmployeesDatas() {
-        $employeesDatas = $this->M_employee->getAllEmployeesDatas();
+        $companyId = $this->session->userdata('companyId');
+        $employeesDatas = $this->M_employee->getAllEmployeesDatas($companyId);
         $datas = array(
             'data' => $employeesDatas
         );
-
+    
         echo json_encode($datas);
     }
 
@@ -99,6 +111,7 @@ class Employee extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
+            $companyId = $this->session->userdata('companyId');
             $employeeData = array(
                 'policyholderNIN' => $this->input->post('policyholderNIN'),
                 'policyholderName' => $this->input->post('policyholderName'),
@@ -107,10 +120,17 @@ class Employee extends CI_Controller {
                 'policyholderAddress' => $this->input->post('policyholderAddress'),
                 'policyholderBirth' => $this->input->post('policyholderBirth'),
                 'policyholderGender' => $this->input->post('policyholderGender'),
-                'policyholderStatus' => $this->input->post('policyholderStatus')
+                'policyholderStatus' => $this->input->post('policyholderStatus'),
             );
 
             $this->M_employee->insertEmployee($employeeData);
+            $compolderData = array(
+                'companyId' => $companyId,
+                'policyholderNIN' => $this->input->post('policyholderNIN')
+            );
+    
+            // Masukkan data ke tabel compolder
+            $this->M_employee->insertCompolder($compolderData);
             echo json_encode(array('status' => 'success'));
         }
     }
@@ -134,6 +154,35 @@ class Employee extends CI_Controller {
                     'valid_email' => 'The %s field must contain a valid email address.'
                 )
             ),
+            array(
+                'field' => 'policyholderEmail',
+                'label' => 'Email',
+                'rules' => 'required|trim|valid_email',
+                'errors' => array(
+                    'required' => 'Employee should provide a %s.',
+                    'valid_email' => 'The %s field must contain a valid email address.'
+                )
+            ),
+            array(
+                'field' => 'newPassword',
+                'label' => 'Password',
+                'rules' => 'trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
+                'errors' => array(
+                    'required' => 'You should provide a %s.',
+                    'min_length' => '%s must be at least 8 characters in length.',
+                    'max_length' => '%s max 20 characters in length.',
+                    'regex_match' => '%s must contain at least one uppercase letter and one number.'
+                )
+            ),
+            array(
+                'field' => 'confirmPassword',
+                'label' => 'Password Confirmation',
+                'rules' => 'trim|matches[newPassword]',
+                'errors' => array(
+					'required' => 'You must provide a %s.',
+					'matches' => '%s does not match the Password.'
+				)
+            )
         );
         $this->form_validation->set_rules($validate);
 
@@ -142,14 +191,18 @@ class Employee extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $policyholderNIN = $this->input->post('policyholderNIN');
+            $password = $this->input->post('policyholderPassword');
+            $newPassword = $this->input->post('newPassword');
             $employeeData = array(
+                'policyholderNIN' => $this->input->post('policyholderNIN'),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
                 'policyholderAddress' => $this->input->post('policyholderAddress'),
                 'policyholderBirth' => $this->input->post('policyholderBirth'),
                 'policyholderGender' => $this->input->post('policyholderGender'),
-                'policyholderStatus' => $this->input->post('policyholderStatus')
+                'policyholderStatus' => $this->input->post('policyholderStatus'),
             );
+            !empty($newPassword)? $employeeData['policyholderPassword'] = $newPassword : '';
 
             $this->M_employee->updateEmployee($policyholderNIN, $employeeData);
             echo json_encode(array('status' => 'success'));

@@ -8,6 +8,14 @@ class M_auth extends CI_Model {
         return $this->db->get('admin')->result_array();
     }
 
+    public function getCompanyDetails($adminId) {
+        $this->db->select('companyId, companyName, companyLogo, companyPhone, companyAddress, companyCoordinate');
+        $this->db->from('company');  // Assuming the table is named 'companies'
+        $this->db->where('adminId', $adminId);
+        $query = $this->db->get();
+    
+        return $query->row_array();  // Return company data as an associative array
+    }
     public function checkAdmin($param, $adminData) {
         return $this->db->get_where('admin', array($param => $adminData))->row_array();
     }

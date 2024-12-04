@@ -5,44 +5,66 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Dashboard extends CI_Controller {
 
     public function __construct()
-    {
-        parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
-            redirect('dashboard');
-        }
-
-        $this->load->model('M_companies');
+{
+    parent::__construct();
+    // Pastikan hanya admin atau company yang dapat mengakses
+    if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
+        redirect('dashboard');
     }
 
-    public function index()
-    {
-        // Ambil data perusahaan dari model
-        $companyData = $this->M_companies->getAllCompaniesDatas();
+    $this->load->model('M_companies');
 
-        // Cek apakah data perusahaan ada
-        $company = !empty($companyData) ? $companyData[0] : null;
+    // Ambil adminId dari session yang sudah login
+    $adminId = $this->session->userdata('adminId');
 
-        // Kirim data ke view
-        $datas = array(
-            'title' => 'BIM Dashboard | Companies',
-            'subtitle' => 'Companies',
-            'contentType' => 'dashboard',
-            'company' => $company // Kirim data perusahaan ke view
-        );
+    // Ambil data perusahaan berdasarkan adminId
+    $companyData = $this->M_companies->getCompanyByAdminId($adminId);
 
-        $partials = array(
-            'head' => 'partials/head',
-            'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/company/contentHeader',
-            'contentBody' => 'company/Dashboard',
-            'footer' => 'partials/dashboard/footer',
-            'script' => 'partials/script'
-        );
-
-        $this->load->vars($datas);
-        $this->load->view('master', $partials);
+    // Jika data perusahaan ada, simpan ke session
+    if (!empty($companyData)) {
+        $this->session->set_userdata('companyId', $companyData['companyId']);
+        $this->session->set_userdata('companyName', $companyData['companyName']);
+        $this->session->set_userdata('companyLogo', $companyData['companyLogo']);
+        $this->session->set_userdata('companyPhone', $companyData['companyPhone']);
+        $this->session->set_userdata('companyAddress', $companyData['companyAddress']);
+        $this->session->set_userdata('companyCoordinate', $companyData['companyCoordinate']);
     }
+}
+
+public function index()
+{
+    // Ambil data perusahaan dari session
+    $company = array(
+        'companyId' => $this->session->userdata('companyId'),
+        'companyName' => $this->session->userdata('companyName'),
+        'companyLogo' => $this->session->userdata('companyLogo'),
+        'companyPhone' => $this->session->userdata('companyPhone'),
+        'companyAddress' => $this->session->userdata('companyAddress'),
+        'companyCoordinate' => $this->session->userdata('companyCoordinate')
+    );
+
+    // Kirim data ke view
+    $datas = array(
+        'title' => 'BIM Dashboard | Companies',
+        'subtitle' => 'Companies',
+        'contentType' => 'dashboard',
+        'company' => $company // Kirim data perusahaan ke view
+    );
+
+    $partials = array(
+        'head' => 'partials/head',
+        'sidebar' => 'partials/company/sidebar',
+        'floatingMenu' => 'partials/dashboard/floatingMenu',
+        'contentHeader' => 'partials/company/contentHeader',
+        'contentBody' => 'company/Dashboard',
+        'footer' => 'partials/dashboard/footer',
+        'script' => 'partials/script'
+    );
+
+    $this->load->vars($datas);
+    $this->load->view('master', $partials);
+}
+
 
     public function editCompany()
     {
@@ -92,7 +114,6 @@ class Dashboard extends CI_Controller {
 
             $companyDatas = array(
                 'companyName' => $this->input->post('companyName'),
-                'adminId' => $this->input->post('adminId') ?: NULL,
                 'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
                 'companyAddress' => $this->input->post('companyAddress'),
             );

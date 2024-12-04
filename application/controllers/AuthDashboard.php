@@ -26,6 +26,7 @@ class AuthDashboard extends CI_Controller {
             $adminDatas = $this->M_auth->checkAdmin('adminId', $adminKeyReference);
             if ($adminLoginKey === hash('sha256', $adminDatas['adminEmail'])) {
                 $sessionDatas = array(
+                    'adminId' => $adminDatas['adminId'],
                     'adminName' => $adminDatas['adminName'],
                     'adminEmail' => $adminDatas['adminEmail'],
                     'adminPassword' => $adminDatas['adminPassword'],
@@ -107,10 +108,27 @@ class AuthDashboard extends CI_Controller {
         if (!empty($adminDatas)) {
             if (password_verify($adminPassword, $adminDatas['adminPassword'])) {
                 if ($rememberMe) {
-                    $this->input->set_cookie('adminLoginKey', hash('sha256',$adminDatas['adminEmail']), 0);
+                    $this->input->set_cookie('adminLoginKey', hash('sha256', $adminDatas['adminEmail']), 0);
                     $this->input->set_cookie('adminKeyReference', $adminDatas['adminId'], 0);
                 }
-
+    
+                // Fetch company details based on adminId
+                if ($adminDatas['adminRole'] === 'company') {
+                    $companyData = $this->M_auth->getCompanyDetails($adminDatas['adminId']);
+                    
+                    // Set company data in session
+                    $companySessionData = array(
+                        'companyId' => $companyData['companyId'],
+                        'companyName' => $companyData['companyName'],
+                        'companyLogo' => $companyData['companyLogo'],
+                        'companyPhone' => $companyData['companyPhone'],
+                        'companyAddress' => $companyData['companyAddress'],
+                        'companyCoordinate' => $companyData['companyCoordinate'],
+                    );
+                    $this->session->set_userdata($companySessionData);
+                }
+    
+                // Set admin data in session
                 $sessionDatas = array(
                     'adminName' => $adminDatas['adminName'],
                     'adminEmail' => $adminDatas['adminEmail'],
@@ -118,6 +136,7 @@ class AuthDashboard extends CI_Controller {
                     'adminRole' => $adminDatas['adminRole']
                 );
                 $this->session->set_userdata($sessionDatas);
+    
                 if ($adminDatas['adminRole'] === 'admin') {
                     redirect('dashboard');
                 } elseif ($adminDatas['adminRole'] === 'company') {

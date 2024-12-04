@@ -184,24 +184,27 @@
                                 <input class="form-control" type="email" placeholder="Email" name="policyholderEmail" id="editEmail">
                             </div>
                         </div>
-
                         <!-- Password -->
-                        <div class="col-12">
+                        <div class="col-12 d-flex justify-content-between w-100">
+                            <div>
+                                <input class="form-check-input" type="checkbox" id="newPasswordCheck" data-bs-toggle="tooltip" data-bs-title="Change Password Checkbox">
+                                <label class="form-check-label">Change password?</label>
+                            </div>
+                        </div>
+                        <div class="col-12 changePasswordInput">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Password">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin New Password">
                                     <i class="las la-key fs-4"></i>
                                 </span>
-                                <input type="password" class="form-control" id="editPassword" placeholder="Password" name="policyholderPassword">
+                                <input type="password" class="form-control" id="adminPassword" placeholder="Password" name="newPassword">
                                 <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
                                     <i class="las la-eye-slash fs-4"></i>
                                 </span>
                             </div>
                         </div>
-
-                        <!-- Password Confirmation -->
-                        <div class="col-12">
+                        <div class="col-12 changePasswordInput">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Password Confirmation">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Password Confirmation">
                                     <i class="las la-key fs-4"></i>
                                 </span>
                                 <input type="password" class="form-control" placeholder="Password Confirmation" name="confirmPassword">

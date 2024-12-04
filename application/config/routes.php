@@ -72,12 +72,14 @@ $route['dashboard/getAllUnconnectedHospitalAdminsDatas'] = 'dashboard/Admins/get
 $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedCompanyAdminsDatas';
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
+$route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
+$route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
+$route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamiliesByPolicyholderNIN';
 
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User/profile';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
-$route['company/employee/getAllEmployeesData'] = 'company/Employee/getAllEmployeesData';
 
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';
