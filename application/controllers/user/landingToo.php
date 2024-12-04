@@ -25,6 +25,7 @@ class LandingToo extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'navbar' => 'partials/user/navbar',
+            'footer' => 'partials/user/footer',
             'content' => 'user/landingToo',
             'script' => 'partials/script'
         );

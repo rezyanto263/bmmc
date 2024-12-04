@@ -26,16 +26,28 @@
 <?php } else if ($contentType == 'user') { ?>
 
     <?php $this->load->view($navbar); ?>
+
     
     <?php $this->load->view($content); ?>
+
+
+    <?php $this->load->view($footer); ?>
     
 <?php } else if ($contentType == 'authentication') { ?>
 
     <?php $this->load->view($content); ?>
 
+<?php } else if ($contentType == 'profile'){ ?>
+
+    <?php $this->load->view($navbar); ?>
+    
+    <?php $this->load->view($content); ?>
+
 <?php } ?>
 
     <?php $this->load->view($script); ?>
+
+
 
 </body>
 </html>
