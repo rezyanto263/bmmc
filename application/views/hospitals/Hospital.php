@@ -30,7 +30,7 @@
   <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#editHospitalModal">Edit</button>
 </div>
 
-<!-- Modal Edit -->
+<!-- modal edit -->
 <div class="modal fade" id="editHospitalModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
