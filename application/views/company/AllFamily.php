@@ -40,7 +40,7 @@
 <div class="modal fade" id="addFamilyModal2">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <form id="addFamilyForm">
+            <form id="addFamilyForm2">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">ADD FAMILY MEMBER</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

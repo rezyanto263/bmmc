@@ -181,7 +181,7 @@ class AuthUser extends CI_Controller {
                 'userNIN' => $userDatas['familyNIN'],
                 'userName' => $userDatas['familyName'],
                 'userEmail' => $userDatas['familyEmail'],
-                'policyholderId' => $userDatas['policyholderId'],
+                'policyholderNIN' => $userDatas['policyholderNIN'],
                 'userAddress' => $userDatas['familyAddress'],
                 'userBirth' => $userDatas['familyBirth'],
                 'userGender' => $userDatas['familyGender'],

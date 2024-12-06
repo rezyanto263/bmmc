@@ -13,6 +13,8 @@ class Family extends CI_Controller {
         }
 
         $this->load->model('M_family');
+        $adminId = $this->session->userdata('adminId');
+        $companyData = $this->M_family->getCompanyByAdminId($adminId);
     }
     
 
@@ -72,7 +74,8 @@ class Family extends CI_Controller {
     }
     
     public function getAllFamilyDatas() {
-        $familyDatas = $this->M_family->getAllFamilyDatas();
+        $companyId = $this->session->userdata('companyId');
+        $familyDatas = $this->M_family->getAllFamilyDatas($companyId);
         $datas = array(
             'data' => $familyDatas
         );

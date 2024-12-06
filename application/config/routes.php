@@ -78,6 +78,8 @@ $route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamil
 
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User';
+$route['user/editEmployee'] = 'user/User/editEmployee';
+$route['user/editFamily'] = 'user/User/editFamily';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
