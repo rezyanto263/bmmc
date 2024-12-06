@@ -1,10 +1,10 @@
 <div class="content-body py-3">
     <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-    <button type="button" class="btn-primary w-100 my-3 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#addFamilyModal">
+    <button type="button" class="btn-primary w-100 my-3 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#addFamilyModal2">
         <i class="las la-plus-circle fs-4"></i>    
         ADD FAMILY
     </button>
-    <table id="familiesTable" class="table" style="width:100%">
+    <table id="allfamiliesTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -37,7 +37,7 @@
 </div>
 
 <!-- Modal Add -->
-<div class="modal fade" id="addFamilyModal">
+<div class="modal fade" id="addFamilyModal2">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="addFamilyForm">
@@ -174,10 +174,10 @@
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editFamilyModal">
+<div class="modal fade" id="editFamilyModal2">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <form id="editFamilyForm" enctype="multipart/form-data">
+            <form id="editFamilyForm2" enctype="multipart/form-data">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">EDIT Family</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -305,7 +305,7 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="editFamilyButton">SAVE</button>
+                    <button type="submit" class="btn-primary" id="editFamilyButton2">SAVE</button>
                 </div>
             </form>
         </div>
@@ -313,10 +313,10 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteFamilyModal" aria-hidden="true">
+<div class="modal fade" id="deleteFamilyModal2" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <form id="deleteFamilyForm">
+            <form id="deleteFamilyForm2">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">
                         DELETE Family
@@ -329,7 +329,7 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="deleteFamilyButton">DELETE</button>
+                    <button type="submit" class="btn-primary" id="deleteFamilyButton2">DELETE</button>
                 </div>
             </form>
         </div>

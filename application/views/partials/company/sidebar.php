@@ -29,7 +29,7 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Family'?'active':''; ?>" href="<?= base_url('company/Family') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Family">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Family'?'active':''; ?>" href="<?= base_url('company/Family/index2') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Family">
                         <i class="las la-user-injured fs-4"></i>
                         <span>Family</span>
                     </a>

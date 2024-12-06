@@ -49,9 +49,15 @@ class M_employee extends CI_Model {
     
 
     public function deleteEmployee($policyholderNIN) {
+        // Hapus data terkait di tabel 'compolder' berdasarkan policyholderNIN
+        $this->db->where('policyholderNIN', $policyholderNIN);
+        $this->db->delete('compolder');
+    
+        // Setelah data di 'compolder' dihapus, hapus data di tabel 'policyholder'
         $this->db->where('policyholderNIN', $policyholderNIN);
         return $this->db->delete('policyholder');
     }
+    
 
 }
 

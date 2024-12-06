@@ -113,10 +113,10 @@ class Employee extends CI_Controller {
         } else {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
-                'policyholderNIN' => $this->input->post('policyholderNIN'),
+                'policyholderNIN' => htmlspecialchars($this->input->post('policyholderNIN')),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
-                'policyholderPassword' => $this->input->post('policyholderPassword'),
+                'policyholderPassword' => password_hash(htmlspecialchars($this->input->post('policyholderPassword')), PASSWORD_DEFAULT),
                 'policyholderAddress' => $this->input->post('policyholderAddress'),
                 'policyholderBirth' => $this->input->post('policyholderBirth'),
                 'policyholderGender' => $this->input->post('policyholderGender'),
@@ -192,7 +192,7 @@ class Employee extends CI_Controller {
         } else {
             $policyholderNIN = $this->input->post('policyholderNIN');
             $password = $this->input->post('policyholderPassword');
-            $newPassword = $this->input->post('newPassword');
+            $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $employeeData = array(
                 'policyholderNIN' => $this->input->post('policyholderNIN'),
                 'policyholderName' => $this->input->post('policyholderName'),

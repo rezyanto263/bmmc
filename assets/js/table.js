@@ -856,6 +856,152 @@ $('#deleteEmployeeForm').on('submit', function(e) {
     });
 });
 
+var allfamiliesTable = $('#allfamiliesTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: {
+        url: baseUrl + 'company/Family/getAllFamilyDatas',
+        dataSrc: 'data', 
+        error: function (xhr, error, thrown) {
+            console.error("AJAX Error:", error);
+            console.error("XHR:", xhr);
+            alert("Error loading data: " + thrown);
+        }
+    },
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {data: 'familyNIN'},
+        {data: 'familyName'},
+        {data: 'familyEmail'},
+        {data: 'familyAddress'},
+        {data: 'familyBirth'},
+        {data: 'familyGender'},
+        {data: 'familyRole'},
+        {data: 'familyStatus'},
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editFamilyModal2">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteFamilyModal2">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ],
+    columnDefs: [
+        {width: '240px', target: 9}
+    ]
+}));
+
+$('#addFamilyModal2').on('shown.bs.modal', function() {
+    // Tambahkan kode jika memerlukan dropdown atau elemen interaktif lainnya
+});
+
+$('#addFamilyButton2, #editFamilyButton2, #deleteFamilyButton2').on('click', function() {
+    reloadTableData(allfamiliesTable);
+});
+
+// Add Data Family
+$('#addFamilyForm2').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Family/addFamily', // URL untuk menambahkan data
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addFamilyModal2').modal('hide');
+                reloadTableData(allfamiliesTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addFamilyForm2', res.errors);
+            }
+        }
+    });
+});
+
+// Edit Data Family
+$('#allfamiliesTable').on('click', '.btn-edit', function() {
+    var data = allfamiliesTable.row($(this).parents('tr')).data();
+    $('#editFamilyForm2 [name="familyNIN"]').val(data.familyNIN);
+    $('#editFamilyForm2 [name="policyholderNIN"]').val(data.policyholderNIN);
+    $('#editFamilyForm2 [name="familyName"]').val(data.familyName);
+    $('#editFamilyForm2 [name="familyEmail"]').val(data.familyEmail);
+    $('#editFamilyForm2 [name="familyAddress"]').val(data.familyAddress);
+    $('#editFamilyForm2 [name="familyBirth"]').val(data.familyBirth);
+    $('#editFamilyForm2 [name="familyGender"]').val(data.familyGender);
+    $('#editFamilyForm2 [name="familyRole"]').val(data.familyRole);
+    $('#editFamilyForm2 [name="familyStatus"]').val(data.familyStatus);
+});
+
+$('#editFamilyForm2').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Family/editFamily', // URL untuk mengedit data
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#editFamilyModal2').modal('hide');
+                reloadTableData(allfamiliesTable);
+                displayAlert('edit success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#editFamilyForm2', res.errors);
+            }
+        }
+    });
+});
+
+// Delete Family
+$('#allfamiliesTable').on('click', '.btn-delete', function() {
+    var data = allfamiliesTable.row($(this).parents('tr')).data();
+    $('#deleteFamilyForm2 #familyName').html(data.familyName);
+    $('#deleteFamilyForm2 #familyNIN').val(data.familyNIN);
+});
+
+$('#deleteFamilyForm2').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'company/Family/deleteFamily', // URL untuk menghapus data
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#deleteFamilyModal2').modal('hide');
+                reloadTableData(allfamiliesTable);
+                displayAlert('delete success');
+            }
+        }
+    });
+});
+
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
         url: baseUrl + 'company/Family/getFamiliesByPolicyholderNIN',

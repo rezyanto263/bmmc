@@ -54,8 +54,8 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 // User
-$route['home'] = 'user/home';
-$route['login'] = 'AuthUser/loginUser';
+$route['home'] = 'user/landingtoo';
+$route['login'] = 'AuthUser';
 $route['logout'] = 'AuthUser/logout';
 
 // Dashboard
@@ -77,9 +77,8 @@ $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
 $route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamiliesByPolicyholderNIN';
 
 // Route baru untuk tampilan profil pengguna
-$route['profile'] = 'user/User/profile';
+$route['profile'] = 'user/User';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
-
 
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';

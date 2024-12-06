@@ -43,8 +43,8 @@
             <div class="d-flex align-items-center justify-content-center mb-2">
                 <img src="<?= base_url('assets/images/logo.png') ?>" class="rounded-circle mr-2" alt="User Image" style="width: 50px; height: 50px;">
                 <div>
-                    <h5 class="mb-0">Cicak Muslimah</h5>
-                    <small class="text-muted">realnamurag@gmail.com</small>
+                    <h5 class="mb-0"><?= $policyholderDatas['policyholderName'] ?></h5>
+                    <small class="text-muted"><?= $policyholderDatas['policyholderEmail'] ?></small>
                 </div>
                 <a href="#" class="ml-2" data-toggle="modal" data-target="#editProfileModal">
                     <i class="fas fa-edit"></i>
@@ -125,72 +125,33 @@
 </div>
 
 
-          <!-- Family Members List -->
+ <!-- Family Members List -->
 <h6 class="text-left mt-4">Daftar Anggota Keluarga</h6>
 <div class="accordion mb-3" id="familyAccordion">
-    <!-- Family Member Item: Jawir Pedia -->
+    <?php foreach ($familyMembers as $index => $member): ?>
+    <!-- Family Member Item: <?= $member['familyName'] ?> -->
     <div class="card">
         <div class="card-header p-2 d-flex align-items-center justify-content-between">
             <h2 class="mb-0">
-                <button class="btn btn-link text-dark text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                    Jawir Pedia
+                <button class="btn btn-link text-dark text-left" type="button" data-toggle="collapse" data-target="#collapse<?= $index ?>" aria-expanded="false" aria-controls="collapse<?= $index ?>">
+                    <?= $member['familyName'] ?>
                 </button>
             </h2>
-            <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+            <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapse<?= $index ?>" aria-expanded="false" aria-controls="collapse<?= $index ?>">
                 <i class="fas fa-chevron-down"></i>
             </button>
         </div>
-        <div id="collapseOne" class="collapse" data-parent="#familyAccordion">
+        <div id="collapse<?= $index ?>" class="collapse" data-parent="#familyAccordion">
             <div class="card-body">
-                <p><strong>Nama:</strong> Jawir Pedia</p>
-                <p><strong>Alamat:</strong> Jalan Mawar No. 123, Denpasar</p>
-                <p><strong>Tanggal Lahir:</strong> 01 Januari 1980</p>
+                <p><strong>Nama:</strong> <?= $member['familyName'] ?></p>
+                <p><strong>Alamat:</strong> <?= $member['familyAddress'] ?></p>
+                <p><strong>Tanggal Lahir:</strong> <?= $member['familyBirth'] ?></p>
+                <p><strong>Status:</strong> <?= $member['familyStatus'] ?></p>
             </div>
         </div>
     </div>
-
-            <!-- Family Member Item: Sari Pedia -->
-            <div class="card">
-                <div class="card-header p-2 d-flex align-items-center justify-content-between">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link text-dark text-left" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Sari Pedia
-                        </button>
-                    </h2>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-                <div id="collapseTwo" class="collapse" data-parent="#familyAccordion">
-                    <div class="card-body">
-                        <p><strong>Nama:</strong> Sari Pedia</p>
-                        <p><strong>Alamat:</strong> Jalan Melati No. 45, Denpasar</p>
-                        <p><strong>Tanggal Lahir:</strong> 15 Mei 1985</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Family Member Item: Budi Pedia -->
-            <div class="card">
-                <div class="card-header p-2 d-flex align-items-center justify-content-between">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link text-dark text-left" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Budi Pedia
-                        </button>
-                    </h2>
-                    <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-                <div id="collapseThree" class="collapse" data-parent="#familyAccordion">
-                    <div class="card-body">
-                        <p><strong>Nama:</strong> Budi Pedia</p>
-                        <p><strong>Alamat:</strong> Jalan Cempaka No. 67, Denpasar</p>
-                        <p><strong>Tanggal Lahir:</strong> 10 Oktober 1990</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <?php endforeach; ?>
+</div>
 
 
 

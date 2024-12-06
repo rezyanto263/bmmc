@@ -38,6 +38,28 @@ class Family extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
+    public function index2()
+    {
+        $datas = array(
+            'title' => 'BIM Dashboard | Family',
+            'subtitle' => 'Family',
+            'contentType' => 'dashboard'
+        );
+
+        $partials = array(
+            'head' => 'partials/head',
+            'sidebar' => 'partials/company/sidebar',
+            'floatingMenu' => 'partials/dashboard/floatingMenu',
+            'contentHeader' => 'partials/company/contentHeader',
+            'contentBody' => 'company/AllFamily',
+            'footer' => 'partials/dashboard/footer',
+            'script' => 'partials/script'
+        );
+
+        $this->load->vars($datas);
+        $this->load->view('master', $partials);
+    }
+
     public function savePolicyholderNIN() {
         $policyholderNIN = $this->input->post('policyholderNIN');
     
@@ -132,11 +154,11 @@ class Family extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $familyData = array(
-                'familyNIN' => $this->input->post('familyNIN'),
+                'familyNIN' => htmlspecialchars($this->input->post('familyNIN')),
                 'policyholderNIN' => $this->input->post('policyholderNIN'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
-                'familyPassword' => $this->input->post('familyPassword'),
+                'familyPassword' => password_hash(htmlspecialchars($this->input->post('familyPassword')), PASSWORD_DEFAULT),
                 'familyAddress' => $this->input->post('familyAddress'),
                 'familyBirth' => $this->input->post('familyBirth'),
                 'familyGender' => $this->input->post('familyGender'),
@@ -195,7 +217,7 @@ class Family extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $familyNIN = $this->input->post('familyNIN');
-            $newPassword = $this->input->post('newPassword');
+            $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $familyData = array(
                 'familyNIN' => $this->input->post('familyNIN'),
                 'policyholderNIN' => $this->input->post('policyholderNIN'),
