@@ -1,6 +1,6 @@
 <div class="content-body py-3">
     <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-    <table id="hospitalsTables" class="table" style="width:100%">
+    <table id="companiesTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -8,8 +8,7 @@
                 <th>Admin</th>
                 <th>Address</th>
                 <th>Phone</th>
-                <th>Coordinate</th>
-                <th>Action</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tfoot>
@@ -19,18 +18,8 @@
                 <th>Admin</th>
                 <th>Address</th>
                 <th>Phone</th>
-                <th>Coordinate</th>
-                <th>Action</th>
+                <th>Actions</th>
             </tr>
         </tfoot>
     </table>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="viewMapHospitalModal" tabindex="-1" aria-labelledby="viewMapHospitalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-        <div id="mapHospitals"></div>
-        </div>
-    </div>
 </div>

@@ -156,8 +156,52 @@ body {
     padding: 20px 60px 10px 60px;
 }
 
-
 /*section6*/
-.sec6{
-    background-color: #8491d3;
+.sec6 .slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+/* Track slide */
+.sec6 .slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out; /* Animasi geser */
+    will-change: transform;
+}
+
+/* Item slide */
+.sec6 .slide {
+    flex: 0 0 25%; /* 4 slide dalam satu baris */
+    box-sizing: border-box;
+    padding: 0 10px; /* Jarak antar slide */
+}
+
+.sec6 .slide img {
+    width: 100%; /* Gambar memenuhi kontainer */
+    display: block;
+}
+
+/* Tombol navigasi */
+.sec6 .btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.sec6 .btn.prev {
+    left: 0;
+}
+
+.sec6 .btn.next {
+    right: 0;
 }

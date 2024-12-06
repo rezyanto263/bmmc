@@ -41,6 +41,12 @@
                     </a>
                 </li>
                 <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('company/History') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
+                        <i class="las la-receipt fs-4"></i>
+                        <span>History</span>
+                    </a>
+                </li>
+                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Hospitals'?'active':''; ?>" href="<?= base_url('company/Hospitals') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Hospitals">
                         <i class="las la-hospital fs-4"></i>
                         <span>Hospitals</span>

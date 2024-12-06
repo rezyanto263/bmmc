@@ -42,106 +42,32 @@
         </div>
     </section>
     
-<!--Section 6 Mitra Kami-->
-<section class="sec6">
-    <div class="container py-5">
-        <h2 class="text-center mb-4">Mitra Bali Mitra Medical Center</h2>
-        <div id="carouselExampleCustom" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner" id="carousel-content">
-                <!-- Gambar akan diisi oleh JavaScript -->
+    <!-- Section 6 Mitra Kami -->
+    <section class="sec6">
+        <div class="container py-5">
+            <h2 class="text-center mb-4">Mitra Bali Mitra Medical Center</h2>
+            <div class="slider">
+                <button class="btn prev" onclick="slide(-1)">&#10094;</button>
+                <div class="slides">
+                    <!-- Akan ditambahkan kloning elemen dengan JS -->
+                    <div class="slide">
+                        <img src="<?= base_url('assets/images/hospital-placeholder.jpg'); ?>" alt="Hospital 1">
+                    </div>
+                    <div class="slide">
+                        <img src="<?= base_url('assets/images/hospital-placeholder.jpg'); ?>" alt="Hospital 2">
+                    </div>
+                    <div class="slide">
+                        <img src="<?= base_url('assets/images/hospital-placeholder.jpg'); ?>" alt="Hospital 3">
+                    </div>
+                    <div class="slide">
+                        <img src="<?= base_url('assets/images/hospital-placeholder.jpg'); ?>" alt="Hospital 4">
+                    </div>
+                </div>
+                <button class="btn next" onclick="slide(1)">&#10095;</button>
             </div>
-
-            <!-- Tombol kontrol -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCustom" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCustom" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
         </div>
-    </div>
-</section>
+    </section>
 
-<script>
-    // Data gambar
-    const imageUrls = [
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 1
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 2
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 3
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 4
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 5
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 6
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 7
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 8
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 9
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>"  // Gambar 10
-    ];
-
-    const carouselContent = document.getElementById('carousel-content');
-
-    // Menampilkan 4 gambar di awal
-    let activeIndex = 0; // Indeks gambar aktif
-    const imagesPerSlide = 4;
-
-    function createSlide(startIndex) {
-        const slideDiv = document.createElement('div');
-        slideDiv.classList.add('carousel-item');
-        if (startIndex === 0) slideDiv.classList.add('active');
-
-        const slideContent = document.createElement('div');
-        slideContent.classList.add('d-flex', 'justify-content-center', 'gap-3');
-
-        for (let i = 0; i < imagesPerSlide; i++) {
-            const img = document.createElement('img');
-            const imageIndex = (startIndex + i) % imageUrls.length;
-            img.src = imageUrls[imageIndex];
-            img.alt = `Logo ${imageIndex + 1}`;
-            img.style.maxHeight = '100px';
-            img.style.objectFit = 'contain';
-            slideContent.appendChild(img);
-        }
-
-        slideDiv.appendChild(slideContent);
-        return slideDiv;
-    }
-
-    // Generate slides
-    for (let i = 0; i < imageUrls.length; i++) {
-        const slide = createSlide(i);
-        carouselContent.appendChild(slide);
-    }
-
-    // Carousel event handler
-    const carouselElement = document.querySelector('#carouselExampleCustom');
-    carouselElement.addEventListener('slide.bs.carousel', (event) => {
-        activeIndex = (activeIndex + 1) % imageUrls.length;
-        const slides = carouselContent.children;
-
-        // Update each slide to show the correct images
-        for (let i = 0; i < slides.length; i++) {
-            const startIndex = (activeIndex + i * imagesPerSlide) % imageUrls.length;
-            const slideContent = slides[i].querySelector('div');
-            slideContent.innerHTML = ''; // Clear existing images
-            for (let j = 0; j < imagesPerSlide; j++) {
-                const img = document.createElement('img');
-                const imageIndex = (startIndex + j) % imageUrls.length;
-                img.src = imageUrls[imageIndex];
-                img.alt = `Logo ${imageIndex + 1}`;
-                img.style.maxHeight = '100px';
-                img.style.objectFit = 'contain';
-                slideContent.appendChild(img);
-            }
-        }
-    });
-</script>
-
-
-
-
-
-    
     <!--Section 5 Artikel-->
     <section class="sec5">
         <div class="container py-5">

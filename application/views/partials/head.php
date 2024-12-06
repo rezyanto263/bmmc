@@ -25,8 +25,7 @@
 
     <!--Map-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/companyMain.css') ?>">
-
+    
 <?php }else if ($contentType == 'user') { ?>
 
     <!-- User Styles -->

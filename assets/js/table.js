@@ -370,7 +370,7 @@ $('#hospitalsTables').on('click', '.btn-view', function () {
 
         if (!isNaN(latitude) && !isNaN(longitude)) {
             // Peta di dalam modal
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
+            var map = L.map('mapHospitals').setView([latitude, longitude], 13); // Inisialisasi peta
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
