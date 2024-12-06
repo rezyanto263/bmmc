@@ -1147,3 +1147,14 @@ $('#deleteFamilyForm').on('submit', function(e) {
         }
     });
 });
+
+
+//Maps
+var map = L.map('map').setView([-6.200000, 106.816666], 13); // Koordinat
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var marker = L.marker([-6.200000, 106.816666]).addTo(map)
+    .bindPopup('Ini adalah Jakarta.')
+    .openPopup();
