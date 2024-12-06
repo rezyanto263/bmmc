@@ -28,6 +28,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <div id="map"></div>
                 <button class="btn btn-primary btn-edit" data-bs-toggle="modal" data-bs-target="#editHotelModal">Edit</button>
             </div>
         </div>
