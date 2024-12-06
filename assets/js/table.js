@@ -336,12 +336,87 @@ var hospitalsTables = $('#hospitalsTables').DataTable($.extend(true, {}, DataTab
             }
         },
         {data: 'hospitalAddress'},
-        {data: 'hospitalPhone'}
+        {data: 'hospitalPhone'},
+        {data: 'hospitalCoordinate'},
+        {
+            data: null, // Mengambil data koordinat
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#viewMapHospitalModal">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            `
+        }
     ],
     columnDefs: [
         {width: '240px', target: 4}
     ]
 }));
+
+$('#hospitalsTables').on('click', '.btn-view', function () {
+    var rowData = hospitalsTables.row($(this).closest('tr')).data();
+    var hospitalCoordinate = rowData.hospitalCoordinate; // Mendapatkan koordinat
+    var hospitalName = rowData.hospitalName; // Mendapatkan nama rumah sakit
+
+    if (hospitalCoordinate) {
+        var coordsArray = hospitalCoordinate.split(',');
+        var latitude = parseFloat(coordsArray[0].trim());
+        var longitude = parseFloat(coordsArray[1].trim());
+
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+            // Peta di dalam modal
+            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Tambahkan marker
+            var marker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('Hospital: ' + hospitalName)
+                .openPopup();
+        } else {
+            console.error('Koordinat tidak valid: ' + hospitalCoordinate);
+        }
+    } else {
+        console.error('Koordinat tidak ditemukan.');
+    }
+});
+
+$('#viewMapHospitalModal').on('shown.bs.modal', function () {
+    var rowData = hospitalsTables.row($(this).closest('tr')).data();
+    var hospitalCoordinate = rowData.hospitalCoordinate; // Mendapatkan koordinat
+    var hospitalName = rowData.hospitalName; // Mendapatkan nama rumah sakit
+
+    if (hospitalCoordinate) {
+        var coordsArray = hospitalCoordinate.split(',');
+        var latitude = parseFloat(coordsArray[0].trim());
+        var longitude = parseFloat(coordsArray[1].trim());
+
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+            // Peta di dalam modal
+            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Tambahkan marker
+            var marker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('Hospital: ' + hospitalName)
+                .openPopup();
+        } else {
+            console.error('Koordinat tidak valid: ' + hospitalCoordinate);
+        }
+    } else {
+        console.error('Koordinat tidak ditemukan.');
+    }
+});
+
+
 
 $('#addHospitalModal').on('shown.bs.modal', function() {
     $(this).find('select#adminId').select2({
@@ -1150,11 +1225,3 @@ $('#deleteFamilyForm').on('submit', function(e) {
 
 
 //Maps
-var map = L.map('map').setView([-6.200000, 106.816666], 13); // Koordinat
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-var marker = L.marker([-6.200000, 106.816666]).addTo(map)
-    .bindPopup('Ini adalah Jakarta.')
-    .openPopup();

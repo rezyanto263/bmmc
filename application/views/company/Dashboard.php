@@ -23,8 +23,8 @@
                             <td><?= $company['adminEmail'] ?? 'info@hotel.com' ?></td>
                         </tr>
                         <tr>
-                            <th>Fasilitas:</th>
-                            <td><?= $company['companyFacilities'] ?? 'WiFi, Kolam Renang, Restoran, Gym' ?></td>
+                            <th>Coordinate:</th>
+                            <td><?= $company['companyCoordinate'] ?? 'WiFi, Kolam Renang, Restoran, Gym' ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -156,3 +156,38 @@
         });
     });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Ambil koordinat perusahaan yang ada di session
+    var companyCoordinates = "<?php echo $company['companyCoordinate']; ?>";
+
+    // Pastikan koordinat valid
+    if (companyCoordinates) {
+        var coordsArray = companyCoordinates.split(',');
+        var latitude = parseFloat(coordsArray[0].trim());
+        var longitude = parseFloat(coordsArray[1].trim());
+
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+            // Inisialisasi peta
+            var map = L.map('map').setView([latitude, longitude], 13); // Pusatkan peta pada koordinat perusahaan
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Gunakan json_encode untuk menghindari masalah dengan tanda kutip atau karakter khusus
+            var companyName = <?php echo json_encode($company['companyName']); ?>;
+
+            // Tambahkan marker pada peta
+            var marker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('Perusahaan: ' + companyName)
+                .openPopup();
+        } else {
+            console.error('Koordinat tidak valid: ' + companyCoordinates);
+        }
+    } else {
+        console.error('Koordinat tidak ditemukan.');
+    }
+});
+</script>
+
