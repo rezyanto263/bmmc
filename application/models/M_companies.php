@@ -11,6 +11,13 @@ class M_companies extends CI_Model {
         return $this->db->get()->result_array();
     }
 
+    public function getCompanyByAdminId($adminId)
+    {
+        $this->db->where('adminId', $adminId);
+        $query = $this->db->get('company'); // Ganti dengan nama tabel yang sesuai
+        return $query->row_array(); // Mengambil satu baris data
+    }
+
     public function checkCompany($param, $companyData) {
         return $this->db->get_where('company', array($param => $companyData))->row_array();
     }

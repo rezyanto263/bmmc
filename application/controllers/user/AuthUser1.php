@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\Exception;
 use League\OAuth2\Client\Provider\Google;
 
-class AuthDashboard extends CI_Controller {
+class AuthUser extends CI_Controller {
 
     public function __construct()
     {
@@ -19,46 +19,14 @@ class AuthDashboard extends CI_Controller {
 
     public function index()
     {
-        // Check Cookie
-        $adminLoginKey = $this->input->cookie('adminLoginKey', TRUE);
-        $adminKeyReference = $this->input->cookie('adminKeyReference', TRUE);
-        if ($adminLoginKey) {
-            $adminDatas = $this->M_auth->checkAdmin('adminId', $adminKeyReference);
-            if ($adminLoginKey === hash('sha256', $adminDatas['adminEmail'])) {
-                $sessionDatas = array(
-                    'adminId' => $adminDatas['adminId'],
-                    'adminName' => $adminDatas['adminName'],
-                    'adminEmail' => $adminDatas['adminEmail'],
-                    'adminPassword' => $adminDatas['adminPassword'],
-                    'adminRole' => $adminDatas['adminRole']
-                );
-                $this->session->set_userdata($sessionDatas);
-
-                if ($adminDatas['adminRole'] === 'admin') {
-                    redirect('dashboard');
-                } elseif ($adminDatas['adminRole'] === 'company') {
-                    redirect('company/dashboard');
-                }
-            }
-        }
-
-        // Check Session
-        if ($this->session->userdata('adminRole')) {
-            if ($this->session->userdata('adminRole') === 'admin') {
-                redirect('dashboard');
-            } elseif ($this->session->userdata('adminRole') === 'company') {
-                redirect('company/dashboard');
-            }
-        }
-
         $datas = array(
-            'title' => 'BIM Dashboard | Login',
+            'title' => 'BIM User | Login',
             'contentType' => 'authentication'
         );
 
         $partials = array(
             'head' => 'partials/head',
-            'content' => 'dashboard/login',
+            'content' => 'user/Login',
             'script' => 'partials/script'
         );
 
@@ -101,54 +69,6 @@ class AuthDashboard extends CI_Controller {
             $adminDatas = $this->M_auth->checkAdmin('adminEmail', $adminEmail);
 
             $this->_login($adminPassword, $adminDatas, $rememberMe);
-        }
-    }
-
-    private function _login($adminPassword, $adminDatas, $rememberMe = FALSE) {
-        if (!empty($adminDatas)) {
-            if (password_verify($adminPassword, $adminDatas['adminPassword'])) {
-                if ($rememberMe) {
-                    $this->input->set_cookie('adminLoginKey', hash('sha256', $adminDatas['adminEmail']), 0);
-                    $this->input->set_cookie('adminKeyReference', $adminDatas['adminId'], 0);
-                }
-    
-                // Fetch company details based on adminId
-                if ($adminDatas['adminRole'] === 'company') {
-                    $companyData = $this->M_auth->getCompanyDetails($adminDatas['adminId']);
-                    
-                    // Set company data in session
-                    $companySessionData = array(
-                        'companyId' => $companyData['companyId'],
-                        'companyName' => $companyData['companyName'],
-                        'companyLogo' => $companyData['companyLogo'],
-                        'companyPhone' => $companyData['companyPhone'],
-                        'companyAddress' => $companyData['companyAddress'],
-                        'companyCoordinate' => $companyData['companyCoordinate'],
-                    );
-                    $this->session->set_userdata($companySessionData);
-                }
-    
-                // Set admin data in session
-                $sessionDatas = array(
-                    'adminName' => $adminDatas['adminName'],
-                    'adminEmail' => $adminDatas['adminEmail'],
-                    'adminPassword' => $adminDatas['adminPassword'],
-                    'adminRole' => $adminDatas['adminRole']
-                );
-                $this->session->set_userdata($sessionDatas);
-    
-                if ($adminDatas['adminRole'] === 'admin') {
-                    redirect('dashboard');
-                } elseif ($adminDatas['adminRole'] === 'company') {
-                    redirect('company/dashboard');
-                }
-            } else {
-                $this->session->set_flashdata('flashdata', 'wrong password');
-                redirect('dashboard/login');
-            }
-        } else {
-            $this->session->set_flashdata('flashdata', 'not found');
-            redirect('dashboard/login');
         }
     }
 
