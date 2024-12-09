@@ -387,27 +387,33 @@ $('#hospitalsTables').on('click', '.btn-view', function () {
     }
 });
 
+// Menampilkan peta ketika modal dibuka
 $('#viewMapHospitalModal').on('shown.bs.modal', function () {
-    var rowData = hospitalsTables.row($(this).closest('tr')).data();
-    var hospitalCoordinate = rowData.hospitalCoordinate; // Mendapatkan koordinat
-    var hospitalName = rowData.hospitalName; // Mendapatkan nama rumah sakit
+    // Ambil data dari tabel yang terkait dengan tombol yang diklik
+    var rowData = hospitalsTables.row($(this).closest('tr')).data();  // Ambil data baris yang sedang dipilih
+    var hospitalCoordinate = rowData.hospitalCoordinate;  // Koordinat rumah sakit
+    var hospitalName = rowData.hospitalName;  // Nama rumah sakit
 
+    // Periksa apakah koordinat ada
     if (hospitalCoordinate) {
-        var coordsArray = hospitalCoordinate.split(',');
-        var latitude = parseFloat(coordsArray[0].trim());
-        var longitude = parseFloat(coordsArray[1].trim());
+        var coordsArray = hospitalCoordinate.split(',');  // Pisahkan koordinat
+        var latitude = parseFloat(coordsArray[0].trim());  // Latitude
+        var longitude = parseFloat(coordsArray[1].trim());  // Longitude
 
         if (!isNaN(latitude) && !isNaN(longitude)) {
-            // Peta di dalam modal
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
+            // Inisialisasi peta dengan koordinat
+            var map = L.map('hospitalMap').setView([latitude, longitude], 13);  // Set posisi peta dan zoom level
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            // Tambahkan marker
+            // Tambahkan marker pada peta
             var marker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Hospital: ' + hospitalName)
+                .bindPopup('Hospital: ' + hospitalName)  // Tampilkan nama rumah sakit di popup
                 .openPopup();
+
+            // Perbarui ukuran peta setelah modal ditampilkan
+            map.invalidateSize();
         } else {
             console.error('Koordinat tidak valid: ' + hospitalCoordinate);
         }
