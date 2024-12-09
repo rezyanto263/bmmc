@@ -39,6 +39,28 @@ class Admins extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
+    public function test()
+    {
+        $datas = array(
+            'title' => 'BIM Dashboard | Admins',
+            'subtitle' => 'Admins',
+            'contentType' => 'dashboard',
+        );
+
+        $partials = array(
+            'head' => 'partials/head',
+            'sidebar' => 'partials/dashboard/sidebar',
+            'floatingMenu' => 'partials/dashboard/floatingMenu',
+            'contentHeader' => 'partials/dashboard/contentHeader',
+            'contentBody' => 'dashboard/admins',
+            'footer' => 'partials/dashboard/footer',
+            'script' => 'partials/script'
+        );
+
+        $this->load->vars($datas);
+        $this->load->view('master', $partials);
+    }
+
     public function getAllAdminsDatas() {
         $adminsDatas = $this->M_admins->getAllAdminsDatas();
         $datas = array(

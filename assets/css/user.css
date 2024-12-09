@@ -1,0 +1,163 @@
+:root {
+    --primary: #00AFEF;
+    --secondary: #81CE8B;
+    --dark: #353535;
+    --seconddark: #454545;
+    --grey: #808080;
+    --lightgrey: #EBEEF3;
+    --secondlightgrey: #DBDBDB;
+    --bgcolor: #fbfbfb;
+    --fwnormal: 400;
+    --fwmedium: 500;
+    --fwsemibold: 600; 
+    --fwbold: 700;
+    --fwextrabold: 900;
+    --transition1: 0.3s ease-in-out;
+    --transition2: 0.5s ease-in-out;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/*section1*/
+.sec1{
+    width: 100%;
+}
+
+.Cimg {
+    width: 100%;
+    max-height: 60vh;
+    object-fit: cover;
+}
+
+/*section2*/
+.sec2 {
+    padding: 20px 250px;
+    background: white;
+}
+
+.sec2 h2 {
+    margin-top: 30px;
+    font-size: 26px; /* Membesarkan ukuran judul */
+    margin-bottom: 15px;
+    color: #2b3e9a;
+    border-bottom: 2px solid #00AFEF; /* Garis biru tipis di bawah teks */
+    padding-bottom: 10px; /* Memberikan ruang agar garis tidak terlalu dekat dengan teks */
+    display: inline-block; /* Membatasi lebar garis hanya sepanjang teks */
+}
+
+
+.sec2 p {
+    font-size: 22px; /* Membesarkan ukuran font paragraf */
+    line-height: 1.8;
+    text-align: justify; /* Menyebar teks secara rata */
+    margin-bottom: 20px; /* Memberi ruang lebih di bawah paragraf */
+}
+
+.layoutInformasi {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.information {
+    flex: 1;
+    max-width: 50%; /* Maksimal setengah lebar layar */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.information h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.information p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.graphicInformation {
+    flex: 1;
+    max-width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center; /* Gambar di tengah */
+}
+
+.giImg {
+    width: 70%; /* Memperkecil ukuran gambar */
+    height: auto;
+    object-fit: cover;
+    margin-top: 20px; /* Memberikan jarak di atas gambar */
+}
+
+@media only screen and (max-width: 800px) {
+    .sec2 {
+        padding: 20px 20px;
+    }
+
+    .layoutInformasi {
+        grid-template-columns: none;
+        display: block;
+    }
+
+    .information, .graphicInformation {
+        max-width: 100%;
+        flex: 1;
+    }
+
+    .sec2Btn {
+        margin: 0 0 20px 0;
+    }
+
+    .giImg {
+        width: 80%; /* Gambar sedikit lebih besar di layar kecil */
+        height: auto;
+        object-fit: cover;
+    }
+
+    .sec2 h2 {
+        font-size: 1.8em; /* Ukuran font lebih besar pada judul di layar kecil */
+    }
+
+    .sec2 p {
+        font-size: 1.2em; /* Ukuran font lebih besar di layar kecil */
+    }
+}
+
+/*section3*/
+.sec3{
+    background-color: #8491d3;
+}
+
+
+/*section4*/
+.sec4{
+    display: grid;
+    justify-content: center;
+    background-color: #2b3e9a;
+    width: 100%;
+    min-height: 200px;
+    align-content: center;
+}
+
+.sec4 h3{
+    color: white;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 60px 10px 60px;
+}
+
+
+/*section6*/
+.sec6{
+    background-color: #8491d3;
+}
