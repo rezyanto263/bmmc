@@ -31,6 +31,29 @@
 <!--Map-->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+
+<script>
+        document.addEventListener( 'DOMContentLoaded', function () {
+        new Splide('.splide', {
+            type: 'loop',
+            perPage: 4,
+            focus: 'center',
+            autoplay: true,
+            interval: 3000,
+            updateOnMove: true,
+            pagination: false,
+            breakpoints: {
+                500: {
+                    perPage: 3
+                },
+                800: {
+                    perPage: 3
+                }
+            }
+        }).mount();
+        });
+    </script>
+
 <?php endif; ?>
 
 
@@ -44,7 +67,8 @@
 <?php endif; ?>
 
 <?php if ($contentType == 'user'): ?>
-    
+    <!--Map-->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script defer src="<?= base_url('assets/js/user.js') ?>"></script>
     
 <?php endif; ?>

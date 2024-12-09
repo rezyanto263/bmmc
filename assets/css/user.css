@@ -37,6 +37,7 @@ body {
 .sec2 {
     padding: 20px 250px;
     background: white;
+    width: 100%;
 }
 
 .sec2 h2 {
@@ -80,15 +81,6 @@ body {
     font-size: 1.1em;
     line-height: 1.6;
     text-align: justify;
-}
-
-.graphicInformation {
-    flex: 1;
-    max-width: 50%;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center; /* Gambar di tengah */
 }
 
 .giImg {

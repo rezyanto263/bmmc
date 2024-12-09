@@ -1,6 +1,18 @@
+<style>
+    main, .sec1{
+        background-color: #F6FBFF;
+        overflow-x:hidden;
+    }
+
+    .sec6{
+        background-color: rgba(13, 181, 253, 0.09);
+        padding-block:40px;
+    }
+</style>
+
 <main>
     <!--Section 1 Carousel -->
-    <section class="sec1">
+    <section class="sec1" data-aos="zoom-in-up" data-aos-duration="1000">
         <div id="carouselExampleInterval" class="carousel slide"        data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleInterval" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -30,126 +42,123 @@
     </section>
 
     <!--Section 2 Introduction-->
-    <section class="sec2">
-        <div class="layoutInformasi">
-            <div class="information">
-                <h2>Bali Mitra Medical Center </h2>
+    <section class="container mt-3 py-5" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class=" d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div class="information"> 
+                <h2 class="fw-bold pb-2 border-3 border-bottom border-primary" style="color:#2b3e9a;">Bali Mitra Medical Center </h2>
                 <p>Asuransi BMMC Bali menghadirkan kemudahan, transparansi, dan efisiensi melalui sistem berbasis QR Code. Karyawan cukup memindai kode untuk mengakses informasi asuransi, seperti data hotel asal, cakupan, dan klaim yang telah digunakan. Proses ini mempercepat administrasi, memastikan transparansi data, serta memudahkan pemantauan pengeluaran dengan laporan yang akurat dan terpercaya.</p>
             </div>
-            <div class="graphicInformation">
-                <img src="<?= base_url('assets/images/Gcih1YDWEAAddAA.jpg_large2.jpg');?>" alt="" class="giImg">
+            <div class="w-sm-100 w-lg-100 d-flex justify-content-center">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.340819910745!2d115.2021294747759!3d-8.659099891388179!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd240a4c54e83d7%3A0x679ce1fdc578914e!2sBali%20Mitra%20Medical%20Center!5e0!3m2!1sen!2sid!4v1733744398879!5m2!1sen!2sid" width="500" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
     
 <!--Section 6 Mitra Kami-->
-<section class="sec6">
+<section class="sec6" data-aos="zoom-in-up" data-aos-duration="1000">
     <div class="container py-5">
-        <h2 class="text-center mb-4">Mitra Bali Mitra Medical Center</h2>
-        <div id="carouselExampleCustom" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner" id="carousel-content">
-                <!-- Gambar akan diisi oleh JavaScript -->
+        <h2 class="text-center mb-5 fw-bold">Mitra Bali Mitra Medical Center</h2>
+        <div class="splide">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+    
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                         <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                        <li class="splide__slide d-flex justify-content-center align-items-center">
+                            <div class=" p-2 sm-w-100 lg-w-50">
+                                <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" alt="" style="width:100%;">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
-            <!-- Tombol kontrol -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCustom" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCustom" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
     </div>
 </section>
 
 <script>
-    // Data gambar
-    const imageUrls = [
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 1
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 2
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 3
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 4
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 5
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 6
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 7
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 8
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>", // Gambar 9
-        "<?= base_url('assets/images/hospital-placeholder.jpg'); ?>"  // Gambar 10
-    ];
-
-    const carouselContent = document.getElementById('carousel-content');
-
-    // Menampilkan 4 gambar di awal
-    let activeIndex = 0; // Indeks gambar aktif
-    const imagesPerSlide = 4;
-
-    function createSlide(startIndex) {
-        const slideDiv = document.createElement('div');
-        slideDiv.classList.add('carousel-item');
-        if (startIndex === 0) slideDiv.classList.add('active');
-
-        const slideContent = document.createElement('div');
-        slideContent.classList.add('d-flex', 'justify-content-center', 'gap-3');
-
-        for (let i = 0; i < imagesPerSlide; i++) {
-            const img = document.createElement('img');
-            const imageIndex = (startIndex + i) % imageUrls.length;
-            img.src = imageUrls[imageIndex];
-            img.alt = `Logo ${imageIndex + 1}`;
-            img.style.maxHeight = '100px';
-            img.style.objectFit = 'contain';
-            slideContent.appendChild(img);
-        }
-
-        slideDiv.appendChild(slideContent);
-        return slideDiv;
-    }
-
-    // Generate slides
-    for (let i = 0; i < imageUrls.length; i++) {
-        const slide = createSlide(i);
-        carouselContent.appendChild(slide);
-    }
-
-    // Carousel event handler
-    const carouselElement = document.querySelector('#carouselExampleCustom');
-    carouselElement.addEventListener('slide.bs.carousel', (event) => {
-        activeIndex = (activeIndex + 1) % imageUrls.length;
-        const slides = carouselContent.children;
-
-        // Update each slide to show the correct images
-        for (let i = 0; i < slides.length; i++) {
-            const startIndex = (activeIndex + i * imagesPerSlide) % imageUrls.length;
-            const slideContent = slides[i].querySelector('div');
-            slideContent.innerHTML = ''; // Clear existing images
-            for (let j = 0; j < imagesPerSlide; j++) {
-                const img = document.createElement('img');
-                const imageIndex = (startIndex + j) % imageUrls.length;
-                img.src = imageUrls[imageIndex];
-                img.alt = `Logo ${imageIndex + 1}`;
-                img.style.maxHeight = '100px';
-                img.style.objectFit = 'contain';
-                slideContent.appendChild(img);
+        document.addEventListener( 'DOMContentLoaded', function () {
+        new Splide('.splide', {
+            type: 'loop',
+            perPage: 4,
+            focus: 'center',
+            autoplay: true,
+            interval: 3000,
+            updateOnMove: true,
+            pagination: false,
+            breakpoints: {
+                500: {
+                    perPage: 3
+                },
+                800: {
+                    perPage: 3
+                }
             }
-        }
-    });
+        }).mount();
+        });
 </script>
 
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+<script>
+  AOS.init();
+</script>
 
-
-
-    
     <!--Section 5 Artikel-->
-    <section class="sec5">
+    <section class="sec5" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="container py-5">
-            <h2 class="text-center mb-4">Artikel Bali Mitra Medical Center</h2>
+            <h2 class="text-center mb-4 fw-bold">Artikel Bali Mitra Medical Center</h2>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="card">
-                        <img src="artikel1.jpg" class="card-img-top" alt="Artikel 1">
+                        <img src="<?php echo base_url('assets/images/hospital-placeholder.jpg')?>" class="card-img-top" alt="Artikel 1">
                         <div class="card-body">
                             <h5 class="card-title">Judul Artikel 1</h5>
                             <p class="card-text">Deskripsi singkat artikel 1.</p>
@@ -208,7 +217,10 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="btn btn-primary mt-3">Baca Selengkapnya</a>
+
+            <div class="d-flex justify-content-center my-5">
+                <a href="#" class="btn btn-primary mt-3">Lihat Selengkapnya</a>
+            </div>
         </div>
     </section>
 </main>

@@ -54,7 +54,7 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 // User
-$route['home'] = 'user/landingtoo';
+$route['home'] = 'user/LandingToo';
 $route['login'] = 'AuthUser';
 $route['logout'] = 'AuthUser/logout';
 
