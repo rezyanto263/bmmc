@@ -54,8 +54,8 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 // User
-$route['home'] = 'user/home';
-$route['login'] = 'AuthUser/loginUser';
+$route['home'] = 'user/landingtoo';
+$route['login'] = 'AuthUser';
 $route['logout'] = 'AuthUser/logout';
 
 // Dashboard
@@ -74,12 +74,18 @@ $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsD
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
 $route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoctorsDatas';
 $route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/Histories/getHospitalHistoriesDatas';
+$route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
+$route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
+$route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamiliesByPolicyholderNIN';
 
 // Route baru untuk tampilan profil pengguna
-$route['profile'] = 'user/User/profile';
+$route['profile'] = 'user/User';
+$route['user/editEmployee'] = 'user/User/editEmployee';
+$route['user/editFamily'] = 'user/User/editFamily';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
 // Hospital
 $route['hospitals/doctors'] = 'hospitals/doctors';
 $route['hospitals/hHistories'] = 'hospitals/hHistories';
+$route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';

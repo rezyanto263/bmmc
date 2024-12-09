@@ -1,0 +1,33 @@
+#map {
+    height: 500px;
+    width: 100%; 
+    z-index: 1;
+}
+
+.card {
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+}
+
+.card-header {
+    background-color: var(--header-bg-color);
+}
+
+.table {
+    background-color: var(--table-bg-color);
+    color: var(--text-color);
+}
+
+:root {
+    --card-bg-color: #fff;
+    --header-bg-color: #f8f9fa;
+    --table-bg-color: #fff;
+    --text-color: #000;
+}
+
+body.dark-mode {
+    --card-bg-color: #2f3542;
+    --header-bg-color: #1e272e;
+    --table-bg-color: #323942;
+    --text-color: #fff;
+}
