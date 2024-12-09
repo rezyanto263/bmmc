@@ -72,6 +72,8 @@ $route['dashboard/getAllUnconnectedHospitalAdminsDatas'] = 'dashboard/Admins/get
 $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedCompanyAdminsDatas';
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
+$route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoctorsDatas';
+$route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/Histories/getHospitalHistoriesDatas';
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
 $route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamiliesByPolicyholderNIN';
@@ -83,4 +85,7 @@ $route['user/editFamily'] = 'user/User/editFamily';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
+// Hospital
+$route['hospitals/doctors'] = 'hospitals/doctors';
+$route['hospitals/hHistories'] = 'hospitals/hHistories';
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';
