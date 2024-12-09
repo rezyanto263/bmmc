@@ -822,16 +822,10 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 return meta.row + 1;
             }
         },
-        {data: 'pHolderName'},
-        {data: 'companyAddress'},
-        {data: 'doctorDateOfBirth'},
-        {data: 'doctorSpecialization'},
-        {
-            data: 'doctorStatus',
-            render: function(data, type, row) {
-                return capitalizeWords(data);
-            }
-        },
+        {data: 'policyholderName'},
+        {data: 'companyName'},
+        {data: 'historyhealthDate'},
+        {data: 'historyhealthStatus'},
         {
             data: null,
             className: 'text-end user-select-none no-export',

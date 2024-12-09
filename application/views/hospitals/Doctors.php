@@ -49,7 +49,7 @@
                                     data-bs-title="Doctor EIN">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="EIN" name="doctorEIN">
+                                <input class="form-control" type="text" placeholder="Doctor EIN" name="doctorEIN">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -143,7 +143,7 @@
                                     data-bs-title="Doctor Date Of Birth">
                                     <i class="las la-calendar fs-4"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" title="Date" name="doctorDateOfBirth"/>
+                                <input type="date" min="" max="" class="form-control" id="date" title="Date" name="doctorDateOfBirth"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">

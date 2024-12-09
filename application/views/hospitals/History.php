@@ -40,28 +40,33 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
-                        <div class="col-12">
+                        <div class="col-12 col-md-8">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Name">
-                                    <i class="las la-stethoscope fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient NIN">
+                                    <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Doctor Name" name="doctorName">
+                                <input class="form-control" type="text" placeholder="Patient NIN" name="patientNIN">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-4">
+                            <div class="input-group p-0">
+                                <button class="btn-primary w-100" onclick="checkPatientNIN()">Check</button>
+                            </div>
+                        </div>
+                        <div class="col-12 md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Date">
-                                    <i class="las la-calendar fs-4"></i>
+                                    <i class="las la-building fs-4"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" name="date" title="Date"/>
+                                <input class="form-control" type="text" placeholder="Company Name" name="companyName" disabled>
                             </div>
                         </div>
-                        <div class="col-12">   
+                        <div class="col-12 md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Health Complaint">
-                                    <i class="las la-notes-medical fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Date">
+                                    <i class="las la-user-cog fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Health Complaint" name="healthComplaint">
+                                <input class="form-control" type="text" placeholder="Policy Holder Name" name="policyholderName" disabled>
                             </div>
                         </div>
                         <div class="col-12">   

@@ -41,12 +41,16 @@ class Doctors extends CI_Controller {
     public function getHospitalDoctorsDatas() {
         $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
-        $doctorsDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
-        $datas = array(
-            'data' => $doctorsDatas
-        );
 
-        echo json_encode($datas);
+        if ($hospitalDatas) {
+            $doctorsDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $datas = array(
+                'data' => $doctorsDatas
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['data' => []]);
+        }
     }
 
     public function addDoctor() {
