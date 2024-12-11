@@ -13,6 +13,12 @@ class History extends CI_Controller {
         
         $this->load->model('M_admins');
         $this->load->model('M_hospitals');
+        $this->load->model('M_historyhealth');
+        $this->load->model('M_hisealthtals');
+        $this->load->model('M_family');
+        $this->load->model('M_employee');
+        $this->load->model('M_compolders');
+        $this->load->model('M_companies');
         
     }    
 
@@ -38,14 +44,38 @@ class History extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getAllHospitalsDatas() {
-        $hospitalsDatas = $this->M_hospitals->getAllHospitalsDatas();
-        $datas = array(
-            'data' => $hospitalsDatas
-        );
+    public function getHospitalHistoriesDatas() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
-        echo json_encode($datas);
+        if ($hospitalDatas) {
+            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+        
+            if ($historyhealthIds) {
+                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+                $family = $this->M_family->getFamiliesByNIN($historiesDatas.['patientNIN']);
+                var_dump($family);
+                exit;
+                if ($family) {
+                    $employee = $this->M_employee->getEmployeeByNIN($family['policyholderNIN']);
+                } else {
+                    $employee = $this->M_employee->getEmployeeByNIN($historiesDatas['patientNIN']);
+                }
+                $patientCompolder = $this->M_compolders->getCompolderByPolicyholderNIN($employee['policyholderNIN']);
+                $patientCompany = $this->M_companies->getCompanyByCompanyId($patientCompolder['companyId']);
+                $datas = array(
+                    'data' => $historiesDatas,
+                    'patientName' =>$employee['policyholderName'],
+                    'patientCompany' =>$patientCompany['companyName'],
+                );
+                echo json_encode($datas);
+            } else {
+                echo json_encode(['data' => []]);
+            }
+        }
     }
+    
 }
 
 ?>

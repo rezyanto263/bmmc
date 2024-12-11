@@ -837,7 +837,7 @@ $('#addDoctorForm').on('submit', function(e) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
-                reloadTableData(adminsTable);
+                reloadTableData(doctorsTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
@@ -853,7 +853,7 @@ $('#addDoctorForm').on('submit', function(e) {
 // Edit Data Doctor
 $('#doctorsTable').on('click', '.btn-edit', function() {
     var data = doctorsTable.row($(this).parents('tr')).data();
-    $('#editDoctorForm [name="doctorEIN"]').val(data.doctorEIN);
+    $('#editDoctorForm [name="doctorId"]').val(data.doctorId);
     $('#editDoctorForm [name="doctorName"]').val(data.doctorName);
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
     $('#editDoctorForm [name="doctorDateOfBirth"]').val(data.doctorDateOfBirth);
@@ -896,16 +896,16 @@ $('#editDoctorForm').on('submit', function(e) {
 $('#doctorsTable').on('click', '.btn-delete', function() {
     var data = doctorsTable.row($(this).parents('tr')).data();
     $('#deleteDoctorForm #doctorName').html(data.doctorName);
-    $('#deleteDoctorForm #doctorEIN').val(data.doctorEIN);
+    $('#deleteDoctorForm #doctorId').val(data.doctorId);
 })
 
 $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
-    var doctorEIN = $('#deleteDoctorForm #doctorEIN').val();
+    var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
         url: baseUrl + 'hospitals/doctors/deleteDoctor',
         method: 'POST',
-        data: {doctorEIN: doctorEIN},
+        data: {doctorId: doctorId},
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {

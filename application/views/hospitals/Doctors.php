@@ -46,15 +46,6 @@
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor EIN">
-                                    <i class="las la-user-tag fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="EIN" name="doctorEIN">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
                                     data-bs-title="Doctor Name">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
@@ -126,7 +117,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    <input type="text" id="doctorEIN" name="doctorEIN" hidden>
+                    <input type="text" id="doctorId" name="doctorId" hidden>
                     <div class="row gy-4">
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
@@ -204,7 +195,7 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="doctorName"></span> account?
-                    <input type="text" id="doctorEIN" name="doctorEIN" hidden>
+                    <input type="text" id="doctorId" name="doctorId" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>

@@ -12,13 +12,13 @@ class M_doctors extends CI_Model {
         return $this->db->insert('doctor', $doctorDatas);
     }
 
-    public function updateDoctor($doctorEIN, $doctorDatas) {
-        $this->db->where('doctorEIN', $doctorEIN);
+    public function updateDoctor($doctorId, $doctorDatas) {
+        $this->db->where('doctorId', $doctorId);
         return $this->db->update('doctor', $doctorDatas);
     }
 
-    public function deleteDoctor($doctorEIN) {
-        $this->db->where('doctorEIN', $doctorEIN);
+    public function deleteDoctor($doctorId) {
+        $this->db->where('doctorId', $doctorId);
         return $this->db->delete('doctor');
     }
 }
