@@ -69,9 +69,10 @@ class Doctors extends CI_Controller {
             array(
                 'field' => 'doctorDateOfBirth',
                 'label' => 'Date of Birth',
-                'rules' => 'required',
+                'rules' => 'required|less_than_or_equal_to_date['.date('Y-m-d').']',
                 'errors' => array(
                     'required' => '%s is required.',
+                    'less_than_or_equal_to_date' => '%s must not be later than today.',
                 )
             ),
             array(
@@ -136,9 +137,10 @@ class Doctors extends CI_Controller {
             array(
                 'field' => 'doctorDateOfBirth',
                 'label' => 'Date of Birth',
-                'rules' => 'required',
+                'rules' => 'required|less_than_or_equal_to_date['.date('Y-m-d').']',
                 'errors' => array(
                     'required' => '%s is required.',
+                    'less_than_or_equal_to_date' => '%s must not be later than today.',
                 )
             ),
             array(

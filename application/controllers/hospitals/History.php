@@ -15,10 +15,6 @@ class History extends CI_Controller {
         $this->load->model('M_hospitals');
         $this->load->model('M_historyhealth');
         $this->load->model('M_hisealthtals');
-        $this->load->model('M_family');
-        $this->load->model('M_employee');
-        $this->load->model('M_compolders');
-        $this->load->model('M_companies');
         
     }    
 
@@ -54,25 +50,15 @@ class History extends CI_Controller {
         
             if ($historyhealthIds) {
                 $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
-                $family = $this->M_family->getFamiliesByNIN($historiesDatas.['patientNIN']);
-                var_dump($family);
-                exit;
-                if ($family) {
-                    $employee = $this->M_employee->getEmployeeByNIN($family['policyholderNIN']);
-                } else {
-                    $employee = $this->M_employee->getEmployeeByNIN($historiesDatas['patientNIN']);
-                }
-                $patientCompolder = $this->M_compolders->getCompolderByPolicyholderNIN($employee['policyholderNIN']);
-                $patientCompany = $this->M_companies->getCompanyByCompanyId($patientCompolder['companyId']);
                 $datas = array(
                     'data' => $historiesDatas,
-                    'patientName' =>$employee['policyholderName'],
-                    'patientCompany' =>$patientCompany['companyName'],
                 );
                 echo json_encode($datas);
             } else {
                 echo json_encode(['data' => []]);
             }
+        } else {
+            echo json_encode(['data' => []]);
         }
     }
     
