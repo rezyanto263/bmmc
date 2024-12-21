@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+/* function root */
+:root {
+  --main-color: #6495ed;
+  --secondary-color: #228b22;
+  --background: #f2f2f2;
+}
+
+/* universal */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins";
+}
+
+body {
+  background-color: var(--background);
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* custom warna sesuai pallet */
+.bg-hijau {
+  background-color: var(--secondary-color);
+}
+
+.bg-biru {
+  background-color: var(--main-color);
+}
+
+/* bagian atas */
+.title-profile {
+  font-family: "Quantico";
+  font-size: 25px;
+  font-style: italic;
+}
+
+.img-logo-profile {
+  width: 15%;
+}
+
+.logout {
+  font-size: 12px;
+}
+
+/* bagian qr */
+.img-qr {
+  width: 65%;
+  margin-top: -20px;
+  margin-bottom: -18px;
+}
+
+/* bagian data keluarga */
+.card {
+  width: 100%;
+}
+
+/* bagian total */
+.div-total {
+  width: 100%;
+}
+
+/* responsive tablet dan laptop */
+@media (min-width: 768px) {
+  /* Tablet dan layar lebih besar */
+
+  /* bagian atas */
+  .title-profile {
+    font-family: "Quantico";
+    font-size: 55px;
+    font-style: italic;
+  }
+
+  .img-logo-profile {
+    width: 5%;
+  }
+
+  .logout {
+    font-size: 15px;
+  }
+
+  /* bagian qr */
+  .img-qr {
+    width: 30%;
+    margin-bottom: -20px;
+  }
+
+  /* bagian data keluarga */
+  .card {
+    width: 49.5%;
+  }
+
+  /* bagian total */
+  .div-total {
+    width: 50%;
+  }
+}
