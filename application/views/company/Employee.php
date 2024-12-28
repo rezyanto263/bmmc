@@ -12,6 +12,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
+                <th>Phone</th>
                 <th>Birth</th>
                 <th>Gender</th>
                 <th>Status</th>
@@ -25,6 +26,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
+                <th>Phone</th>
                 <th>Birth</th>
                 <th>Gender</th>
                 <th>Status</th>
@@ -90,6 +92,14 @@
                                 <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
                                     <i class="las la-eye-slash fs-4"></i>
                                 </span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Phone">
+                                    <i class="las la-map fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Phone" name="policyholderPhone">
                             </div>
                         </div>
                         <div class="col-12">

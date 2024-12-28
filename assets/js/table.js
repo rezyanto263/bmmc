@@ -975,6 +975,7 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         {data: 'policyholderName'},
         {data: 'policyholderEmail'},
         {data: 'policyholderAddress'},
+        {data: 'policyholderPhone'},
         {data: 'policyholderBirth'},
         {data: 'policyholderGender'},
         {data: 'policyholderStatus'},
@@ -1067,6 +1068,7 @@ $('#employeesTable').on('click', '.btn-edit', function() {
     $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
     $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
     $('#editEmployeeForm [name="policyholderAddress"]').val(data.policyholderAddress);
+    $('#editEmployeeForm [name="policyholderPhone"]').val(data.policyholderPhone);
     $('#editEmployeeForm [name="policyholderBirth"]').val(data.policyholderBirth);
     $('#editEmployeeForm [name="policyholderGender"]').val(data.policyholderGender);
     $('#editEmployeeForm [name="policyholderStatus"]').val(data.policyholderStatus);
