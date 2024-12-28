@@ -127,7 +127,7 @@
       </h3>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -152,10 +152,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -180,10 +180,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -208,10 +208,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -236,10 +236,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -264,10 +264,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -292,10 +292,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -320,10 +320,10 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
 
       <!-- card -->
-      <div class="border-bottom border-secondary pb-1 mb-2">
+      <a class="border-bottom border-secondary pb-1 mb-2" href="#">
         <!-- icon -->
         <div
           class="d-flex align-items-center text-secondary"
@@ -348,7 +348,7 @@
             Quibusdam, soluta.
           </span>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </body>
