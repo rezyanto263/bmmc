@@ -360,6 +360,211 @@
           </div>
         </div>
 
+        <!-- col 4 -->
+        <div class="col" data-aos="zoom-in" data-aos-duration="500">
+          <div class="card h-100">
+            <div class="h-75">
+              <img
+                src="<?= base_url('assets/images/test2.j');?>pg"
+                class="card-img-top img-uniform h-100 object-fit-cover"
+                alt="..."
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title fw-semibold judul-card">
+                Lorem ipsum dolor sit amet.
+              </h5>
+              <!-- tambahan -->
+              <div class="d-flex align-items-center flex-wrap my-1">
+                <!-- bagian waktu -->
+                <div
+                  class="d-flex align-items-center bg-danger rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-clock-rotate-left mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">2 Bulan yang lalu</span>
+                  </i>
+                </div>
+
+                <!-- bagian jenis -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-success rounded-pill text-white mx-1"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-circle-exclamation mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Berita</span>
+                  </i>
+                </div>
+
+                <!-- bagian kategori -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-primary rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-copyright mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Kerjasama</span>
+                  </i>
+                </div>
+              </div>
+              <p class="card-text">
+                This is a wider card with supporting text below as a natural
+                lead-in to additional content. This content is a little bit
+                longer.
+              </p>
+            </div>
+            <div class="ms-3 mb-3 button-berita">
+              <a class="" href="<?=base_url('user/DetailBerita');?>" role="button">Baca Sekarang </a>
+              <i class="fa-solid fa-arrow-right ms-2"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- col 5 -->
+        <div class="col" data-aos="zoom-in" data-aos-duration="500">
+          <div class="card h-100">
+            <div class="h-75">
+              <img
+                src="<?= base_url('assets/images/95c.png');?>"
+                class="card-img-top img-uniform h-100 object-fit-cover"
+                alt="..."
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title fw-semibold judul-card">
+                Lorem ipsum dolor sit amet.
+              </h5>
+              <!-- tambahan -->
+              <div class="d-flex align-items-center flex-wrap my-1">
+                <!-- bagian waktu -->
+                <div
+                  class="d-flex align-items-center bg-danger rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-clock-rotate-left mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">2 Bulan yang lalu</span>
+                  </i>
+                </div>
+
+                <!-- bagian jenis -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-success rounded-pill text-white mx-1"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-circle-exclamation mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Berita</span>
+                  </i>
+                </div>
+
+                <!-- bagian kategori -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-primary rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-copyright mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Kerjasama</span>
+                  </i>
+                </div>
+              </div>
+              <p class="card-text">
+                This is a wider card with supporting text below as a natural
+                lead-in to additional content. This content is a little bit
+                longer.
+              </p>
+            </div>
+            <div class="ms-3 mb-3 button-berita">
+              <a class="" href="<?=base_url('user/DetailBerita');?>" role="button">Baca Sekarang </a>
+              <i class="fa-solid fa-arrow-right ms-2"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- col 6 -->
+        <div class="col" data-aos="zoom-in" data-aos-duration="500">
+          <div class="card h-100">
+            <div class="h-75">
+              <img
+                src="<?= base_url('assets/images/mitra.jpg');?>"
+                class="card-img-top img-uniform h-100 object-fit-cover"
+                alt="..."
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title fw-semibold judul-card">
+                Lorem ipsum dolor sit amet.
+              </h5>
+              <!-- tambahan -->
+              <div class="d-flex align-items-center flex-wrap my-1">
+                <!-- bagian waktu -->
+                <div
+                  class="d-flex align-items-center bg-danger rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-clock-rotate-left mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">2 Bulan yang lalu</span>
+                  </i>
+                </div>
+
+                <!-- bagian jenis -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-success rounded-pill text-white mx-1"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-circle-exclamation mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Berita</span>
+                  </i>
+                </div>
+
+                <!-- bagian kategori -->
+                <div
+                  class="mx-lg-1 d-flex align-items-center bg-primary rounded-pill text-white"
+                  style="height: 30px"
+                >
+                  <i
+                    class="fa-solid fa-copyright mx-2"
+                    style="font-size: 12px"
+                  >
+                    <span class="fw-normal ms-1">Kerjasama</span>
+                  </i>
+                </div>
+              </div>
+              <p class="card-text">
+                This is a wider card with supporting text below as a natural
+                lead-in to additional content. This content is a little bit
+                longer.
+              </p>
+            </div>
+            <div class="ms-3 mb-3 button-berita">
+              <a class="" href="<?=base_url('user/DetailBerita');?>" role="button">Baca Sekarang </a>
+              <i class="fa-solid fa-arrow-right ms-2"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- button all berita -->
       <div class="mb-3 mt-4 button-berita-all shadow">
         <a class="" href="./berita_list.html" role="button"
@@ -599,53 +804,5 @@
       </div>
     </div>
   </section>
-
-  <!-- script slider -->
-  <script>
-    // buat normal
-    document.addEventListener("DOMContentLoaded", function () {
-      new Splide(".normal", {
-        type: "loop",
-        drag: "free",
-        focus: "center",
-        pagination: false,
-        arrows: false,
-        perPage: 5,
-        autoScroll: {
-          speed: 0.5,
-        },
-        breakpoints: {
-          768: {
-            perPage: 3,
-          },
-          640: {
-            perPage: 2,
-          },
-        },
-      }).mount(window.splide.Extensions);
-    });
-
-    // buar reverse
-    document.addEventListener("DOMContentLoaded", function () {
-      new Splide(".reverse", {
-        type: "loop",
-        drag: "free",
-        focus: "center",
-        pagination: false,
-        arrows: false,
-        perPage: 5,
-        autoScroll: {
-          speed: -0.5,
-        },
-        breakpoints: {
-          768: {
-            perPage: 3,
-          },
-          640: {
-            perPage: 2,
-          },
-        },
-      }).mount(window.splide.Extensions);
-    });
-  </script>
 </body>
+
