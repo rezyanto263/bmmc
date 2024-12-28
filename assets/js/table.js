@@ -1074,9 +1074,9 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         {data: 'policyholderName'},
         {data: 'policyholderEmail'},
         {data: 'policyholderAddress'},
+        {data: 'policyholderPhone'},
         {data: 'policyholderBirth'},
         {data: 'policyholderGender'},
-        {data: 'policyholderStatus'},
         {
             data: null,
             className: 'text-end user-select-none no-export',

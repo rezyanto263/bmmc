@@ -15,7 +15,6 @@
                 <th>Phone</th>
                 <th>Birth</th>
                 <th>Gender</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,7 +28,6 @@
                 <th>Phone</th>
                 <th>Birth</th>
                 <th>Gender</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </tfoot>

@@ -7,9 +7,9 @@ class Hospitals extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != 'admin') {
-            redirect('dashboard');
-        }
+        // if ($this->session->userdata('adminRole') != 'admin') {
+        //     redirect('dashboard');
+        // }
 
         $this->load->model('M_hospitals');
     }    

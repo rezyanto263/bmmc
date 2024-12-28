@@ -21,13 +21,13 @@ class AuthUser extends CI_Controller {
             $policyholderDatas = $this->M_auth->checkPolicyHolder('policyholderId', $keyReference);
             if ($loginKey === hash('sha256', $policyholderDatas['policyholderNIN'])) {
                 $this->_setSession($policyholderDatas, 'policyholder');
-                redirect('profile');
+                redirect('user/profile');
             }
 
             $familyDatas = $this->M_auth->checkFamily('policyholderId', $keyReference);
             if ($loginKey === hash('sha256', $familyDatas['familyNIN'])) {
                 $this->_setSession($familyDatas, 'family');
-                redirect('profile');
+                redirect('user/profile');
             }
         }
 
@@ -108,7 +108,7 @@ class AuthUser extends CI_Controller {
                     }
     
                     $this->_setSession($userDatas, $userType);
-                    redirect('profile');
+                    redirect('user/profile');
                 } else {
                     $this->session->set_flashdata('flashdata', 'wrong password');
                     redirect('login');
@@ -126,7 +126,7 @@ class AuthUser extends CI_Controller {
                     }
     
                     $this->_setSession($userDatas, $userType);
-                    redirect('profile');
+                    redirect('user/profile');
                 } else {
                     $this->session->set_flashdata('flashdata', 'wrong password');
                     redirect('login');
