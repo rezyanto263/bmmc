@@ -13,6 +13,8 @@ class History extends CI_Controller {
         
         $this->load->model('M_admins');
         $this->load->model('M_hospitals');
+        $this->load->model('M_historyhealth');
+        $this->load->model('M_hisealthtals');
         
     }    
 
@@ -38,14 +40,28 @@ class History extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getAllHospitalsDatas() {
-        $hospitalsDatas = $this->M_hospitals->getAllHospitalsDatas();
-        $datas = array(
-            'data' => $hospitalsDatas
-        );
+    public function getHospitalHistoriesDatas() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
-        echo json_encode($datas);
+        if ($hospitalDatas) {
+            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+        
+            if ($historyhealthIds) {
+                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+                $datas = array(
+                    'data' => $historiesDatas,
+                );
+                echo json_encode($datas);
+            } else {
+                echo json_encode(['data' => []]);
+            }
+        } else {
+            echo json_encode(['data' => []]);
+        }
     }
+    
 }
 
 ?>

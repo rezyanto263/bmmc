@@ -25,13 +25,21 @@
 
 <?php } else if ($contentType == 'user') { ?>
 
-    <?php $this->load->view($navbar); ?>
+    <?php if ($subtitle == 'Profile') { ?>
 
-    
-    <?php $this->load->view($content); ?>
+        <?php $this->load->view($content); ?>
 
+        <?php $this->load->view($footer); ?>
 
-    <?php $this->load->view($footer); ?>
+    <?php } else { ?>
+
+        <?php $this->load->view($navbar); ?>
+
+        <?php $this->load->view($content); ?>
+
+        <?php $this->load->view($footer); ?>
+        
+    <?php } ?>
     
 <?php } else if ($contentType == 'authentication') { ?>
 

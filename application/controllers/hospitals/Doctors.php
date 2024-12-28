@@ -41,12 +41,16 @@ class Doctors extends CI_Controller {
     public function getHospitalDoctorsDatas() {
         $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
-        $doctorsDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
-        $datas = array(
-            'data' => $doctorsDatas
-        );
 
-        echo json_encode($datas);
+        if ($hospitalDatas) {
+            $doctorsDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $datas = array(
+                'data' => $doctorsDatas
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['data' => []]);
+        }
     }
 
     public function addDoctor() {
@@ -63,19 +67,12 @@ class Doctors extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'doctorEIN',
-                'label' => 'EIN',
-                'rules' => 'required|trim',
-                'errors' => array(
-                    'required' => 'Doctor should provide an %s.'
-                )
-            ),
-            array(
                 'field' => 'doctorDateOfBirth',
                 'label' => 'Date of Birth',
-                'rules' => 'required',
+                'rules' => 'required|less_than_or_equal_to_date['.date('Y-m-d').']',
                 'errors' => array(
                     'required' => '%s is required.',
+                    'less_than_or_equal_to_date' => '%s must not be later than today.',
                 )
             ),
             array(
@@ -111,7 +108,6 @@ class Doctors extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $doctorDatas = array(
-                'doctorEIN' => $this->input->post('doctorEIN'),
                 'hospitalId' => $hospitalDatas['hospitalId'],
                 'doctorName' => $this->input->post('doctorName'),
                 'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress')),
@@ -119,7 +115,6 @@ class Doctors extends CI_Controller {
                 'doctorSpecialization' => htmlspecialchars($this->input->post('doctorSpecialization')),
                 'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus'))
             );
-            var_dump($doctorDatas);
             $this->M_doctors->insertDoctor($doctorDatas);
 
             echo json_encode(array('status' => 'success'));
@@ -140,19 +135,12 @@ class Doctors extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'doctorEIN',
-                'label' => 'EIN',
-                'rules' => 'required|trim',
-                'errors' => array(
-                    'required' => 'Doctor should provide an %s.'
-                )
-            ),
-            array(
                 'field' => 'doctorDateOfBirth',
                 'label' => 'Date of Birth',
-                'rules' => 'required',
+                'rules' => 'required|less_than_or_equal_to_date['.date('Y-m-d').']',
                 'errors' => array(
                     'required' => '%s is required.',
+                    'less_than_or_equal_to_date' => '%s must not be later than today.',
                 )
             ),
             array(
@@ -188,7 +176,6 @@ class Doctors extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $doctorDatas = array(
-                'doctorEIN' => $this->input->post('doctorEIN'),
                 'hospitalId' => $hospitalDatas['hospitalId'],
                 'doctorName' => $this->input->post('doctorName'),
                 'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress')),
@@ -196,16 +183,16 @@ class Doctors extends CI_Controller {
                 'doctorSpecialization' => htmlspecialchars($this->input->post('doctorSpecialization')),
                 'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus'))
             );
-            $this->M_doctors->updateDoctor($this->input->post('doctorEIN'), $doctorDatas);
+            $this->M_doctors->updateDoctor($this->input->post('doctorId'), $doctorDatas);
 
             echo json_encode(array('status' => 'success'));
         }
     }
 
     public function deleteDoctor() {
-        $doctorEIN = $this->input->post('doctorEIN');
+        $doctorId = $this->input->post('doctorId');
         
-        $this->M_doctors->deleteDoctor($doctorEIN);
+        $this->M_doctors->deleteDoctor($doctorId);
         echo json_encode(array('status' => 'success'));
     }
 

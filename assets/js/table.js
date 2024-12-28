@@ -791,7 +791,19 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
         },
         {data: 'doctorName'},
         {data: 'doctorAddress'},
-        {data: 'doctorDateOfBirth'},
+        {
+            data: 'doctorDateOfBirth',
+            render: function (data, type, row) {
+                if (type === 'display' || type === 'filter') {
+                    if (data) {
+                        return moment(data).format('DD MMMM YYYY');
+                    } else {
+                        return '';
+                    }
+                }
+                return data;
+            }
+        },
         {data: 'doctorSpecialization'},
         {
             data: 'doctorStatus',
@@ -808,14 +820,14 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
                     type="button" 
                     class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#editDoctorModal">
-                    <i class="fa-regular fa-pen-to-square"></i>
+                    data-bs-target="#editDoctorModal" title="Edit Doctor">
+                        <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
                     class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#deleteDoctorModal">
+                    data-bs-target="#deleteDoctorModal" title="Delete Doctor">
                         <i class="fa-solid fa-trash-can"></i>
                 </button>
             `
@@ -837,7 +849,7 @@ $('#addDoctorForm').on('submit', function(e) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
-                reloadTableData(adminsTable);
+                reloadTableData(doctorsTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
@@ -853,12 +865,12 @@ $('#addDoctorForm').on('submit', function(e) {
 // Edit Data Doctor
 $('#doctorsTable').on('click', '.btn-edit', function() {
     var data = doctorsTable.row($(this).parents('tr')).data();
-    $('#editDoctorForm [name="doctorEIN"]').val(data.doctorEIN);
+    $('#editDoctorForm [name="doctorId"]').val(data.doctorId);
     $('#editDoctorForm [name="doctorName"]').val(data.doctorName);
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
     $('#editDoctorForm [name="doctorDateOfBirth"]').val(data.doctorDateOfBirth);
     $('#editDoctorForm [name="doctorSpecialization"]').val(data.doctorSpecialization);
-    $('#editDoctorForm [name="doctorStatus"]').val(data.doctorStatus);
+    $('#editDoctorForm [name="doctorStatus"]').val(data.doctorStatus);  
 });
 
 $('#editDoctorModal').on('shown.bs.modal', function () {
@@ -896,16 +908,16 @@ $('#editDoctorForm').on('submit', function(e) {
 $('#doctorsTable').on('click', '.btn-delete', function() {
     var data = doctorsTable.row($(this).parents('tr')).data();
     $('#deleteDoctorForm #doctorName').html(data.doctorName);
-    $('#deleteDoctorForm #doctorEIN').val(data.doctorEIN);
+    $('#deleteDoctorForm #doctorId').val(data.doctorId);
 })
 
 $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
-    var doctorEIN = $('#deleteDoctorForm #doctorEIN').val();
+    var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
         url: baseUrl + 'hospitals/doctors/deleteDoctor',
         method: 'POST',
-        data: {doctorEIN: doctorEIN},
+        data: {doctorId: doctorId},
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
@@ -930,7 +942,26 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {data: 'policyholderName'},
         {data: 'companyName'},
-        {data: 'historyhealthDate'},
+        {data: 'doctorName'},
+        {
+            data: 'historyhealthBill',
+            render: function (data) {
+                return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+        },
+        {
+            data: 'historyhealthDate',
+            render: function (data, type, row) {
+                if (type === 'display' || type === 'filter') {
+                    if (data) {
+                        return moment(data).format('DD MMMM YYYY');
+                    } else {
+                        return '';
+                    }
+                }
+                return data;
+            }
+        },
         {data: 'historyhealthStatus'},
         {
             data: null,
@@ -939,27 +970,60 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#editDoctorModal">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                </button>
-                <button 
-                    type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#deleteDoctorModal">
-                        <i class="fa-solid fa-trash-can"></i>
+                    data-bs-target="#detailHistoryModal"
+                    title="View History">
+                    <i class="fa-regular fa-eye"></i>
                 </button>
             `
+        },
+        { 
+            data: 'patientNIN',
+            visible: false, 
+            searchable: true
         }
     ],
     columnDefs: [
         {width: '180px', target: 4}
     ]
 }));
-      
-      
+
+// Detail History Health Hospital
+$('#hHistoriesTable').on('click', '.btn-view', function() {
+    var data = hHistoriesTable.row($(this).parents('tr')).data();
+
+    const formattedDate = moment(data.historyhealthDate).format('DD MMMM YYYY');
+    const formattedCreateAt = moment(data.createdAt).format('DD MMM YYYY, HH:mm');
+    const formattedUpdateAt = moment(data.updatedAt).format('DD MMM YYYY, HH:mm');
+    const formattedBill = 'Rp ' + parseFloat(data.historyhealthBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    if (data.historyhealthFamilyStatus == "policyholder") {
+        $('#detailContent #patientName').text(data.policyholderName);
+    } else {
+        $('#detailContent #patientName').text(data.familyName);
+    }
+
+    $('#detailContent #detailDoctorName').text(data.doctorName);
+    $('#detailContent #historyhealthComplaint').text(data.historyhealthComplaint);
+    $('#detailContent #historyhealthFamilyStatus').text(data.historyhealthFamilyStatus);
+    $('#detailContent #historyhealthDetails').text(data.historyhealthDetails);
+    $('#detailContent #policyholderName').text(data.policyholderName);
+    $('#detailContent #companyName').text(data.companyName);
+    $('#detailContent #historyhealthDate').text(formattedDate);
+    $('#detailContent #historyhealthStatus').text(data.historyhealthStatus);
+    $('#detailContent #createdAt').text(formattedCreateAt);
+    $('#detailContent #updatedAt').text(formattedUpdateAt);
+    $('#detailContent #historyhealthBill').text(formattedBill);
+});
+
+$('#detailHistoryModal').on('shown.bs.modal', function () {});
+
+// Check Patient For Hospital
+// $('#chechPatientButton').on('click', '.btn-view', function() {
+// var data = ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+// });
+
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'company/Employee/getAllEmployeesDatas', // base URL diubah

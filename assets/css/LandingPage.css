@@ -1,0 +1,275 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* function root */
+:root {
+  --main-color: #6495ed;
+  --secondary-color: #228b22;
+  --background: #f2f2f2;
+}
+
+/* universal */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins";
+  scroll-behavior: smooth;
+}
+
+/* custom warna sesuai pallet */
+.bg-hijau {
+  background-color: var(--secondary-color);
+}
+
+.bg-biru {
+  background-color: var(--main-color);
+}
+
+/* konten */
+body {
+  background-color: var(--background);
+  width: 100%;
+}
+
+/* hero */
+.kotak-hero {
+  width: 100%;
+  height: 20%;
+  margin-top: -30px;
+}
+
+.title-heading {
+  width: 100%;
+  font-size: 55px;
+}
+
+.slogan {
+  font-size: 15px;
+}
+
+/* about */
+.kiri-about {
+  width: 100%;
+}
+
+.kanan-about {
+  width: 100%;
+  margin-top: 10px;
+  height: 300px;
+}
+
+.title-about {
+  font-size: 40px;
+  color: var(--main-color);
+  border-bottom: 5px solid var(--secondary-color);
+  width: 90%;
+}
+
+/* mitra */
+.mitra-sec {
+  background-color: var(--main-color);
+  margin-top: 100px;
+}
+
+.title-mitra {
+  font-size: 35px;
+  width: 100%;
+  border-bottom: 5px solid var(--secondary-color);
+}
+
+.img-mitra {
+  width: 60%;
+  margin: 10px;
+}
+
+/* berita */
+.berita-sec {
+  padding-top: 100px;
+  padding-bottom: 30px;
+}
+
+.title-berita {
+  font-size: 25px;
+  width: 50%;
+  border-bottom: 5px solid var(--secondary-color);
+}
+
+.judul-card {
+  color: var(--main-color);
+}
+
+.button-berita {
+  background-color: var(--secondary-color);
+  color: white;
+  padding-block: 10px;
+  padding-left: 10px;
+  border-radius: 10px;
+  width: 49%;
+}
+
+.button-berita:hover {
+  background-color: #1e781e;
+}
+
+.button-berita-all {
+  background-color: var(--secondary-color);
+  color: white;
+  padding-block: 10px;
+  padding-left: 10px;
+  width: 68%;
+}
+
+.button-berita-all:hover {
+  background-color: #1e781e;
+}
+
+.button-berita a {
+  color: white;
+  text-decoration: none;
+}
+
+.button-berita-all a {
+  color: white;
+  text-decoration: none;
+}
+
+/* FQA */
+.title-faq {
+  font-size: 30px;
+  width: 20%;
+  border-bottom: 5px solid var(--secondary-color);
+}
+
+/* MAP */
+#map {
+  height: 100vh; 
+  width: 100%; 
+}
+
+/* responsive tablet dan laptop */
+@media (min-width: 768px) {
+  /* Tablet dan layar lebih besar */
+
+  /* hero */
+  .kotak-hero {
+    width: 75%;
+    height: 25%;
+    margin: 0;
+  }
+
+  .title-heading {
+    width: 100%;
+    font-size: 100px;
+  }
+
+  .slogan {
+    font-size: 25px;
+  }
+
+  /* about */
+  .kiri-about {
+    width: 50%;
+  }
+
+  .kanan-about {
+    width: 50%;
+    margin-left: 15px;
+    height: 500px;
+  }
+
+  .title-about {
+    font-size: 70px;
+    color: var(--main-color);
+    border-bottom: 5px solid var(--secondary-color);
+    width: 90%;
+  }
+
+  /* mitra */
+  .mitra-sec {
+    background-color: var(--main-color);
+    margin-top: 100px;
+  }
+
+  .title-mitra {
+    font-size: 55px;
+    width: 80%;
+    border-bottom: 5px solid var(--secondary-color);
+  }
+
+  .img-mitra {
+    width: 50%;
+    margin: 10px;
+  }
+
+  /* articel */
+  .berita-sec {
+    padding-top: 100px;
+    padding-bottom: 30px;
+  }
+
+  .title-berita {
+    font-size: 30px;
+    width: 18%;
+    border-bottom: 5px solid var(--secondary-color);
+  }
+
+  .judul-card {
+    color: var(--main-color);
+  }
+
+  .button-berita {
+    background-color: var(--secondary-color);
+    color: white;
+    padding-block: 10px;
+    padding-left: 10px;
+    border-radius: 10px;
+    width: 42%;
+  }
+
+  .button-berita:hover {
+    background-color: #1e781e;
+  }
+
+  .button-berita-all {
+    background-color: var(--secondary-color);
+    color: white;
+    padding-block: 10px;
+    padding-left: 10px;
+    width: 18%;
+  }
+
+  .button-berita-all:hover {
+    background-color: #1e781e;
+  }
+
+  .button-berita a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .button-berita-all a {
+    color: white;
+    text-decoration: none;
+  }
+
+  /* FQA */
+  .title-faq {
+    font-size: 30px;
+    width: 6%;
+    border-bottom: 5px solid var(--secondary-color);
+  }
+
+  /* footer */
+  .footer {
+    background-color: var(--main-color);
+  }
+
+  /* berita detail */
+  .berita-detail {
+    width: 68%;
+  }
+
+  .rekomendasi {
+    width: 30%;
+  }
+}

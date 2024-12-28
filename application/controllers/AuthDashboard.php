@@ -38,7 +38,7 @@ class AuthDashboard extends CI_Controller {
                     redirect('dashboard');
                 } elseif ($adminDatas['adminRole'] === 'company') {
                     redirect('company/dashboard');
-                }
+                } 
             }
         }
 
@@ -48,6 +48,8 @@ class AuthDashboard extends CI_Controller {
                 redirect('dashboard');
             } elseif ($this->session->userdata('adminRole') === 'company') {
                 redirect('company/dashboard');
+            } elseif ($this->session->userdata('adminRole') === 'hospital') {
+                redirect('hospitals/hospital');
             }
         }
 
@@ -137,11 +139,19 @@ class AuthDashboard extends CI_Controller {
                 );
                 $this->session->set_userdata($sessionDatas);
     
-                if ($adminDatas['adminRole'] === 'admin') {
+                if ($this->session->adminRole == 'admin') {
                     redirect('dashboard');
-                } elseif ($adminDatas['adminRole'] === 'company') {
+                } elseif ($this->session->adminRole == 'company') {
                     redirect('company/dashboard');
+                } elseif ($this->session->adminRole == 'hospital') {
+                    redirect('hospitals/hospital');
                 }
+
+                // if ($adminDatas['adminRole'] === 'admin') {
+                //     redirect('dashboard');
+                // } elseif ($adminDatas['adminRole'] === 'company') {
+                //     redirect('company/dashboard');
+                // } 
             } else {
                 $this->session->set_flashdata('flashdata', 'wrong password');
                 redirect('dashboard/login');
