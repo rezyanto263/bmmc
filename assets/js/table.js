@@ -66,6 +66,41 @@ var DataTableSettings = {
     autoWidth: true,
 }
 
+let minDate, maxDate;
+ 
+// Custom filtering function which will search data in column four between two values
+DataTable.ext.search.push(function (settings, data, dataIndex) {
+    let min = minDate.val();
+    let max = maxDate.val();
+    let date = new Date(data[4]);
+ 
+    if (
+        (min === null && max === null) ||
+        (min === null && date <= max) ||
+        (min <= date && max === null) ||
+        (min <= date && date <= max)
+    ) {
+        return true;
+    }
+    return false;
+});
+ 
+// Create date inputs
+minDate = new DateTime('#min', {
+    format: 'MMMM Do YYYY'
+});
+maxDate = new DateTime('#max', {
+    format: 'MMMM Do YYYY'
+});
+ 
+// DataTables initialisation
+let table = new DataTable('#example');
+ 
+// Refilter the table
+document.querySelectorAll('#min, #max').forEach((el) => {
+    el.addEventListener('change', () => table.draw());
+});
+
 function displayFormValidation(formSelector, errors) {
     $(formSelector + ' .error-message').remove();
     $(formSelector + ' .is-invalid').removeClass('is-invalid');
@@ -1039,7 +1074,6 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         {data: 'policyholderName'},
         {data: 'policyholderEmail'},
         {data: 'policyholderAddress'},
-        {data: 'policyholderPhone'},
         {data: 'policyholderBirth'},
         {data: 'policyholderGender'},
         {data: 'policyholderStatus'},
@@ -1132,7 +1166,6 @@ $('#employeesTable').on('click', '.btn-edit', function() {
     $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
     $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
     $('#editEmployeeForm [name="policyholderAddress"]').val(data.policyholderAddress);
-    $('#editEmployeeForm [name="policyholderPhone"]').val(data.policyholderPhone);
     $('#editEmployeeForm [name="policyholderBirth"]').val(data.policyholderBirth);
     $('#editEmployeeForm [name="policyholderGender"]').val(data.policyholderGender);
     $('#editEmployeeForm [name="policyholderStatus"]').val(data.policyholderStatus);
