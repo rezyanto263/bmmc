@@ -12,7 +12,13 @@ class M_historyhealth extends CI_Model {
     
         $results = array();
         foreach ($query->result() as $row) {
-            $this->db->select('hh.*, ph.policyholderName, c.companyName, d.doctorName');
+            $select = 'hh.*, ph.policyholderName, c.companyName, d.doctorName';
+
+            if ($row->historyhealthFamilyStatus != 'policyholder') { 
+                $select .= ', f.familyName';
+            }
+
+            $this->db->select($select, FALSE);
             $this->db->from('historyhealth hh');
 
             if ($row->historyhealthFamilyStatus == 'policyholder') {

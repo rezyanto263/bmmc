@@ -35,6 +35,12 @@
                     </a>
                 </li>
                 <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Treatment History'?'active':''; ?>" href="<?= base_url('company/TreatmentHistory') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Treatment History">
+                        <i class="las la-file-medical fs-4"></i>
+                        <span>Treatment History</span>
+                    </a>
+                </li>
+                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Monthly Payment'?'active':''; ?>" href="<?= base_url('company/MonthlyPayment') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Monthly Payment">
                         <i class="las la-file-invoice fs-4"></i>
                         <span>Monthly Payment</span>

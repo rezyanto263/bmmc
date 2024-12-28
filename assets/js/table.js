@@ -870,7 +870,7 @@ $('#doctorsTable').on('click', '.btn-edit', function() {
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
     $('#editDoctorForm [name="doctorDateOfBirth"]').val(data.doctorDateOfBirth);
     $('#editDoctorForm [name="doctorSpecialization"]').val(data.doctorSpecialization);
-    $('#editDoctorForm [name="doctorStatus"]').val(data.doctorStatus);
+    $('#editDoctorForm [name="doctorStatus"]').val(data.doctorStatus);  
 });
 
 $('#editDoctorModal').on('shown.bs.modal', function () {
@@ -972,11 +972,16 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                     type="button" 
                     class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#detailTreatmentModal"
+                    data-bs-target="#detailHistoryModal"
                     title="View History">
                     <i class="fa-regular fa-eye"></i>
                 </button>
             `
+        },
+        { 
+            data: 'patientNIN',
+            visible: false, 
+            searchable: true
         }
     ],
     columnDefs: [
@@ -988,17 +993,37 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
 $('#hHistoriesTable').on('click', '.btn-view', function() {
     var data = hHistoriesTable.row($(this).parents('tr')).data();
 
+    const formattedDate = moment(data.historyhealthDate).format('DD MMMM YYYY');
+    const formattedCreateAt = moment(data.createdAt).format('DD MMM YYYY, HH:mm');
+    const formattedUpdateAt = moment(data.updatedAt).format('DD MMM YYYY, HH:mm');
+    const formattedBill = 'Rp ' + parseFloat(data.historyhealthBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    if (data.historyhealthFamilyStatus == "policyholder") {
+        $('#detailContent #patientName').text(data.policyholderName);
+    } else {
+        $('#detailContent #patientName').text(data.familyName);
+    }
+
     $('#detailContent #detailDoctorName').text(data.doctorName);
-    const formattedDate = new Date(data.date).toLocaleDateString();
-    $('#detailContent #detailDate').text(formattedDate);
-    $('#detailContent #detailHealthComplaint').text(data.healthComplaint);
-    $('#detailContent #detailFamilyStatus').text(data.familyStatus);
-    $('#detailContent #detailHealthDetails').text(data.healthDetails);
-    $('#detailContent #detailHealthStatus').text(data.healthStatus);
+    $('#detailContent #historyhealthComplaint').text(data.historyhealthComplaint);
+    $('#detailContent #historyhealthFamilyStatus').text(data.historyhealthFamilyStatus);
+    $('#detailContent #historyhealthDetails').text(data.historyhealthDetails);
+    $('#detailContent #policyholderName').text(data.policyholderName);
+    $('#detailContent #companyName').text(data.companyName);
+    $('#detailContent #historyhealthDate').text(formattedDate);
+    $('#detailContent #historyhealthStatus').text(data.historyhealthStatus);
+    $('#detailContent #createdAt').text(formattedCreateAt);
+    $('#detailContent #updatedAt').text(formattedUpdateAt);
+    $('#detailContent #historyhealthBill').text(formattedBill);
 });
 
-$('#detailTreatmentModal').on('shown.bs.modal', function () {});
-      
+$('#detailHistoryModal').on('shown.bs.modal', function () {});
+
+// Check Patient For Hospital
+// $('#chechPatientButton').on('click', '.btn-view', function() {
+// var data = ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+// });
+
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'company/Employee/getAllEmployeesDatas', // base URL diubah

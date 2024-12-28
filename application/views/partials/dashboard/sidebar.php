@@ -52,13 +52,19 @@
                 <?php if ($this->session->userdata('adminRole') == 'hospital') : ?>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Hospital'?'active':''; ?>" href="<?= base_url('hospitals/Hospital') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Hospital">
-                        <i class="las la-stream fs-4"></i>
+                        <i class="las la-hospital fs-4"></i>
                         <span>Hospital</span>
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('hospitals/History') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Patient'?'active':''; ?>" href="<?= base_url('hospitals/Patient') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Patient Profile">
                         <i class="las la-notes-medical fs-4"></i>
+                        <span>Patient Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('hospitals/History') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
+                        <i class="las la-book-medical fs-4"></i>
                         <span>History</span>
                     </a>
                 </li>
