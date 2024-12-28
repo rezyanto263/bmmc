@@ -393,27 +393,50 @@ var hospitalsTables = $('#hospitalsTables').DataTable($.extend(true, {}, DataTab
     ]
 }));
 
+var hospitalMap; // Variabel untuk instance peta
+var hospitalMarker; // Variabel untuk marker peta
+
+// Fungsi inisialisasi atau pembaruan peta
+function initializeOrUpdateMap(mapContainerId, latitude, longitude, popupContent) {
+    if (!hospitalMap) {
+        // Inisialisasi peta hanya jika belum ada instance
+        hospitalMap = L.map(mapContainerId).setView([latitude, longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(hospitalMap);
+
+        // Tambahkan marker awal
+        hospitalMarker = L.marker([latitude, longitude]).addTo(hospitalMap)
+            .bindPopup(popupContent).openPopup();
+    } else {
+        // Perbarui peta dan marker jika instance sudah ada
+        hospitalMap.setView([latitude, longitude], 13);
+        hospitalMarker.setLatLng([latitude, longitude]).bindPopup(popupContent).openPopup();
+    }
+
+    // Pastikan ukuran peta diperbarui saat modal ditampilkan
+    hospitalMap.invalidateSize();
+}
+
+// Event listener untuk tombol "View"
 $('#hospitalsTables').on('click', '.btn-view', function () {
-    var rowData = hospitalsTables.row($(this).closest('tr')).data();
-    var hospitalCoordinate = rowData.hospitalCoordinate; // Mendapatkan koordinat
-    var hospitalName = rowData.hospitalName; // Mendapatkan nama rumah sakit
+    var rowData = hospitalsTables.row($(this).closest('tr')).data(); // Data baris yang diklik
+    var hospitalCoordinate = rowData.hospitalCoordinate; // Koordinat rumah sakit
+    var hospitalName = rowData.hospitalName; // Nama rumah sakit
 
     if (hospitalCoordinate) {
-        var coordsArray = hospitalCoordinate.split(',');
+        var coordsArray = hospitalCoordinate.split(','); // Pisahkan koordinat
         var latitude = parseFloat(coordsArray[0].trim());
         var longitude = parseFloat(coordsArray[1].trim());
 
         if (!isNaN(latitude) && !isNaN(longitude)) {
-            // Peta di dalam modal
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Tambahkan marker
-            var marker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Hospital: ' + hospitalName)
-                .openPopup();
+            // Simpan data ke modal sebelum dibuka
+            $('#viewMapHospitalModal').data('latitude', latitude)
+                .data('longitude', longitude)
+                .data('hospitalName', hospitalName);
+            
+            // Tampilkan modal
+            $('#viewMapHospitalModal').modal('show');
         } else {
             console.error('Koordinat tidak valid: ' + hospitalCoordinate);
         }
@@ -422,40 +445,18 @@ $('#hospitalsTables').on('click', '.btn-view', function () {
     }
 });
 
-// Menampilkan peta ketika modal dibuka
+// Event listener untuk membuka modal dan memuat peta
 $('#viewMapHospitalModal').on('shown.bs.modal', function () {
-    // Ambil data dari tabel yang terkait dengan tombol yang diklik
-    var rowData = hospitalsTables.row($(this).closest('tr')).data();  // Ambil data baris yang sedang dipilih
-    var hospitalCoordinate = rowData.hospitalCoordinate;  // Koordinat rumah sakit
-    var hospitalName = rowData.hospitalName;  // Nama rumah sakit
+    var latitude = $(this).data('latitude');
+    var longitude = $(this).data('longitude');
+    var hospitalName = $(this).data('hospitalName');
 
-    // Periksa apakah koordinat ada
-    if (hospitalCoordinate) {
-        var coordsArray = hospitalCoordinate.split(',');  // Pisahkan koordinat
-        var latitude = parseFloat(coordsArray[0].trim());  // Latitude
-        var longitude = parseFloat(coordsArray[1].trim());  // Longitude
-
-        if (!isNaN(latitude) && !isNaN(longitude)) {
-            // Inisialisasi peta dengan koordinat
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13);  // Set posisi peta dan zoom level
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Tambahkan marker pada peta
-            var marker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Hospital: ' + hospitalName)  // Tampilkan nama rumah sakit di popup
-                .openPopup();
-
-            // Perbarui ukuran peta setelah modal ditampilkan
-            map.invalidateSize();
-        } else {
-            console.error('Koordinat tidak valid: ' + hospitalCoordinate);
-        }
-    } else {
-        console.error('Koordinat tidak ditemukan.');
+    if (latitude !== undefined && longitude !== undefined) {
+        // Inisialisasi atau perbarui peta
+        initializeOrUpdateMap('hospitalMap', latitude, longitude, 'Hospital: ' + hospitalName);
     }
 });
+
 
 
 
