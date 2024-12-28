@@ -61,7 +61,8 @@ function floatingMenuHandler() {
 // QR Scanner
 var scanner;
 var cameraStream;
-$('#scannerModal').on('shown.bs.modal', function() {
+$
+$('#scannerModal').on('show.bs.modal', function() {
     $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
     try {
         cameraStream = navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
@@ -95,7 +96,7 @@ $('#scannerModal').on('hidden.bs.modal', function () {
         });
         cameraStream = null;
     }
-    scanner.stop();
+    scanner ? scanner.stop() : null;
     scanner = null;
 });	
 

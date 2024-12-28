@@ -94,6 +94,46 @@ $('#addAdminButton, #editAdminButton, #deleteAdminButton').on('click', function(
     reloadTableData(adminsTable);
 });
 
+// Initialize OSM
+var map;
+
+function initializeMap(latitude, longitude, imageFile) {
+    if (!map) {
+        // Inisialisasi peta hanya sekali
+        map = L.map('map').setView([latitude, longitude], 17);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 20,
+            minZoom: 8,
+        }).addTo(map);
+
+        // Tambahkan marker awal
+        marker = L.marker([latitude, longitude]).addTo(map);
+
+        marker.setLatLng([latitude, longitude]).bindPopup(
+            `<img src="${imageFile}" width="150px" height="150px">`
+        ).openPopup();
+    } else {
+        // Update koordinat jika peta sudah diinisialisasi
+        updateMap(latitude, longitude, imageFile);
+    }
+}
+
+function updateMap(latitude, longitude, imageFile) {
+    if (map && marker) {
+        // Pindahkan peta ke lokasi baru
+        map.setView([latitude, longitude], 17);
+
+        // Pindahkan marker ke lokasi baru
+        marker.setLatLng([latitude, longitude]).bindPopup(
+            `<img src="${imageFile}" width="150px" height="150px">`
+        ).openPopup();
+    } else {
+        console.error('Peta atau marker belum diinisialisasi.');
+    }
+}
+
 
 
 // Admins CRUD
@@ -264,7 +304,7 @@ $('#deleteAdminForm').on('submit', function(e) {
 
 
 
-// // Hospitals CRUD
+// Hospitals CRUD
 var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'dashboard/getAllHospitalsDatas',
     columns: [
@@ -374,6 +414,37 @@ $('#addHospitalForm').on('submit', function(e) {
         }
     });
 });
+
+
+// View Data Hospital
+$('#hospitalsTable').on('click', '.btn-view', function() {
+    var data = hospitalsTable.row($(this).parents('tr')).data();
+    let imageFilePath = baseUrl + 'assets/images/hospital-placeholder.jpg';
+    if (data.hospitalLogo) {
+        imageFilePath = baseUrl + 'uploads/logos/' + data.hospitalLogo;
+        $('#viewHospitalModal #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.hospitalLogo);
+    }
+    $('#viewHospitalModal [name="hospitalId"]').val(data.hospitalId);
+    $('#viewHospitalModal [name="hospitalName"]').val(data.hospitalName);
+    $('#viewHospitalModal [name="hospitalPhone"]').val(data.hospitalPhone);
+    $('#viewHospitalModal [name="hospitalAddress"]').val(data.hospitalAddress);
+    $('#viewHospitalModal [name="hospitalCoordinate"]').val(data.hospitalCoordinate);
+
+    if (data.adminId) {
+        $('#viewHospitalModal [name="adminId"]').val(data.adminName + ' | ' + data.adminEmail);
+    } else {
+        $('#viewHospitalModal [name="adminId"]').val('No Admin');
+    }
+
+    $('#viewHospitalModal').on('shown.bs.modal', function() {
+        var coordsArray = data.hospitalCoordinate.split(',');
+        var latitude = parseFloat(coordsArray[0].trim());
+        var longitude = parseFloat(coordsArray[1].trim());
+
+        initializeMap(latitude, longitude, imageFilePath);
+    });
+});
+
 
 // Edit Data Hospital
 $('#hospitalsTable').on('click', '.btn-edit', function() {
@@ -581,6 +652,34 @@ $('#addCompanyForm').on('submit', function(e) {
                 displayFormValidation('#addCompanyForm', res.errors);
             }
         }
+    });
+});
+
+// View Data Company
+$('#companiesTable').on('click', '.btn-view', function() {
+    var data = companiesTable.row($(this).parents('tr')).data();
+    let imageFilePath = baseUrl + 'assets/images/company-placeholder.jpg';
+    if (data.companyLogo) {
+        imageFilePath = baseUrl + 'uploads/logos/' + data.companyLogo;
+        $('#viewCompanyModal #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.companyLogo);
+    }
+    $('#viewCompanyModal [name="companyName"]').val(data.companyName);
+    $('#viewCompanyModal [name="companyPhone"]').val(data.companyPhone);
+    $('#viewCompanyModal [name="companyAddress"]').val(data.companyAddress);
+    $('#viewCompanyModal [name="companyCoordinate"]').val(data.companyCoordinate);
+
+    if (data.adminId) {
+        $('#viewCompanyModal [name="adminId"]').val(data.adminName + ' | ' + data.adminEmail);
+    } else {
+        $('#viewCompanyModal [name="adminId"]').val('No Admin');
+    }
+
+    $('#viewCompanyModal').on('shown.bs.modal', function() {
+        var coordsArray = data.companyCoordinate.split(',');
+        var latitude = parseFloat(coordsArray[0].trim());
+        var longitude = parseFloat(coordsArray[1].trim());
+
+        initializeMap(latitude, longitude, imageFilePath);
     });
 });
 

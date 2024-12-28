@@ -101,6 +101,75 @@
 </div>
 
 
+<!-- Modal View -->
+<div class="modal fade" id="viewCompanyModal">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-4">COMPANY DETAILS</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body border-0">
+                <div class="row gy-4">
+                    <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
+                        <div class="row gy-4">
+                            <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                                <div class="imgContainer">
+                                    <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Name">
+                                        <i class="las la-building fs-4"></i>
+                                    </span>
+                                    <input class="form-control" type="text" placeholder="Name" name="companyName" disabled>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
+                                        <i class="las la-user-cog fs-4"></i>
+                                    </span>
+                                    <input class="form-control" type="text" placeholder="Admin Account" name="adminId" disabled>
+                                </div>
+                            </div>
+                            <div class="col-12">   
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
+                                        <i class="las la-phone fs-4"></i>
+                                    </span>
+                                    <input class="form-control" type="text" placeholder="Company Phone Number" name="companyPhone" disabled>
+                                </div>
+                            </div>
+                            <div class="col-12">   
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Address">
+                                        <i class="las la-map fs-4"></i>
+                                    </span>
+                                    <input class="form-control" type="text" placeholder="Company Address" name="companyAddress" disabled>
+                                </div>
+                            </div>
+                            <div class="col-12">   
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Coordinate">
+                                        <i class="las la-map-marker fs-4"></i>
+                                    </span>
+                                    <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
+                        <div id="map" class="w-100 h-100" style="min-height:300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Modal Edit -->
 <div class="modal fade" id="editCompanyModal">
     <div class="modal-dialog modal-dialog-centered modal-md">
@@ -176,6 +245,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal Delete -->
 <div class="modal fade" id="deleteCompanyModal" aria-hidden="true">

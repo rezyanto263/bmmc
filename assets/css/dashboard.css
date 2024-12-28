@@ -51,10 +51,12 @@ body.dashboard {
         position: absolute;
         background: transparent !important;
         backdrop-filter: blur(20px) saturate(150%) brightness(90%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(90%);
     }
 
     .dashboard.dark aside {
         backdrop-filter: blur(20px) saturate(150%) brightness(50%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(50%);
     }
 
     .dashboard aside.maximize {
@@ -144,6 +146,11 @@ option:hover:focus {
 
 ::placeholder {
     color: var(--grey) !important;
+}
+
+.modal-content #map {
+    border-radius: 0.375rem;
+    border: 1px solid var(--grey);
 }
 
 /* Select2 Styles */
@@ -264,6 +271,10 @@ option:hover:focus {
     font-weight: var(--fwnormal);
     font-size: 12px;
     line-height: 18px;
+}
+
+.sidebar-menu {
+    overflow-y: auto;
 }
 
 :where(.sidebar-menu, .sidebar-extramenu) ul li {
