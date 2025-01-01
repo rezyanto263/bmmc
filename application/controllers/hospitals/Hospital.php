@@ -18,7 +18,7 @@ class Hospital extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Hospital',
+            'title' => 'BIM Hospital | Profile',
             'subtitle' => 'Hospital',
             'contentType' => 'dashboard'
         );

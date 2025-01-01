@@ -21,7 +21,7 @@ class History extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | History',
+            'title' => 'BIM Hospital | History',
             'subtitle' => 'History',
             'contentType' => 'dashboard'
         );

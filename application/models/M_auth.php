@@ -39,33 +39,33 @@ class M_auth extends CI_Model {
     }
 
     public function getPolicyHolderDataById($policyholderId) {
-        $this->db->select('policyholderNIN, policyholderName, policyholderEmail, policyholderAddress, policyholderBirth, policyholderGender, policyholderPassword, policyholderStatus');
+        $this->db->select('policyholderNIK, policyholderName, policyholderEmail, policyholderAddress, policyholderBirth, policyholderGender, policyholderPassword, policyholderStatus');
         $this->db->from('policyholder');
-        $this->db->where('policyholderNIN', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->get()->row_array();
     }
 
     public function updateEmployee($policyholderId, $employeeData) {
-        $this->db->where('policyholderNIN', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', $employeeData);
     }
 
     public function getFamilyDataById($familyId) {
-        $this->db->select('familyNIN, familyName, familyEmail, policyholderNIN, familyAddress, familyBirth, familyGender, familyPassword, familyStatus');
+        $this->db->select('familyNIK, familyName, familyEmail, policyholderNIK, familyAddress, familyBirth, familyGender, familyPassword, familyStatus');
         $this->db->from('family');
-        $this->db->where('familyNIN', $familyId);
+        $this->db->where('familyNIK', $familyId);
         return $this->db->get()->row_array();
     }
 
-    public function updateFamily($familyNIN, $familyData) {
-        $this->db->where('familyNIN', $familyNIN);
+    public function updateFamily($familyNIK, $familyData) {
+        $this->db->where('familyNIK', $familyNIK);
         return $this->db->update('family', $familyData);
     }
 
-    public function validatePolicyHolderLogin($nin, $password) {
-        $this->db->select('policyholderNIN, policyholderPassword');
+    public function validatePolicyHolderLogin($NIK, $password) {
+        $this->db->select('policyholderNIK, policyholderPassword');
         $this->db->from('policyholder');
-        $this->db->where('policyholderNIN', $nin);
+        $this->db->where('policyholderNIK', $NIK);
         $userData = $this->db->get()->row_array();
 
         if ($userData && password_verify($password, $userData['policyholderPassword'])) {
@@ -74,10 +74,10 @@ class M_auth extends CI_Model {
         return FALSE;
     }
 
-    public function validateFamilyLogin($nin, $password) {
-        $this->db->select('familyNIN, familyPassword');
+    public function validateFamilyLogin($NIK, $password) {
+        $this->db->select('familyNIK, familyPassword');
         $this->db->from('family');
-        $this->db->where('familyNIN', $nin);
+        $this->db->where('familyNIK', $NIK);
         $userData = $this->db->get()->row_array();
     
         if ($userData && password_verify($password, $userData['familyPassword'])) {
@@ -87,29 +87,29 @@ class M_auth extends CI_Model {
     }    
 
     public function getFamilyMembersByPolicyHolder($policyholderId) {
-        $this->db->select('familyNIN, familyName, familyAddress, familyBirth, familyGender, familyStatus');
+        $this->db->select('familyNIK, familyName, familyAddress, familyBirth, familyGender, familyStatus');
         $this->db->from('family');
-        $this->db->where('policyholderNIN', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->get()->result_array();
     }
 
     public function updatePolicyHolderPassword($policyholderId, $newPassword) {
-        $this->db->where('policyholderNIN', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', array('policyholderPassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
     }
 
     public function updateFamilyPassword($familyId, $newPassword) {
-        $this->db->where('familyNIN', $familyId);
+        $this->db->where('familyNIK', $familyId);
         return $this->db->update('family', array('familyPassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
     }
 
     public function rememberPolicyHolderLogin($policyholderId, $rememberToken) {
-        $this->db->where('policyholderNIN', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', array('rememberToken' => $rememberToken));
     }
 
     public function rememberFamilyLogin($familyId, $rememberToken) {
-        $this->db->where('familyNIN', $familyId);
+        $this->db->where('familyNIK', $familyId);
         return $this->db->update('family', array('rememberToken' => $rememberToken));
     }
 }

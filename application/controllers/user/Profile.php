@@ -21,12 +21,12 @@ class Profile extends CI_Controller {
         $userType = $this->session->userdata('userType');
         if ($userType == 'policyholder') {
             // Use session data for the logged-in policyholder
-            $policyholderId = $this->session->userdata('userNIN');
+            $policyholderId = $this->session->userdata('userNIK');
             $policyholderDatas = $this->M_auth->getPolicyHolderDataById($policyholderId);
             $familyMembers = $this->M_auth->getFamilyMembersByPolicyHolder($policyholderId);
         } else {
             // Assuming you are also retrieving family data if logged in as family
-            $familyId = $this->session->userdata('userNIN');
+            $familyId = $this->session->userdata('userNIK');
             $policyholderDatas = $this->M_auth->getFamilyDataById($familyId);
             $familyMembers = null;
         }

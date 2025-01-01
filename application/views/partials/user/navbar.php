@@ -72,7 +72,7 @@
 
     <div class="d-none d-lg-flex">
       <a
-        href="<?=base_url('user/AuthUser1');?>"
+        href="<?=base_url('login');?>"
         class="btn btn-primary mx-1"
         tabindex="-1"
         role="button"

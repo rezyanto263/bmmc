@@ -19,7 +19,7 @@ class Doctors extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Doctors',
+            'title' => 'BIM Hospital | Doctors',
             'subtitle' => 'Doctors',
             'contentType' => 'dashboard'
         );

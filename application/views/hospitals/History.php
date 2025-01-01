@@ -4,7 +4,8 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Policy Holder Name</th>
+                <th>Patient Name</th>
+                <th>Relationship to Policyholder</th>
                 <th>Company Name</th>
                 <th>Doctor Name</th>
                 <th>Bill</th>
@@ -16,7 +17,8 @@
         <tfoot>
             <tr>
                 <th>#</th>
-                <th>Policy Holder Name</th>
+                <th>Patient Name</th>
+                <th>Relationship to Policyholder</th>
                 <th>Company Name</th>
                 <th>Doctor Name</th>
                 <th>Bill</th>

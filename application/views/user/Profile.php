@@ -105,7 +105,7 @@
                   <tr>
                     <td class="fw-bold">NIK</td>
                     <td>:</td>
-                    <td><?= isset($policyholderDatas['familyNIN']) && $policyholderDatas['familyNIN'] ? $policyholderDatas['familyNIN'] : (isset($policyholderDatas['policyholderNIN']) ? $policyholderDatas['policyholderNIN'] : '') ?></td>
+                    <td><?= isset($policyholderDatas['familyNIK']) && $policyholderDatas['familyNIK'] ? $policyholderDatas['familyNIK'] : (isset($policyholderDatas['policyholderNIK']) ? $policyholderDatas['policyholderNIK'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Nama</td>
@@ -166,7 +166,7 @@
                   <tr>
                     <td class="fw-bold">NIK</td>
                     <td>:</td>
-                    <td><?= $member['familyNIN']; ?></td>
+                    <td><?= $member['familyNIK']; ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Nama</td>

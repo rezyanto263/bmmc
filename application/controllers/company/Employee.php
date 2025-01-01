@@ -68,8 +68,8 @@ class Employee extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderNIN',
-                'label' => 'NIN',
+                'field' => 'policyholderNIK',
+                'label' => 'NIK',
                 'rules' => 'required|trim',
                 'errors' => array(
                     'required' => 'Employee should provide a %s.',
@@ -113,7 +113,7 @@ class Employee extends CI_Controller {
         } else {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
-                'policyholderNIN' => htmlspecialchars($this->input->post('policyholderNIN')),
+                'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
                 'policyholderPassword' => password_hash(htmlspecialchars($this->input->post('policyholderPassword')), PASSWORD_DEFAULT),
@@ -127,7 +127,7 @@ class Employee extends CI_Controller {
             $this->M_employee->insertEmployee($employeeData);
             $compolderData = array(
                 'companyId' => $companyId,
-                'policyholderNIN' => $this->input->post('policyholderNIN')
+                'policyholderNIK' => $this->input->post('policyholderNIK')
             );
     
             // Masukkan data ke tabel compolder
@@ -191,11 +191,11 @@ class Employee extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
-            $policyholderNIN = $this->input->post('policyholderNIN');
+            $policyholderNIK = $this->input->post('policyholderNIK');
             $password = $this->input->post('policyholderPassword');
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $employeeData = array(
-                'policyholderNIN' => $this->input->post('policyholderNIN'),
+                'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
                 'policyholderAddress' => $this->input->post('policyholderAddress'),
@@ -206,14 +206,14 @@ class Employee extends CI_Controller {
             );
             !empty($newPassword)? $employeeData['policyholderPassword'] = $newPassword : '';
 
-            $this->M_employee->updateEmployee($policyholderNIN, $employeeData);
+            $this->M_employee->updateEmployee($policyholderNIK, $employeeData);
             echo json_encode(array('status' => 'success'));
         }
     }
 
     public function deleteEmployee() {
-        $policyholderNIN = $this->input->post('policyholderNIN');
-        $this->M_employee->deleteEmployee($policyholderNIN);
+        $policyholderNIK = $this->input->post('policyholderNIK');
+        $this->M_employee->deleteEmployee($policyholderNIK);
 
         echo json_encode(array('status' => 'success'));
     }

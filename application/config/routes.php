@@ -76,7 +76,7 @@ $route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoct
 $route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/History/getHospitalHistoriesDatas';
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
-$route['company/Family/getFamiliesByPolicyholderNIN'] = 'company/Family/getFamiliesByPolicyholderNIN';
+$route['company/Family/getFamiliesByPolicyholderNIK'] = 'company/Family/getFamiliesByPolicyholderNIK';
 
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User';

@@ -48,10 +48,10 @@
                     <div class="row gy-4">
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIN">
+                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIK">
                             </div>
                         </div>
                         <div class="col-12">
@@ -166,10 +166,10 @@
                         <!-- National ID -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIN" id="editNIN">
+                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIK" id="editNIK">
                             </div>
                         </div>
 
@@ -291,7 +291,7 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="policyholderName"></span> Employee?
-                    <input type="number" id="policyholderNIN" name="policyholderNIN" hidden>
+                    <input type="number" id="policyholderNIK" name="policyholderNIK" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>

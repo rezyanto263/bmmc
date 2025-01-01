@@ -66,41 +66,6 @@ var DataTableSettings = {
     autoWidth: true,
 }
 
-let minDate, maxDate;
- 
-// Custom filtering function which will search data in column four between two values
-DataTable.ext.search.push(function (settings, data, dataIndex) {
-    let min = minDate.val();
-    let max = maxDate.val();
-    let date = new Date(data[4]);
- 
-    if (
-        (min === null && max === null) ||
-        (min === null && date <= max) ||
-        (min <= date && max === null) ||
-        (min <= date && date <= max)
-    ) {
-        return true;
-    }
-    return false;
-});
- 
-// Create date inputs
-minDate = new DateTime('#min', {
-    format: 'MMMM Do YYYY'
-});
-maxDate = new DateTime('#max', {
-    format: 'MMMM Do YYYY'
-});
- 
-// DataTables initialisation
-let table = new DataTable('#example');
- 
-// Refilter the table
-document.querySelectorAll('#min, #max').forEach((el) => {
-    el.addEventListener('change', () => table.draw());
-});
-
 function displayFormValidation(formSelector, errors) {
     $(formSelector + ' .error-message').remove();
     $(formSelector + ' .is-invalid').removeClass('is-invalid');
@@ -976,7 +941,17 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 return meta.row + 1;
             }
         },
-        {data: 'policyholderName'},
+        {
+            data: 'historyhealthFamilyStatus',
+            render: function (data, type, row) {
+                if (data === 'policyholder') {
+                    return row.policyholderName;
+                } else {
+                    return row.familyName;
+                }
+            }
+        },
+        {data: 'historyhealthFamilyStatus'},
         {data: 'companyName'},
         {data: 'doctorName'},
         {
@@ -1015,7 +990,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             `
         },
         { 
-            data: 'patientNIN',
+            data: 'patientNIK',
             visible: false, 
             searchable: true
         }
@@ -1071,7 +1046,7 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
                 return meta.row + 1;
             }
         },
-        {data: 'policyholderNIN'},
+        {data: 'policyholderNIK'},
         {data: 'policyholderName'},
         {data: 'policyholderEmail'},
         {data: 'policyholderAddress'},
@@ -1114,15 +1089,15 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
 function viewEmployeeInNewTab(button) {
     // Dapatkan data baris dari tombol yang diklik
     var rowData = employeesTable.row($(button).closest('tr')).data();
-    var policyholderNIN = rowData.policyholderNIN;
+    var policyholderNIK = rowData.policyholderNIK;
 
-    // Simpan policyholderNIN ke dalam session melalui AJAX
-    $.post(baseUrl + 'company/Family/savePolicyholderNIN', { policyholderNIN: policyholderNIN }, function(response) {
+    // Simpan policyholderNIK ke dalam session melalui AJAX
+    $.post(baseUrl + 'company/Family/savePolicyholderNIK', { policyholderNIK: policyholderNIK }, function(response) {
         if (response.success) {
             // Buka halaman baru untuk melihat data keluarga
             window.open(baseUrl + 'company/Family', '_blank');
         } else {
-            alert("Gagal menyimpan Policyholder NIN.");
+            alert("Gagal menyimpan Policyholder NIK.");
         }
     }, 'json');
 }
@@ -1162,7 +1137,7 @@ $('#addEmployeeForm').on('submit', function(e) {
 // Edit Data Employee
 $('#employeesTable').on('click', '.btn-edit', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
-    $('#editEmployeeForm [name="policyholderNIN"]').val(data.policyholderNIN);
+    $('#editEmployeeForm [name="policyholderNIK"]').val(data.policyholderNIK);
     $('#editEmployeeForm [name="policyholderName"]').val(data.policyholderName);
     $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
     $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
@@ -1201,7 +1176,7 @@ $('#editEmployeeForm').on('submit', function(e) {
 $('#employeesTable').on('click', '.btn-delete', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
     $('#deleteEmployeeForm #employeeName').html(data.policyholderName);
-    $('#deleteEmployeeForm #policyholderNIN').val(data.policyholderNIN);
+    $('#deleteEmployeeForm #policyholderNIK').val(data.policyholderNIK);
 });
 
 $('#deleteEmployeeForm').on('submit', function(e) {
@@ -1239,7 +1214,7 @@ var allfamiliesTable = $('#allfamiliesTable').DataTable($.extend(true, {}, DataT
                 return meta.row + 1;
             }
         },
-        {data: 'familyNIN'},
+        {data: 'familyNIK'},
         {data: 'familyName'},
         {data: 'familyEmail'},
         {data: 'familyAddress'},
@@ -1309,8 +1284,8 @@ $('#addFamilyForm2').on('submit', function(e) {
 // Edit Data Family
 $('#allfamiliesTable').on('click', '.btn-edit', function() {
     var data = allfamiliesTable.row($(this).parents('tr')).data();
-    $('#editFamilyForm2 [name="familyNIN"]').val(data.familyNIN);
-    $('#editFamilyForm2 [name="policyholderNIN"]').val(data.policyholderNIN);
+    $('#editFamilyForm2 [name="familyNIK"]').val(data.familyNIK);
+    $('#editFamilyForm2 [name="policyholderNIK"]').val(data.policyholderNIK);
     $('#editFamilyForm2 [name="familyName"]').val(data.familyName);
     $('#editFamilyForm2 [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm2 [name="familyAddress"]').val(data.familyAddress);
@@ -1347,7 +1322,7 @@ $('#editFamilyForm2').on('submit', function(e) {
 $('#allfamiliesTable').on('click', '.btn-delete', function() {
     var data = allfamiliesTable.row($(this).parents('tr')).data();
     $('#deleteFamilyForm2 #familyName').html(data.familyName);
-    $('#deleteFamilyForm2 #familyNIN').val(data.familyNIN);
+    $('#deleteFamilyForm2 #familyNIK').val(data.familyNIK);
 });
 
 $('#deleteFamilyForm2').on('submit', function(e) {
@@ -1369,7 +1344,7 @@ $('#deleteFamilyForm2').on('submit', function(e) {
 
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
-        url: baseUrl + 'company/Family/getFamiliesByPolicyholderNIN',
+        url: baseUrl + 'company/Family/getFamiliesByPolicyholderNIK',
         dataSrc: 'data', 
         error: function (xhr, error, thrown) {
             console.error("AJAX Error:", error);
@@ -1385,7 +1360,7 @@ var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSe
                 return meta.row + 1;
             }
         },
-        {data: 'familyNIN'},
+        {data: 'familyNIK'},
         {data: 'familyName'},
         {data: 'familyEmail'},
         {data: 'familyAddress'},
@@ -1455,8 +1430,8 @@ $('#addFamilyForm').on('submit', function(e) {
 // Edit Data Family
 $('#familiesTable').on('click', '.btn-edit', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
-    $('#editFamilyForm [name="familyNIN"]').val(data.familyNIN);
-    $('#editFamilyForm [name="policyholderNIN"]').val(data.policyholderNIN);
+    $('#editFamilyForm [name="familyNIK"]').val(data.familyNIK);
+    $('#editFamilyForm [name="policyholderNIK"]').val(data.policyholderNIK);
     $('#editFamilyForm [name="familyName"]').val(data.familyName);
     $('#editFamilyForm [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm [name="familyAddress"]').val(data.familyAddress);
@@ -1493,7 +1468,7 @@ $('#editFamilyForm').on('submit', function(e) {
 $('#familiesTable').on('click', '.btn-delete', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
     $('#deleteFamilyForm #familyName').html(data.familyName);
-    $('#deleteFamilyForm #familyNIN').val(data.familyNIN);
+    $('#deleteFamilyForm #familyNIK').val(data.familyNIK);
 });
 
 $('#deleteFamilyForm').on('submit', function(e) {
