@@ -14,14 +14,14 @@ class M_historyhealth extends CI_Model {
         foreach ($query->result() as $row) {
             $select = 'hh.*, ph.policyholderName, c.companyName, d.doctorName';
 
-            if ($row->historyhealthFamilyStatus != 'policyholder') { 
+            if ($row->historyhealthFamilyRole != 'policyholder') { 
                 $select .= ', f.familyName';
             }
 
             $this->db->select($select, FALSE);
             $this->db->from('historyhealth hh');
 
-            if ($row->historyhealthFamilyStatus == 'policyholder') {
+            if ($row->historyhealthFamilyRole == 'policyholder') {
                 $this->db->join('policyholder ph', 'ph.policyholderNIK = hh.patientNIK', 'left');
             } else {
                 $this->db->join('family f', 'f.familyNIK = hh.patientNIK', 'left');

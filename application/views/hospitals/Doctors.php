@@ -33,7 +33,7 @@
 
 
 <!-- Modal Add -->
-<div class="modal fade" id="addDoctorModal" aria-hidden="true">
+<div class="modal fade" id="addDoctorModal">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="addDoctorForm">
@@ -99,7 +99,7 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="addCompanyButton">ADD</button>
+                    <button type="submit" class="btn-primary" id="addDoctorButton">ADD</button>
                 </div>
             </form>
         </div>
@@ -108,7 +108,7 @@
 
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editDoctorModal" aria-hidden="true">
+<div class="modal fade" id="editDoctorModal">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="editDoctorForm">
@@ -175,7 +175,7 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="editButton">SAVE</button>
+                    <button type="submit" class="btn-primary" id="editDoctorButton">SAVE</button>
                 </div>
             </form>
         </div>

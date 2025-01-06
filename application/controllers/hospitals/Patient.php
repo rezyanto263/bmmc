@@ -11,6 +11,7 @@ class Patient extends CI_Controller {
             redirect('dashboard');
         }
 
+        $this->load->model('M_patient');
         $this->load->model('M_hospitals');
         $this->load->model('M_historyhealth');
         $this->load->model('M_hisealthtals');
@@ -19,8 +20,8 @@ class Patient extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Hospital | Patient',
-            'subtitle' => 'Patient',
+            'title' => 'BIM Hospital | Patient Profile',
+            'subtitle' => 'Patient Profile',
             'contentType' => 'dashboard'
         );
 
@@ -36,6 +37,29 @@ class Patient extends CI_Controller {
 
         $this->load->vars($datas);
         $this->load->view('master', $partials);
+    }
+
+    public function getPatientDataByNIK() {
+        $patientNIK = $this->input->post('patientNIK');
+        $patient = $this->M_patient->getPatientDataByNIK($patientNIK);
+        var_dump($patient);
+        exit;
+        if ($hospitalDatas) {
+            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+        
+            if ($historyhealthIds) {
+                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+                $datas = array(
+                    'data' => $historiesDatas,
+                );
+                echo json_encode($datas);
+            } else {
+                echo json_encode(['data' => []]);
+            }
+        } else {
+            echo json_encode(['data' => []]);
+        }
     }
 }
 ?>

@@ -74,6 +74,7 @@ $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsD
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
 $route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoctorsDatas';
 $route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/History/getHospitalHistoriesDatas';
+$route['hospitals/getPatientDataByNIK'] = 'hospitals/Patient/getPatientDataByNIK';
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
 $route['company/Family/getFamiliesByPolicyholderNIK'] = 'company/Family/getFamiliesByPolicyholderNIK';

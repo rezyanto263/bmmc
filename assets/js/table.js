@@ -839,13 +839,25 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
     ]
 }));
 
+$('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', function() {
+    reloadTableData(doctorsTable);
+});
+
+$('#addDoctorModal').on('hidden.bs.modal', function(e) {
+    console.log('addDoctorModal closed and reset'); // Debugging
+    $(e.target).find('form').trigger('reset');
+});
+
 // Add Data Doctor
 $('#addDoctorForm').on('submit', function(e) {
     e.preventDefault();
+    var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'hospitals/doctors/addDoctor',
         method: 'POST',
-        data: $(this).serialize(),
+        data: formData,
+        contentType: false,
+        processData: false,
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
@@ -855,11 +867,18 @@ $('#addDoctorForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
-                displayAlert(res.failedMsg);
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
                 displayFormValidation('#addDoctorForm', res.errors);
             }
         }
+    });
+});
+
+$('#addDoctorModal').on('shown.bs.modal', function () {
+    $(this).find('select#doctorStatus').select2({
+        placeholder: 'Choose Status',
+        dropdownParent: $('#addDoctorModal .modal-body')
     });
 });
 
@@ -942,7 +961,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             }
         },
         {
-            data: 'historyhealthFamilyStatus',
+            data: 'historyhealthFamilyRole',
             render: function (data, type, row) {
                 if (data === 'policyholder') {
                     return row.policyholderName;
@@ -951,7 +970,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 }
             }
         },
-        {data: 'historyhealthFamilyStatus'},
+        {data: 'historyhealthFamilyRole'},
         {data: 'companyName'},
         {data: 'doctorName'},
         {
@@ -1004,12 +1023,12 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
 $('#hHistoriesTable').on('click', '.btn-view', function() {
     var data = hHistoriesTable.row($(this).parents('tr')).data();
 
-    const formattedDate = moment(data.historyhealthDate).format('DD MMMM YYYY');
+    const formattedDate = moment(data.historyhealthDate).format('DD MMM YYYY, HH:mm');
     const formattedCreateAt = moment(data.createdAt).format('DD MMM YYYY, HH:mm');
     const formattedUpdateAt = moment(data.updatedAt).format('DD MMM YYYY, HH:mm');
     const formattedBill = 'Rp ' + parseFloat(data.historyhealthBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    if (data.historyhealthFamilyStatus == "policyholder") {
+    if (data.historyhealthFamilyRole == "policyholder") {
         $('#detailContent #patientName').text(data.policyholderName);
     } else {
         $('#detailContent #patientName').text(data.familyName);
@@ -1017,7 +1036,7 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
 
     $('#detailContent #detailDoctorName').text(data.doctorName);
     $('#detailContent #historyhealthComplaint').text(data.historyhealthComplaint);
-    $('#detailContent #historyhealthFamilyStatus').text(data.historyhealthFamilyStatus);
+    $('#detailContent #historyhealthFamilyRole').text(data.historyhealthFamilyRole);
     $('#detailContent #historyhealthDetails').text(data.historyhealthDetails);
     $('#detailContent #policyholderName').text(data.policyholderName);
     $('#detailContent #companyName').text(data.companyName);
@@ -1028,12 +1047,112 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     $('#detailContent #historyhealthBill').text(formattedBill);
 });
 
-$('#detailHistoryModal').on('shown.bs.modal', function () {});
-
 // Check Patient For Hospital
-// $('#chechPatientButton').on('click', '.btn-view', function() {
-// var data = ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
-// });
+// Inisialisasi DataTables untuk patientTable
+var patientTable = $('#patientTable').DataTable({
+    paging: false,
+    searching: false,
+    info: false,
+    ordering: false,
+    columns: [
+        { data: null, render: function(data, type, row) { return 'Name:'; } },
+        { data: 'patientName' },
+        { data: null, render: function(data, type, row) { return 'NIK:'; } },
+        { data: 'patientNIK' },
+        { data: null, render: function(data, type, row) { return 'Company:'; } },
+        { data: 'patientCompany' },
+        { data: null, render: function(data, type, row) { return 'Birth Date:'; } },
+        { data: 'patientBirthDate', render: function(data) { return moment(data).format('DD MMMM YYYY'); } },
+        { data: null, render: function(data, type, row) { return 'Gender:'; } },
+        { data: 'patientGender' },
+        { data: null, render: function(data, type, row) { return 'Address:'; } },
+        { data: 'patientAddress' },
+        { data: null, render: function(data, type, row) { return 'Phone:'; } },
+        { data: 'patientPhone' },
+        { data: null, render: function(data, type, row) { return 'Status:'; } },
+        { data: 'patientStatus' }
+    ]
+});
+
+// Inisialisasi DataTables untuk hPatientTable
+var hPatientTable = $('#hPatientTable').DataTable({
+    paging: true,
+    searching: true,
+    info: true,
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        { data: 'patientName', title: 'Patient Name' },
+        { data: 'doctorName', title: 'Doctor Name' },
+        {
+            data: 'bill',
+            title: 'Bill',
+            render: function (data) {
+                return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format mata uang
+            }
+        },
+        {
+            data: 'date',
+            title: 'Date',
+            render: function (data) {
+                return moment(data).format('DD MMMM YYYY');
+            }
+        },
+        { data: 'historyStatus', title: 'History Status' },
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#detailHistoryModal"
+                    title="View History">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            `
+        }
+    ]
+});
+
+// Event listener untuk form submit
+$('#testCheckPatientForm').on('submit', function (e) {
+    e.preventDefault(); // Mencegah form dari submit default
+    var patientNIK = $('#patientNIK').val();
+
+    // AJAX request untuk mendapatkan data pasien
+    $.ajax({
+        url: baseUrl + 'hospitals/getPatientDataByNIK', // Endpoint untuk mendapatkan data pasien
+        method: 'POST',
+        data: { patientNIK },
+        success: function (response) {
+            console.log('Response dari Server:', response);
+            // Mengisi data ke patientTable
+            patientTable.clear().rows.add([response.patient]).draw();
+
+            // Mengisi data ke hPatientTable
+            hPatientTable.clear().rows.add(response.histories).draw();
+
+            // Menutup modal setelah data dimuat
+            $('#testCheckPatientModal').modal('hide');
+
+            // Menjalankan kondisi else untuk menampilkan tabel
+            $('#btn-scan').hide(); // Sembunyikan tombol scan
+            $('content').show(); // Tampilkan konten
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching patient data:', error);
+            alert('Failed to fetch patient data. Please try again.');
+        }
+    });
+});
 
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {

@@ -57,7 +57,7 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Patient'?'active':''; ?>" href="<?= base_url('hospitals/Patient') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Patient Profile">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Patient Profile'?'active':''; ?>" href="<?= base_url('hospitals/Patient') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Patient Profile">
                         <i class="las la-notes-medical fs-4"></i>
                         <span>Patient Profile</span>
                     </a>
