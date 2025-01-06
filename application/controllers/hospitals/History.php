@@ -28,11 +28,11 @@ class History extends CI_Controller {
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/dashboard/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/dashboard/contentHeader',
+            'sidebar' => 'partials/hospital/sidebar',
+            'floatingMenu' => 'partials/hospital/floatingMenu',
+            'contentHeader' => 'partials/hospital/contentHeader',
             'contentBody' => 'hospitals/History',
-            'footer' => 'partials/dashboard/footer',
+            'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
 

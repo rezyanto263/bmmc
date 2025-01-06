@@ -27,11 +27,11 @@ class Patient extends CI_Controller {
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/dashboard/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/dashboard/contentHeader',
+            'sidebar' => 'partials/hospital/sidebar',
+            'floatingMenu' => 'partials/hospital/floatingMenu',
+            'contentHeader' => 'partials/hospital/contentHeader',
             'contentBody' => 'hospitals/Patient',
-            'footer' => 'partials/dashboard/footer',
+            'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
 
@@ -61,5 +61,62 @@ class Patient extends CI_Controller {
             echo json_encode(['data' => []]);
         }
     }
+
+    public function scanQR() {
+        $qrInput = $this->input->post('qrData');
+        if (!$qrInput) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'qr data missing'
+            ));
+            return;
+        }
+    
+        $decodedData = base64_decode($qrInput, true);
+        if ($decodedData === false) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'invalid qr'
+            ));
+            return;
+        }
+
+        
+        $qrData = explode('-', $decodedData);
+        if (!(count($qrData) == 2)) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incorrect format qr data'
+            ));
+            return;
+        }
+        
+        $NIK = trim($qrData[0]) ?: NULL;
+        $role = trim($qrData[1]) ?: NULL;
+        if (!$NIK || !$role) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incomplete qr data'
+            ));
+            return;
+        }
+    
+        $patientData = $role == 'policyholder' 
+            ? $this->M_companies->getPolicyholderByNIK($NIK) 
+            : $this->M_companies->getFamilyByNIK($NIK);
+    
+        if ($patientData) {
+            echo json_encode(array(
+                'status' => 'success',
+                'data' => $patientData,
+            ));
+        } else {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'scan not found'
+            ));
+        }
+    }
+
 }
 ?>

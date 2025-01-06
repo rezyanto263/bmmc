@@ -1047,7 +1047,76 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     $('#detailContent #historyhealthBill').text(formattedBill);
 });
 
-// Check Patient For Hospital
+// Scan QR Patient For Hospital
+var patientTable;
+function getPatientHistoryHealth(patientNIK) {
+    if ($.fn.DataTable.isDataTable('#hPatientTable')) {
+        $('#hPatientTable').DataTable().ajax.url(baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        return;
+    }
+    patientTable = $('#patientTable').DataTable($.extend(true, {}, DataTableSettings, {
+        ajax: baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        columns: [
+            {
+                data: null,
+                className: 'text-start',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {data: 'hospitalName'},
+            {data: 'doctorName'},
+            {
+                data: 'diseaseNames',
+                render: function(data, type, row) {
+                    return data.split('|').join(', ');
+                }
+            },
+            {
+                data: 'historyhealthDate',
+                render: function(data, type, row) {
+                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
+                }
+            },
+            {
+                data: 'historyhealthBill',
+                render: function(data, type, row) {
+                    return formatToRupiah(data);
+                }
+            },
+            {
+                data: 'historyhealthStatus',
+                render: function(data, type, row) {
+                    var statusColor;
+                    if (data === 'not paid') {
+                        statusColor = 'bg-danger';
+                    } else if (data === 'paid') {
+                        statusColor = 'bg-success';
+                    } else if (data === 'free') {
+                        statusColor = 'bg-info';
+                    }
+                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                }
+            },
+            {
+                data: null,
+                className: 'text-end user-select-none no-export',
+                orderable: false,
+                defaultContent: `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `
+            }
+        ],
+        columnDefs: [
+            {width: '80px', target: 7}
+        ]
+    }));
+}
+
 // Inisialisasi DataTables untuk patientTable
 var patientTable = $('#patientTable').DataTable({
     paging: false,
