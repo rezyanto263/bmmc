@@ -1,5 +1,5 @@
 <!-- Sidebar Start -->
-<aside class="minimize shadow-sm">
+<aside class="<?= isset($_COOKIE['sidebarSize']) ? $_COOKIE['sidebarSize'] : 'maximize'; ?> shadow-sm">
     <div class="container-fluid p-0 d-flex flex-column justify-content-between">
         <div class="sidebar-header p-3 gap-3">
             <img src="<?= base_url('assets/images/logo.png') ?>" alt="" draggable="false">
@@ -23,15 +23,9 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Scan Details'?'active':''; ?>" href="<?= base_url('dashboard/scan') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Scan Details">
-                        <i class="las la-id-card fs-4"></i>
-                        <span>Scan Details</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Bills'?'active':''; ?>" href="<?= base_url('dashboard/bills') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Bills">
-                        <i class="las la-file-invoice-dollar fs-4"></i>
-                        <span>Bills</span>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Bills'?'active':''; ?>" href="<?= base_url('dashboard/billings') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Billings">
+                        <i class="las la-credit-card fs-4"></i>
+                        <span>Billings</span>
                     </a>
                 </li>
                 <li>
@@ -53,7 +47,7 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insuranced D'?'active':''; ?>" href="<?= base_url('dashboard/news') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="News">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insuranced Disease'?'active':''; ?>" href="<?= base_url('dashboard/insuredDisease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insured Disease">
                         <i class="las la-medkit fs-4"></i>
                         <span>Insured Disease</span>
                     </a>

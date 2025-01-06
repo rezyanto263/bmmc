@@ -153,6 +153,18 @@ option:hover:focus {
     border: 1px solid var(--grey);
 }
 
+.leaflet-routing-container {
+    padding:0 !important;
+}
+
+.leaflet-routing-container-hide .leaflet-routing-collapse-btn {
+    left: 1px !important;
+}
+
+.modal-content #map .leaflet-routing-alt {
+    color: black;
+}
+
 /* Select2 Styles */
 .select2-container--default .select2-selection--single {
     height: calc(1.5em + 0.75rem + 2px);
@@ -530,4 +542,8 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
     backdrop-filter: blur(10px) saturate(120%) brightness(95%);
     color: var(--dark);
     box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.modal#viewHistoryHealthDetailsModal {
+    z-index: 1056 !important;
 }

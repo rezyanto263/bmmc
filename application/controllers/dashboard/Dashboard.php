@@ -17,7 +17,7 @@ class Dashboard extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard',
+            'title' => 'BMMC Dashboard',
             'subtitle' => 'Dashboard',
             'contentType' => 'dashboard',
         );

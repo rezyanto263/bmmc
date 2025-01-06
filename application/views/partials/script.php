@@ -30,6 +30,11 @@
 
     <!--Map-->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- Moment -->
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
 
 <?php endif; ?>
 

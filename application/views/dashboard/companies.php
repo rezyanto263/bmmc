@@ -161,7 +161,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
-                        <div id="map" class="w-100 h-100" style="min-height:300px"></div>
+                        <div id="map" class="w-100 h-100" style="min-height:450px"></div>
                     </div>
                 </div>
             </div>

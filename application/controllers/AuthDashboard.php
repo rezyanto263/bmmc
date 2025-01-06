@@ -43,7 +43,7 @@ class AuthDashboard extends CI_Controller {
         }
 
         $datas = array(
-            'title' => 'BIM Dashboard | Login',
+            'title' => 'BMMC Dashboard | Login',
             'contentType' => 'authentication'
         );
 
@@ -134,7 +134,7 @@ class AuthDashboard extends CI_Controller {
 
     public function forgotPasswordPage() {
         $datas = array(
-            'title' => 'BIM Dashboard | Forgot Password',
+            'title' => 'BMMC Dashboard | Forgot Password',
             'contentType' => 'authentication'
         );
 
@@ -246,7 +246,7 @@ class AuthDashboard extends CI_Controller {
             if (strtotime($tokenData[1]) >= strtotime(date('d-m-Y H:i:s'))) {
                 $this->session->set_userdata('resetPassToken', $adminToken);
                 $datas = array(
-                    'title' => 'BIM Dashboard | Reset Password',
+                    'title' => 'BMMC Dashboard | Reset Password',
                     'adminEmail' => $adminDatas['adminEmail'],
                     'contentType' => 'authentication',
                 );

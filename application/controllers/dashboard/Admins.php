@@ -20,7 +20,7 @@ class Admins extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Admins',
+            'title' => 'BMMC Dashboard | Admins',
             'subtitle' => 'Admins',
             'contentType' => 'dashboard',
         );

@@ -6,9 +6,11 @@ function userColorPreference() {
         if (colorPreference === 'dark') {
             $('body:not(.dark)').addClass('dark');
             $('#btn-mode i:not(.las.la-sun)').toggleClass('las la-sun las la-moon');
+            $('.modal .btn-close').addClass('btn-close-white');
         } else if (colorPreference === 'light') {
             $('body').removeClass('dark');
             $('#btn-mode i:not(.las.la-moon)').toggleClass('las la-sun las la-moon');
+            $('.modal .btn-close').removeClass('btn-close-white');
         }
     } else {
         var userColorSchema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -28,8 +30,25 @@ $('#btn-mode').on('click', function() {
 
 
 // Sidebar Maximize Minimize
+function sidebarSize() {
+    var sidebarSize = $.cookie('sidebarSize');
+    if (sidebarSize) {
+        if (sidebarSize == 'maximize') {
+            $('aside').hasClass('minimize') && $('aside').toggleClass('minimize maximize');
+        } else if (sidebarSize == 'minimize') {
+            $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
+        }
+    } else {
+        $.cookie('sidebarSize', 'maximize', {path: '/'});
+    }
+}
+sidebarSize();
+
+
 $('#btn-menu').on('click', function() {
     $('aside').toggleClass('minimize maximize');
+    var sidebarSize = $.cookie('sidebarSize') == 'minimize'? 'maximize':'minimize';
+    $.cookie('sidebarSize', sidebarSize, {path: '/'});
     floatingMenuHandler()
 });
 
@@ -61,8 +80,9 @@ function floatingMenuHandler() {
 // QR Scanner
 var scanner;
 var cameraStream;
-$
+
 $('#scannerModal').on('show.bs.modal', function() {
+    $('#scannerModal .btn-close').hide();
     $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
     try {
         cameraStream = navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
@@ -70,23 +90,60 @@ $('#scannerModal').on('show.bs.modal', function() {
         });
         scanner = new Instascan.Scanner({ video: $('#qrScanner').get(0) });
         scanner.addListener('scan', function (content) {
-            $('#qrData').val(content);
+            $('[name="qrData"]').val(content);
             $('#qrForm').submit();
-            console.log(content);
         });
         Instascan.Camera.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
                 scanner.start(cameras[0]);
+                $('#scannerModal .btn-close').show();
             } else {
                 alert('No cameras found.');
             }
         }).catch(function (e) {
-            // console.error(e);
+            $('#scannerModal .btn-close').show();
             alert(e);
         });
     } catch (error) {
         console.error('Instascan initialization error:', error);
     }
+});
+
+$('#qrForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'dashboard/getPatientByNIK',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function (response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
+                // resultModal.show();
+                $('#scanResultModal').modal('show');
+                $('#scannerModal').modal('hide');
+                const data = res.data;
+                $('#scanResultModal').on('shown.bs.modal', function() {
+                    var photo = data.policyholderPhoto || data.familyPhoto;
+                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
+                    $('#scanResultModal [name="nik"]').val(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
+                    $('#scanResultModal [name="name"]').val(data.policyholderName ? data.policyholderName : data.familyName);
+                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Policyholder');
+                    $('#scanResultModal [name="birth"]').val(data.policyholderBirth ? data.policyholderBirth : data.familyBirth);
+                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.policyholderGender ? data.policyholderGender : data.familyGender));
+                    $('#scanResultModal [name="companyName"]').val(data.companyName);
+                    $('#scanResultModal [name="email"]').val(data.policyholderEmail ? data.policyholderEmail : data.familyEmail);
+                    $('#scanResultModal [name="phone"]').val(data.policyholderPhone ? data.policyholderPhone : data.familyPhone);
+                    $('#scanResultModal [name="address"]').val(data.policyholderAddress ? data.policyholderAddress : data.familyAddress);
+                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.policyholderStatus ? data.policyholderStatus : data.familyStatus));
+                    displayAlert('scan qr success');
+                    getPatientHistoryHealth(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
+                });
+            } else if (res.status === 'failed') {
+                displayAlert(res.failedMsg);
+            }
+        }
+    });
 });
 
 $('#scannerModal').on('hidden.bs.modal', function () {
@@ -96,7 +153,11 @@ $('#scannerModal').on('hidden.bs.modal', function () {
         });
         cameraStream = null;
     }
-    scanner ? scanner.stop() : null;
+
+    if (scanner) {
+        scanner.stop()
+    }
+
     scanner = null;
 });	
 
@@ -134,11 +195,19 @@ function isLetterSpaceKey(evt) {
 
 // Capitalize Words
 function capitalizeWords(string) {
+    string = string.toLowerCase();
     return string.replace(/\b[a-z]/g, function(char) {
         return char.toUpperCase();
     });
 }
 
+// Rupiah Format
+function formatToRupiah(amount) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+    }).format(amount);
+}
 
 // Bootstrap Tooltips
 $('[data-bs-toggle="tooltip"]').each(function() {

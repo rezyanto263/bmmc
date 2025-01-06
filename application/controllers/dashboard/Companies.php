@@ -19,7 +19,7 @@ class Companies extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Companies',
+            'title' => 'BMMC Dashboard | Companies',
             'subtitle' => 'Companies',
             'contentType' => 'dashboard'
         );
@@ -135,7 +135,7 @@ class Companies extends CI_Controller {
         $this->load->library('upload', $config);
 
         if (!$this->upload->do_upload($fileLogo)) {
-            return array('status' => false, 'error' => $this->upload->display_errors());
+            return array('status' => false, 'error' => strip_tags($this->upload->display_errors()));
         } else {
             return array('status' => true, 'data' => $this->upload->data());
         }
@@ -143,7 +143,7 @@ class Companies extends CI_Controller {
 
     private function _deleteLogo($companyId) {
         $companyDatas = $this->M_companies->checkCompany('companyId', $companyId);
-        unlink(FCPATH . 'uploads/logos/' . $companyDatas['companyLogo']);
+        $companyDatas['companyLogo'] && unlink(FCPATH . 'uploads/logos/' . $companyDatas['companyLogo']);
     }
 
     public function editCompany() {
@@ -242,11 +242,76 @@ class Companies extends CI_Controller {
 
     public function deleteCompany() {
         $companyId = $this->input->post('companyId');
-        $this->_deleteLogo($companyId);
-        $this->M_companies->deleteCompany($companyId);
+        $isCompanyHasPolicyholder = $this->M_companies->countPolicyholderByCompanyId($companyId);
+        if (!$isCompanyHasPolicyholder) {
+            $this->_deleteLogo($companyId);
+            $this->M_companies->deleteCompany($companyId);
 
-        echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success'));
+        } else {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'can not delete linked data'
+            ));
+        }
     }
+
+    public function scanQR() {
+        $qrInput = $this->input->post('qrData');
+        if (!$qrInput) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'qr data missing'
+            ));
+            return;
+        }
+    
+        $decodedData = base64_decode($qrInput, true);
+        if ($decodedData === false) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'invalid qr'
+            ));
+            return;
+        }
+
+        
+        $qrData = explode('-', $decodedData);
+        if (!(count($qrData) == 2)) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incorrect format qr data'
+            ));
+            return;
+        }
+        
+        $NIK = trim($qrData[0]) ?: NULL;
+        $role = trim($qrData[1]) ?: NULL;
+        if (!$NIK || !$role) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incomplete qr data'
+            ));
+            return;
+        }
+    
+        $patientData = $role == 'policyholder' 
+            ? $this->M_companies->getPolicyholderByNIK($NIK) 
+            : $this->M_companies->getFamilyByNIK($NIK);
+    
+        if ($patientData) {
+            echo json_encode(array(
+                'status' => 'success',
+                'data' => $patientData,
+            ));
+        } else {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'scan not found'
+            ));
+        }
+    }
+    
 
 }
 

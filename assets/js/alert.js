@@ -87,6 +87,11 @@ function displayAlert(flashdata, message = null) {
             title: 'The data has been deleted successfuly!',
             icon: 'success'
         });
+    } else if (flashdata == 'can not delete linked data') {
+        Toast.fire({
+            title: 'Sorry, you cannot delete this data because it is still linked to other data',
+            icon: 'error'
+        });
     } else if (flashdata == 'email used') {
         Toast.fire({
             title: 'The email already used!',
@@ -106,6 +111,36 @@ function displayAlert(flashdata, message = null) {
     } else if (flashdata == 'coordinate used') {
         Toast.fire({
             title: "The coordinate already used!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'scan qr success') {
+        Toast.fire({
+            title: "QR Scanned Successfully!",
+            icon: 'success'
+        });
+    } else if (flashdata == 'scan not found') {
+        Toast.fire({
+            title: "Data not found!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'invalid qr') {
+        Toast.fire({
+            title: "Invalid QR Code Data",
+            icon: 'error'
+        });
+    } else if (flashdata == 'qr data missing') {
+        Toast.fire({
+            title: "QR data is missing",
+            icon: 'error'
+        });
+    } else if (flashdata == 'incorrect format qr data') {
+        Toast.fire({
+            title: "QR data format is incorrect",
+            icon: 'error'
+        });
+    } else if (flashdata == 'incomplete qr data') {
+        Toast.fire({
+            title: "QR data is incomplete",
             icon: 'error'
         });
     }

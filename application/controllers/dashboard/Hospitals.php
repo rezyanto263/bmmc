@@ -17,7 +17,7 @@ class Hospitals extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Hospitals',
+            'title' => 'BMMC Dashboard | Hospitals',
             'subtitle' => 'Hospitals',
             'contentType' => 'dashboard'
         );
@@ -40,6 +40,15 @@ class Hospitals extends CI_Controller {
         $hospitalsDatas = $this->M_hospitals->getAllHospitalsDatas();
         $datas = array(
             'data' => $hospitalsDatas
+        );
+
+        echo json_encode($datas);
+    }
+
+    public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
+        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+        $datas = array(
+            'data' => $historyhealthDatas
         );
 
         echo json_encode($datas);
@@ -141,7 +150,7 @@ class Hospitals extends CI_Controller {
 
     private function _deleteLogo($hospitalId) {
         $hospitalDatas = $this->M_hospitals->checkHospital('hospitalId', $hospitalId);
-        unlink(FCPATH . 'uploads/logos/' . $hospitalDatas['hospitalLogo']);
+        $hospitalDatas['hospitalLogo'] && unlink(FCPATH . 'uploads/logos/' . $hospitalDatas['hospitalLogo']);
     }
 
     public function editHospital() {
@@ -241,10 +250,18 @@ class Hospitals extends CI_Controller {
 
     public function deleteHospital() {
         $hospitalId = $this->input->post('hospitalId');
-        $this->_deleteLogo($hospitalId);
-        $this->M_hospitals->deleteHospital($hospitalId);
-
-        echo json_encode(array('status' => 'success'));
+        $isHospitalHasDoctor = $this->M_hospitals->countHospitalDoctorByHospitalId($hospitalId);
+        if (!$isHospitalHasDoctor) {
+            $this->_deleteLogo($hospitalId);
+            $this->M_hospitals->deleteHospital($hospitalId);
+    
+            echo json_encode(array('status' => 'success'));
+        } else {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'can not delete linked data'
+            ));
+        }
     }
 
 }

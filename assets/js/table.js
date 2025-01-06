@@ -83,7 +83,7 @@ function reloadTableData(table) {
 
 $('.modal').on('hidden.bs.modal', function(e) {
     $('#imgPreview').attr('src', $('#imgPreview').data('originalsrc'));
-    $(this).find('select').select2('destroy');
+    $(this).find('select.form-control').select2('destroy');
     $(e.target).find('form').trigger('reset');
     $('.error-message').remove();
     $('.is-invalid').removeClass('is-invalid');
@@ -96,6 +96,11 @@ $('#addAdminButton, #editAdminButton, #deleteAdminButton').on('click', function(
 
 // Initialize OSM
 var map;
+var marker;
+var currentMarker;
+var destinationMarker;
+var routingControl;
+var address;
 
 function initializeMap(latitude, longitude, imageFile) {
     if (!map) {
@@ -112,7 +117,10 @@ function initializeMap(latitude, longitude, imageFile) {
         marker = L.marker([latitude, longitude]).addTo(map);
 
         marker.setLatLng([latitude, longitude]).bindPopup(
-            `<img src="${imageFile}" width="150px" height="150px">`
+            `
+            <img src="${imageFile}" width="150px" height="150px"><br>
+            <button class="btn-primary w-100 mt-3" type="button" onclick="routeFromCurrentLocation(${latitude}, ${longitude}, '${imageFile}')"><i class="las la-directions"></i> GET DIRECTION</button>
+            `
         ).openPopup();
     } else {
         // Update koordinat jika peta sudah diinisialisasi
@@ -125,16 +133,82 @@ function updateMap(latitude, longitude, imageFile) {
         // Pindahkan peta ke lokasi baru
         map.setView([latitude, longitude], 17);
 
+        if (routingControl) {
+            map.removeControl(routingControl);
+        }
+
+        currentMarker ? currentMarker.remove() : null;
+        destinationMarker ? destinationMarker.remove() : null;
+
         // Pindahkan marker ke lokasi baru
         marker.setLatLng([latitude, longitude]).bindPopup(
-            `<img src="${imageFile}" width="150px" height="150px">`
+            `
+            <img src="${imageFile}" width="150px" height="150px"><br>
+            <button class="btn-primary w-100 mt-3" type="button" onclick="routeFromCurrentLocation(${latitude}, ${longitude}, '${imageFile}')"><i class="las la-directions"></i> GET DIRECTION</button>
+            `
         ).openPopup();
     } else {
         console.error('Peta atau marker belum diinisialisasi.');
     }
 }
 
+function routeFromCurrentLocation(destLatitude, destLongitude, imageFile) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var currentLocation = L.latLng(position.coords.latitude, position.coords.longitude);
+                var destination = L.latLng(destLatitude, destLongitude);
 
+                const yourLocationIcon = L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/12207/12207498.png',
+                    iconSize: [50, 50],
+                    iconAnchor: [25, 50],
+                    popupAnchor: [0, -50]
+                });
+
+                currentMarker = L.marker(currentLocation, { icon: yourLocationIcon }).addTo(map).bindPopup('Your Location').openPopup();
+
+                destinationMarker = L.marker(destination).addTo(map).bindPopup(
+                    `
+                    <img src="${imageFile}" width="150px" height="150px"><br>
+                    <button class="btn-danger w-100 mt-3" type="button" onclick="initializeMap(${destLatitude}, ${destLongitude}, '${imageFile}')"><i class="las la-close"></i> EXIT DIRECTION</button>
+                    `
+                ).openPopup();
+
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        currentLocation,
+                        destination
+                    ],
+                    draggableWaypoints: false,
+                    routeWhileDragging: false,
+                    showAlternatives: false,
+                    addWaypoints: false,
+                    deleteWaypoints: false,
+                    createMarker: function() {
+                        return null;
+                    }
+                }).addTo(map);
+
+                map.fitBounds([
+                    [currentLocation.lat, currentLocation.lng],
+                    [destination.lat, destination.lng]
+                ]);
+            },
+            function (error) {
+                console.error("Error mendapatkan lokasi: ", error);
+                alert("Gagal mendapatkan lokasi. Pastikan GPS diaktifkan.");
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        alert("Geolocation tidak didukung di browser Anda.");
+    }
+}
 
 // Admins CRUD
 var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettings, {
@@ -441,6 +515,8 @@ $('#hospitalsTable').on('click', '.btn-view', function() {
         var latitude = parseFloat(coordsArray[0].trim());
         var longitude = parseFloat(coordsArray[1].trim());
 
+        address = data.hospitalAddress;
+
         initializeMap(latitude, longitude, imageFilePath);
     });
 });
@@ -537,6 +613,9 @@ $('#deleteHospitalForm').on('submit', function(e) {
                 $('#deleteHospitalModal').modal('hide');
                 reloadTableData(hospitalsTable)
                 displayAlert('delete success');
+            } else if (res.status === 'failed') {
+                $('#deleteHospitalModal').modal('hide');
+                displayAlert(res.failedMsg);
             }
         },
     });
@@ -679,6 +758,8 @@ $('#companiesTable').on('click', '.btn-view', function() {
         var latitude = parseFloat(coordsArray[0].trim());
         var longitude = parseFloat(coordsArray[1].trim());
 
+        address = data.companyAddress;
+
         initializeMap(latitude, longitude, imageFilePath);
     });
 });
@@ -766,7 +847,241 @@ $('#deleteCompanyForm').on('submit', function(e) {
                 $('#deleteCompanyModal').modal('hide');
                 reloadTableData(companiesTable);
                 displayAlert('delete success');
+            } else if (res.status === 'failed') {
+                $('#deleteCompanyModal').modal('hide'); 
+                displayAlert(res.failedMsg);
             }
         }
     });
+});
+
+// Billings CRUD
+var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'dashboard/getAllCompanyBillingDatas',
+    columns: [
+        {
+            data: null,
+            className: 'text-start align-middle',
+            responsivePriority: 1,
+            render: function(data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: 'companyLogo',
+            className: 'align-middle',
+            responsivePriority: 100,
+            orderable: false,
+            render: function(data, type, row) {
+                return `<img src="${baseUrl}uploads/logos/${data}" width="45px" height="45px">`;
+            }
+        },
+        {
+            data: 'companyName',
+            className: 'align-middle',
+        },
+        {
+            data: 'billingStartedAt',
+            className: 'align-middle',
+            responsivePriority: 1,
+            render: function(data, type, row) {
+                return moment(data).format('ddd, D MMMM YYYY');
+            }
+        },
+        {
+            data: 'billingEndedAt',
+            className: 'align-middle',
+            responsivePriority: 1,
+            render: function(data, type, row) {
+                return moment(data).format('ddd, D MMMM YYYY');
+            }
+        },
+
+        {
+            data: null,
+            className: 'align-middle',
+            responsivePriority: 1,
+            render: function(data, type, row) {
+                var current = row.billingAmount - row.billingUsed;
+                var percentage = current != 0 ? parseInt((current / row.billingAmount) * 100) : 0;
+                var barColor;
+                if (percentage >= 50) {
+                    barColor = 'bg-success';
+                } else if (50 > percentage && percentage >= 20) {
+                    barColor = 'bg-warning';
+                } else {
+                    barColor = 'bg-danger';
+                }
+                return `
+                <div class="progress bg-secondary border" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar overflow-visible ${barColor} progress-bar-striped progress-bar-animated fw-bold" style="width: ${percentage}%">${formatToRupiah(current)} / ${formatToRupiah(row.billingAmount)}</div>
+                </div>
+                `
+            }
+        },
+        {
+            data: 'billingStatus',
+            render: function(data, type, row) {
+                var statusColor;
+                if (data === 'active') {
+                    statusColor = 'bg-success';
+                } else if (data === 'finished') {
+                    statusColor = 'bg-secondary';
+                } else if (data === 'stopped') {
+                    statusColor = 'bg-danger';
+                }
+                return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+            }
+        },
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            responsivePriority: 2,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editCompanyModal">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteCompanyModal">
+                        <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        },
+    ],
+    columnDefs: [
+        {width: '45px', target: 1},
+        {
+            targets: 5,
+            orderData: function(data, type, row) {
+                return row.billingUsed;
+            }
+        },
+        {width: '160px', target: 7},
+    ]
+}));
+
+// Add Billing
+$('#addBillingModal').on('shown.bs.modal', function () {
+    $(this).find('select#billingStatus').select2({
+        placeholder: 'Choose Status',
+        dropdownParent: $('#addBillingModal .modal-body')
+    });
+
+    $(this).find('select#companyId').select2({
+        ajax: {
+            url: baseUrl + 'dashboard/getAllCompaniesDatas',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response) {
+                return {
+                    results: $.map(response.data, function (data) {
+                        return {
+                            id: data.companyId,
+                            text: data.companyName + ' | ' + capitalizeWords(data.companyStatus)
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Company',
+        allowClear: true,
+        dropdownParent: $('#addBillingModal .modal-body')
+    });
+})
+
+
+// Scan QR Details Table
+var patientTable;
+function getPatientHistoryHealth(patientNIK) {
+    if ($.fn.DataTable.isDataTable('#patientTable')) {
+        $('#patientTable').DataTable().ajax.url(baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        return;
+    }
+    patientTable = $('#patientTable').DataTable($.extend(true, {}, DataTableSettings, {
+        ajax: baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        columns: [
+            {
+                data: null,
+                className: 'text-start',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {data: 'hospitalName'},
+            {data: 'doctorName'},
+            {
+                data: 'diseaseNames',
+                render: function(data, type, row) {
+                    return data.split('|').join(', ');
+                }
+            },
+            {
+                data: 'historyhealthDate',
+                render: function(data, type, row) {
+                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
+                }
+            },
+            {
+                data: 'historyhealthBill',
+                render: function(data, type, row) {
+                    return formatToRupiah(data);
+                }
+            },
+            {
+                data: 'historyhealthStatus',
+                render: function(data, type, row) {
+                    var statusColor;
+                    if (data === 'not paid') {
+                        statusColor = 'bg-danger';
+                    } else if (data === 'paid') {
+                        statusColor = 'bg-success';
+                    } else if (data === 'free') {
+                        statusColor = 'bg-info';
+                    }
+                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                }
+            },
+            {
+                data: null,
+                className: 'text-end user-select-none no-export',
+                orderable: false,
+                defaultContent: `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `
+            }
+        ],
+        columnDefs: [
+            {width: '80px', target: 7}
+        ]
+    }));
+}
+
+var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
+$('#patientTable').on('click', '.btn-view', function() {
+    viewHistoryHealthDetailsModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    if (backdrops.length >= 2) {
+        backdrops[1].style.zIndex = "1055";
+    }
+    var data = patientTable.row($(this).parents('tr')).data();
+
+    console.log(data);
+
+    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
 });
