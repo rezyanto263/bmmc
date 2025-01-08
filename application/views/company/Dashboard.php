@@ -1,37 +1,35 @@
 <div class="content-body py-3">
     <div class="container mt-5">
-        <!-- Hotel Card -->
-        <div class="card">
-            <div class="card-header text-center">
-                <!-- Logo Hotel -->
-                <img src="<?= base_url('uploads/logos/' . $company['companyLogo']); ?>" alt="Hotel Logo" class="img-fluid mb-3" style="max-height: 150px;">
-                <h4><?= $company['companyName'] ?? 'Hotel Name' ?></h4>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Alamat:</th>
-                            <td><?= $company['companyAddress'] ?? 'Jalan Contoh No.123, Kota ABC' ?></td>
-                        </tr>
-                        <tr>
-                            <th>Telepon:</th>
-                            <td><?= $company['companyPhone'] ?? '+62 123 4567 890' ?></td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td><?= $company['adminEmail'] ?? 'info@hotel.com' ?></td>
-                        </tr>
-                        <tr>
-                            <th>Coordinate:</th>
-                            <td><?= $company['companyCoordinate'] ?? 'WiFi, Kolam Renang, Restoran, Gym' ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div id="map"></div>
-                <button class="btn btn-primary btn-edit" data-bs-toggle="modal" data-bs-target="#editHotelModal">Edit</button>
-            </div>
+        <!-- Hotel Card -->    
+        <div class="text-center">
+            <!-- Logo Hotel -->
+            <img src="<?= base_url('uploads/logos/' . $company['companyLogo']); ?>" alt="Hotel Logo" class="img-fluid mb-3 w-25">
+            <h4><?= $company['companyName'] ?? 'Hotel Name' ?></h4>
         </div>
+        <div class="d-flex">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Alamat:</th>
+                        <td><?= $company['companyAddress'] ?? 'Jalan Contoh No.123, Kota ABC' ?></td>
+                    </tr>
+                    <tr>
+                        <th>Telepon:</th>
+                        <td><?= $company['companyPhone'] ?? '+62 123 4567 890' ?></td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td><?= $company['adminEmail'] ?? 'info@hotel.com' ?></td>
+                    </tr>
+                    <tr>
+                        <th>Coordinate:</th>
+                        <td><?= $company['companyCoordinate'] ?? 'WiFi, Kolam Renang, Restoran, Gym' ?></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="map"></div>
+        </div>  
+        <button class="btn btn-primary btn-edit w-25" data-bs-toggle="modal" data-bs-target="#editHotelModal">Edit</button>
 
         <!-- Modal for Editing Hotel -->
         <div class="modal fade" id="editHotelModal" tabindex="-1" aria-labelledby="editHotelModalLabel" aria-hidden="true">

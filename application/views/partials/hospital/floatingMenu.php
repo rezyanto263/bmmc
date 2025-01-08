@@ -22,7 +22,7 @@
             </div>
             <div class="modal-body p-0 d-flex flex-column justify-content-center">
                 <video class="m-0" id="qrScanner"></video>
-                <form id="qrForm" class="text-center px-5">
+                <form id="qrHospitalForm" class="text-center px-5">
                     <input class="border border-1 rounded my-3 text-center w-100" readonly type="text" placeholder="Scan your QR please!" name="qrData">
                 </form>
             </div>
@@ -135,7 +135,7 @@
                 </div>
                 <h1>History Health</h1>
                 <div class="row">
-                    <table id="patientTable" class="table" style="width:100%">
+                    <table id="hPatientTable" class="table" style="width:100%">
                         <thead>
                             <tr>
                                 <th>#</th>

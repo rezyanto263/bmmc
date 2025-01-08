@@ -45,7 +45,7 @@ class User extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'navbar' => 'partials/user/navbar',
-            'content' => 'user/userPage', // You can access policyholderData here
+            'content' => 'user/Profile', // You can access policyholderData here
             'script' => 'partials/script'
         );
 

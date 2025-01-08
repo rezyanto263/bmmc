@@ -4,7 +4,8 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Policy Holder Name</th>
+                <th>Patient Name</th>
+                <th>Relationship to Policyholder</th>
                 <th>Company Name</th>
                 <th>Doctor Name</th>
                 <th>Bill</th>
@@ -16,7 +17,8 @@
         <tfoot>
             <tr>
                 <th>#</th>
-                <th>Policy Holder Name</th>
+                <th>Patient Name</th>
+                <th>Relationship to Policyholder</th>
                 <th>Company Name</th>
                 <th>Doctor Name</th>
                 <th>Bill</th>
@@ -83,7 +85,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Status">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <span class="form-control" id="historyhealthFamilyStatus"></span>
+                                <span class="form-control" id="historyhealthFamilyRole"></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">

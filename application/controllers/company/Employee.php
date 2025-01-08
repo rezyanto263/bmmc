@@ -69,6 +69,8 @@ class Employee extends CI_Controller {
             array(
                 'field' => 'policyholderNIK',
                 'label' => 'NIK',
+                'field' => 'policyholderNIK',
+                'label' => 'NIK',
                 'rules' => 'required|trim',
                 'errors' => array('required' => 'Karyawan harus memberikan %s.')
             ),
@@ -111,6 +113,7 @@ class Employee extends CI_Controller {
         } else {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
+                'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
                 'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
@@ -240,6 +243,7 @@ class Employee extends CI_Controller {
             $policyholderNIK = $this->input->post('policyholderNIK');
             $employeeData = array(
                 'policyholderNIK' => $this->input->post('policyholderNIK'),
+                'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
                 'policyholderAddress' => $this->input->post('policyholderAddress'),
@@ -277,6 +281,8 @@ class Employee extends CI_Controller {
     }    
 
     public function deleteEmployee() {
+        $policyholderNIK = $this->input->post('policyholderNIK');
+        $this->M_employee->deleteEmployee($policyholderNIK);
         $policyholderNIK = $this->input->post('policyholderNIK');
         $this->M_employee->deleteEmployee($policyholderNIK);
 

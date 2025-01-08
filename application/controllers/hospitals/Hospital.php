@@ -18,18 +18,18 @@ class Hospital extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Dashboard | Hospital',
+            'title' => 'BIM Hospital | Profile',
             'subtitle' => 'Hospital',
             'contentType' => 'dashboard'
         );
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/dashboard/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/dashboard/contentHeader',
+            'sidebar' => 'partials/hospital/sidebar',
+            'floatingMenu' => 'partials/hospital/floatingMenu',
+            'contentHeader' => 'partials/hospital/contentHeader',
             'contentBody' => 'hospitals/Hospital',
-            'footer' => 'partials/dashboard/footer',
+            'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
 

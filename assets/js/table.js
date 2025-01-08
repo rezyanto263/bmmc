@@ -66,41 +66,6 @@ var DataTableSettings = {
     autoWidth: true,
 }
 
-let minDate, maxDate;
- 
-// Custom filtering function which will search data in column four between two values
-DataTable.ext.search.push(function (settings, data, dataIndex) {
-    let min = minDate.val();
-    let max = maxDate.val();
-    let date = new Date(data[4]);
- 
-    if (
-        (min === null && max === null) ||
-        (min === null && date <= max) ||
-        (min <= date && max === null) ||
-        (min <= date && date <= max)
-    ) {
-        return true;
-    }
-    return false;
-});
- 
-// Create date inputs
-minDate = new DateTime('#min', {
-    format: 'MMMM Do YYYY'
-});
-maxDate = new DateTime('#max', {
-    format: 'MMMM Do YYYY'
-});
- 
-// DataTables initialisation
-let table = new DataTable('#example');
- 
-// Refilter the table
-document.querySelectorAll('#min, #max').forEach((el) => {
-    el.addEventListener('change', () => table.draw());
-});
-
 function displayFormValidation(formSelector, errors) {
     $(formSelector + ' .error-message').remove();
     $(formSelector + ' .is-invalid').removeClass('is-invalid');
@@ -393,27 +358,50 @@ var hospitalsTables = $('#hospitalsTables').DataTable($.extend(true, {}, DataTab
     ]
 }));
 
+var hospitalMap; // Variabel untuk instance peta
+var hospitalMarker; // Variabel untuk marker peta
+
+// Fungsi inisialisasi atau pembaruan peta
+function initializeOrUpdateMap(mapContainerId, latitude, longitude, popupContent) {
+    if (!hospitalMap) {
+        // Inisialisasi peta hanya jika belum ada instance
+        hospitalMap = L.map(mapContainerId).setView([latitude, longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(hospitalMap);
+
+        // Tambahkan marker awal
+        hospitalMarker = L.marker([latitude, longitude]).addTo(hospitalMap)
+            .bindPopup(popupContent).openPopup();
+    } else {
+        // Perbarui peta dan marker jika instance sudah ada
+        hospitalMap.setView([latitude, longitude], 13);
+        hospitalMarker.setLatLng([latitude, longitude]).bindPopup(popupContent).openPopup();
+    }
+
+    // Pastikan ukuran peta diperbarui saat modal ditampilkan
+    hospitalMap.invalidateSize();
+}
+
+// Event listener untuk tombol "View"
 $('#hospitalsTables').on('click', '.btn-view', function () {
-    var rowData = hospitalsTables.row($(this).closest('tr')).data();
-    var hospitalCoordinate = rowData.hospitalCoordinate; // Mendapatkan koordinat
-    var hospitalName = rowData.hospitalName; // Mendapatkan nama rumah sakit
+    var rowData = hospitalsTables.row($(this).closest('tr')).data(); // Data baris yang diklik
+    var hospitalCoordinate = rowData.hospitalCoordinate; // Koordinat rumah sakit
+    var hospitalName = rowData.hospitalName; // Nama rumah sakit
 
     if (hospitalCoordinate) {
-        var coordsArray = hospitalCoordinate.split(',');
+        var coordsArray = hospitalCoordinate.split(','); // Pisahkan koordinat
         var latitude = parseFloat(coordsArray[0].trim());
         var longitude = parseFloat(coordsArray[1].trim());
 
         if (!isNaN(latitude) && !isNaN(longitude)) {
-            // Peta di dalam modal
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13); // Inisialisasi peta
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Tambahkan marker
-            var marker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Hospital: ' + hospitalName)
-                .openPopup();
+            // Simpan data ke modal sebelum dibuka
+            $('#viewMapHospitalModal').data('latitude', latitude)
+                .data('longitude', longitude)
+                .data('hospitalName', hospitalName);
+            
+            // Tampilkan modal
+            $('#viewMapHospitalModal').modal('show');
         } else {
             console.error('Koordinat tidak valid: ' + hospitalCoordinate);
         }
@@ -422,40 +410,18 @@ $('#hospitalsTables').on('click', '.btn-view', function () {
     }
 });
 
-// Menampilkan peta ketika modal dibuka
+// Event listener untuk membuka modal dan memuat peta
 $('#viewMapHospitalModal').on('shown.bs.modal', function () {
-    // Ambil data dari tabel yang terkait dengan tombol yang diklik
-    var rowData = hospitalsTables.row($(this).closest('tr')).data();  // Ambil data baris yang sedang dipilih
-    var hospitalCoordinate = rowData.hospitalCoordinate;  // Koordinat rumah sakit
-    var hospitalName = rowData.hospitalName;  // Nama rumah sakit
+    var latitude = $(this).data('latitude');
+    var longitude = $(this).data('longitude');
+    var hospitalName = $(this).data('hospitalName');
 
-    // Periksa apakah koordinat ada
-    if (hospitalCoordinate) {
-        var coordsArray = hospitalCoordinate.split(',');  // Pisahkan koordinat
-        var latitude = parseFloat(coordsArray[0].trim());  // Latitude
-        var longitude = parseFloat(coordsArray[1].trim());  // Longitude
-
-        if (!isNaN(latitude) && !isNaN(longitude)) {
-            // Inisialisasi peta dengan koordinat
-            var map = L.map('hospitalMap').setView([latitude, longitude], 13);  // Set posisi peta dan zoom level
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Tambahkan marker pada peta
-            var marker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Hospital: ' + hospitalName)  // Tampilkan nama rumah sakit di popup
-                .openPopup();
-
-            // Perbarui ukuran peta setelah modal ditampilkan
-            map.invalidateSize();
-        } else {
-            console.error('Koordinat tidak valid: ' + hospitalCoordinate);
-        }
-    } else {
-        console.error('Koordinat tidak ditemukan.');
+    if (latitude !== undefined && longitude !== undefined) {
+        // Inisialisasi atau perbarui peta
+        initializeOrUpdateMap('hospitalMap', latitude, longitude, 'Hospital: ' + hospitalName);
     }
 });
+
 
 
 
@@ -873,13 +839,25 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
     ]
 }));
 
+$('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', function() {
+    reloadTableData(doctorsTable);
+});
+
+$('#addDoctorModal').on('hidden.bs.modal', function(e) {
+    console.log('addDoctorModal closed and reset'); // Debugging
+    $(e.target).find('form').trigger('reset');
+});
+
 // Add Data Doctor
 $('#addDoctorForm').on('submit', function(e) {
     e.preventDefault();
+    var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'hospitals/doctors/addDoctor',
         method: 'POST',
-        data: $(this).serialize(),
+        data: formData,
+        contentType: false,
+        processData: false,
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
@@ -889,11 +867,18 @@ $('#addDoctorForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
-                displayAlert(res.failedMsg);
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
                 displayFormValidation('#addDoctorForm', res.errors);
             }
         }
+    });
+});
+
+$('#addDoctorModal').on('shown.bs.modal', function () {
+    $(this).find('select#doctorStatus').select2({
+        placeholder: 'Choose Status',
+        dropdownParent: $('#addDoctorModal .modal-body')
     });
 });
 
@@ -975,7 +960,17 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 return meta.row + 1;
             }
         },
-        {data: 'policyholderName'},
+        {
+            data: 'historyhealthFamilyRole',
+            render: function (data, type, row) {
+                if (data === 'policyholder') {
+                    return row.policyholderName;
+                } else {
+                    return row.familyName;
+                }
+            }
+        },
+        {data: 'historyhealthFamilyRole'},
         {data: 'companyName'},
         {data: 'doctorName'},
         {
@@ -1028,12 +1023,12 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
 $('#hHistoriesTable').on('click', '.btn-view', function() {
     var data = hHistoriesTable.row($(this).parents('tr')).data();
 
-    const formattedDate = moment(data.historyhealthDate).format('DD MMMM YYYY');
+    const formattedDate = moment(data.historyhealthDate).format('DD MMM YYYY, HH:mm');
     const formattedCreateAt = moment(data.createdAt).format('DD MMM YYYY, HH:mm');
     const formattedUpdateAt = moment(data.updatedAt).format('DD MMM YYYY, HH:mm');
     const formattedBill = 'Rp ' + parseFloat(data.historyhealthBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    if (data.historyhealthFamilyStatus == "policyholder") {
+    if (data.historyhealthFamilyRole == "policyholder") {
         $('#detailContent #patientName').text(data.policyholderName);
     } else {
         $('#detailContent #patientName').text(data.familyName);
@@ -1041,7 +1036,7 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
 
     $('#detailContent #detailDoctorName').text(data.doctorName);
     $('#detailContent #historyhealthComplaint').text(data.historyhealthComplaint);
-    $('#detailContent #historyhealthFamilyStatus').text(data.historyhealthFamilyStatus);
+    $('#detailContent #historyhealthFamilyRole').text(data.historyhealthFamilyRole);
     $('#detailContent #historyhealthDetails').text(data.historyhealthDetails);
     $('#detailContent #policyholderName').text(data.policyholderName);
     $('#detailContent #companyName').text(data.companyName);
@@ -1052,11 +1047,180 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     $('#detailContent #historyhealthBill').text(formattedBill);
 });
 
-$('#detailHistoryModal').on('shown.bs.modal', function () {});
+// Scan QR Patient For Hospital
+var patientTable;
+function getPatientHistoryHealth(patientNIK) {
+    if ($.fn.DataTable.isDataTable('#hPatientTable')) {
+        $('#hPatientTable').DataTable().ajax.url(baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        return;
+    }
+    patientTable = $('#hPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
+        ajax: baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        columns: [
+            {
+                data: null,
+                className: 'text-start',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {data: 'hospitalName'},
+            {data: 'doctorName'},
+            {
+                data: 'diseaseNames',
+                render: function(data, type, row) {
+                    return data.split('|').join(', ');
+                }
+            },
+            {
+                data: 'historyhealthDate',
+                render: function(data, type, row) {
+                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
+                }
+            },
+            {
+                data: 'historyhealthBill',
+                render: function(data, type, row) {
+                    return formatToRupiah(data);
+                }
+            },
+            {
+                data: 'historyhealthStatus',
+                render: function(data, type, row) {
+                    var statusColor;
+                    if (data === 'not paid') {
+                        statusColor = 'bg-danger';
+                    } else if (data === 'paid') {
+                        statusColor = 'bg-success';
+                    } else if (data === 'free') {
+                        statusColor = 'bg-info';
+                    }
+                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                }
+            },
+            {
+                data: null,
+                className: 'text-end user-select-none no-export',
+                orderable: false,
+                defaultContent: `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `
+            }
+        ],
+        columnDefs: [
+            {width: '80px', target: 7}
+        ]
+    }));
+}
 
-// Check Patient For Hospital
-// $('#chechPatientButton').on('click', '.btn-view', function() {
-// var data = ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+// Inisialisasi DataTables untuk patientTable
+// var patientTable = $('#patientTable').DataTable({
+//     paging: false,
+//     searching: false,
+//     info: false,
+//     ordering: false,
+//     columns: [
+//         { data: null, render: function(data, type, row) { return 'Name:'; } },
+//         { data: 'patientName' },
+//         { data: null, render: function(data, type, row) { return 'NIK:'; } },
+//         { data: 'patientNIK' },
+//         { data: null, render: function(data, type, row) { return 'Company:'; } },
+//         { data: 'patientCompany' },
+//         { data: null, render: function(data, type, row) { return 'Birth Date:'; } },
+//         { data: 'patientBirthDate', render: function(data) { return moment(data).format('DD MMMM YYYY'); } },
+//         { data: null, render: function(data, type, row) { return 'Gender:'; } },
+//         { data: 'patientGender' },
+//         { data: null, render: function(data, type, row) { return 'Address:'; } },
+//         { data: 'patientAddress' },
+//         { data: null, render: function(data, type, row) { return 'Phone:'; } },
+//         { data: 'patientPhone' },
+//         { data: null, render: function(data, type, row) { return 'Status:'; } },
+//         { data: 'patientStatus' }
+//     ]
+// });
+
+// // Inisialisasi DataTables untuk hPatientTable
+// var hPatientTable = $('#hPatientTable').DataTable({
+//     paging: true,
+//     searching: true,
+//     info: true,
+//     columns: [
+//         {
+//             data: null,
+//             className: 'text-start',
+//             render: function (data, type, row, meta) {
+//                 return meta.row + 1;
+//             }
+//         },
+//         { data: 'patientName', title: 'Patient Name' },
+//         { data: 'doctorName', title: 'Doctor Name' },
+//         {
+//             data: 'bill',
+//             title: 'Bill',
+//             render: function (data) {
+//                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format mata uang
+//             }
+//         },
+//         {
+//             data: 'date',
+//             title: 'Date',
+//             render: function (data) {
+//                 return moment(data).format('DD MMMM YYYY');
+//             }
+//         },
+//         { data: 'historyStatus', title: 'History Status' },
+//         {
+//             data: null,
+//             className: 'text-end user-select-none no-export',
+//             orderable: false,
+//             defaultContent: `
+//                 <button 
+//                     type="button" 
+//                     class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+//                     data-bs-toggle="modal" 
+//                     data-bs-target="#detailHistoryModal"
+//                     title="View History">
+//                     <i class="fa-regular fa-eye"></i>
+//                 </button>
+//             `
+//         }
+//     ]
+// });
+
+// // Event listener untuk form submit
+// $('#testCheckPatientForm').on('submit', function (e) {
+//     e.preventDefault(); // Mencegah form dari submit default
+//     var patientNIK = $('#patientNIK').val();
+
+//     // AJAX request untuk mendapatkan data pasien
+//     $.ajax({
+//         url: baseUrl + 'hospitals/getPatientDataByNIK', // Endpoint untuk mendapatkan data pasien
+//         method: 'POST',
+//         data: { patientNIK },
+//         success: function (response) {
+//             console.log('Response dari Server:', response);
+//             // Mengisi data ke patientTable
+//             patientTable.clear().rows.add([response.patient]).draw();
+
+//             // Mengisi data ke hPatientTable
+//             hPatientTable.clear().rows.add(response.histories).draw();
+
+//             // Menutup modal setelah data dimuat
+//             $('#testCheckPatientModal').modal('hide');
+
+//             // Menjalankan kondisi else untuk menampilkan tabel
+//             $('#btn-scan').hide(); // Sembunyikan tombol scan
+//             $('content').show(); // Tampilkan konten
+//         },
+//         error: function (xhr, status, error) {
+//             console.error('Error fetching patient data:', error);
+//             alert('Failed to fetch patient data. Please try again.');
+//         }
+//     });
 // });
 
 // Employees CRUD

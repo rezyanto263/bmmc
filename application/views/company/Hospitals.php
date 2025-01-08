@@ -8,6 +8,7 @@
                 <th>Email</th>
                 <th>Address</th>
                 <th>Phone</th>
+                <th>Coordinate</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -18,6 +19,7 @@
                 <th>Email</th>
                 <th>Address</th>
                 <th>Phone</th>
+                <th>Coordinate</th>
                 <th>Action</th>
             </tr>
         </tfoot>
