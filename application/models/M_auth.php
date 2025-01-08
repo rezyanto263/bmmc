@@ -43,10 +43,12 @@ class M_auth extends CI_Model {
         $this->db->from('policyholder');
         $this->db->where('policyholderNIK', $policyholderId);
         $this->db->where('policyholderNIK', $policyholderId);
+        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->get()->row_array();
     }
 
     public function updateEmployee($policyholderId, $employeeData) {
+        $this->db->where('policyholderNIK', $policyholderId);
         $this->db->where('policyholderNIK', $policyholderId);
         $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', $employeeData);
@@ -56,12 +58,9 @@ class M_auth extends CI_Model {
         $this->db->select('familyNIK, familyName, familyEmail, policyholderNIK, familyAddress, familyBirth, familyGender, familyPassword, familyStatus, familyPhoto');
         $this->db->from('family');
         $this->db->where('familyNIK', $familyId);
-        $this->db->where('familyNIK', $familyId);
         return $this->db->get()->row_array();
     }
 
-    public function updateFamily($familyNIK, $familyData) {
-        $this->db->where('familyNIK', $familyNIK);
     public function updateFamily($familyNIK, $familyData) {
         $this->db->where('familyNIK', $familyNIK);
         return $this->db->update('family', $familyData);
@@ -69,10 +68,7 @@ class M_auth extends CI_Model {
 
     public function validatePolicyHolderLogin($NIK, $password) {
         $this->db->select('policyholderNIK, policyholderPassword');
-    public function validatePolicyHolderLogin($NIK, $password) {
-        $this->db->select('policyholderNIK, policyholderPassword');
         $this->db->from('policyholder');
-        $this->db->where('policyholderNIK', $NIK);
         $this->db->where('policyholderNIK', $NIK);
         $userData = $this->db->get()->row_array();
 
@@ -84,10 +80,7 @@ class M_auth extends CI_Model {
 
     public function validateFamilyLogin($NIK, $password) {
         $this->db->select('familyNIK, familyPassword');
-    public function validateFamilyLogin($NIK, $password) {
-        $this->db->select('familyNIK, familyPassword');
         $this->db->from('family');
-        $this->db->where('familyNIK', $NIK);
         $this->db->where('familyNIK', $NIK);
         $userData = $this->db->get()->row_array();
     
@@ -101,18 +94,15 @@ class M_auth extends CI_Model {
         $this->db->select('familyNIK, familyName, familyAddress, familyBirth, familyGender, familyStatus, familyPhoto');
         $this->db->from('family');
         $this->db->where('policyholderNIK', $policyholderId);
-        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->get()->result_array();
     }
 
     public function updatePolicyHolderPassword($policyholderId, $newPassword) {
         $this->db->where('policyholderNIK', $policyholderId);
-        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', array('policyholderPassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
     }
 
     public function updateFamilyPassword($familyId, $newPassword) {
-        $this->db->where('familyNIK', $familyId);
         $this->db->where('familyNIK', $familyId);
         return $this->db->update('family', array('familyPassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
     }
@@ -134,12 +124,10 @@ class M_auth extends CI_Model {
 
     public function rememberPolicyHolderLogin($policyholderId, $rememberToken) {
         $this->db->where('policyholderNIK', $policyholderId);
-        $this->db->where('policyholderNIK', $policyholderId);
         return $this->db->update('policyholder', array('rememberToken' => $rememberToken));
     }
 
     public function rememberFamilyLogin($familyId, $rememberToken) {
-        $this->db->where('familyNIK', $familyId);
         $this->db->where('familyNIK', $familyId);
         return $this->db->update('family', array('rememberToken' => $rememberToken));
     }

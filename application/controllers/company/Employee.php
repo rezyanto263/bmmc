@@ -69,8 +69,6 @@ class Employee extends CI_Controller {
             array(
                 'field' => 'policyholderNIK',
                 'label' => 'NIK',
-                'field' => 'policyholderNIK',
-                'label' => 'NIK',
                 'rules' => 'required|trim',
                 'errors' => array('required' => 'Karyawan harus memberikan %s.')
             ),
@@ -113,7 +111,6 @@ class Employee extends CI_Controller {
         } else {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
-                'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
                 'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
@@ -241,8 +238,10 @@ class Employee extends CI_Controller {
         } else {
             // Retrieve form data
             $policyholderNIK = $this->input->post('policyholderNIK');
+            $policyholderNIK = $this->input->post('policyholderNIK');
+            $password = $this->input->post('policyholderPassword');
+            $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $employeeData = array(
-                'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'policyholderName' => $this->input->post('policyholderName'),
                 'policyholderEmail' => $this->input->post('policyholderEmail'),
@@ -252,37 +251,14 @@ class Employee extends CI_Controller {
                 'policyholderGender' => $this->input->post('policyholderGender'),
                 'policyholderStatus' => $this->input->post('policyholderStatus'),
             );
-    
-            // Handle password change if provided
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            if (!empty($newPassword)) {
-                $employeeData['policyholderPassword'] = $newPassword;
-            }
-    
-            // Handle photo upload if provided
-            if ($_FILES['policyholderPhoto']['name']) {
-                $fileName = strtoupper(trim(str_replace('.', ' ', $employeeData['policyholderName']))) . '-' . time();
-                $policyholderPhoto = $this->_uploadLogo('policyholderPhoto', array('file_name' => $fileName));
-    
-                if ($policyholderPhoto['status']) {
-                    // If there's an existing photo, delete it
-                    $this->_deleteLogo($policyholderNIK);
-                    $employeeData['policyholderPhoto'] = $policyholderPhoto['data']['file_name'];
-                } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $policyholderPhoto['error']));
-                    return; // Exit here if photo upload fails
-                }
-            }
-    
-            // Update employee record
+            !empty($newPassword)? $employeeData['policyholderPassword'] = $newPassword : '';
+
             $this->M_employee->updateEmployee($policyholderNIK, $employeeData);
             echo json_encode(array('status' => 'success'));
         }
     }    
 
     public function deleteEmployee() {
-        $policyholderNIK = $this->input->post('policyholderNIK');
-        $this->M_employee->deleteEmployee($policyholderNIK);
         $policyholderNIK = $this->input->post('policyholderNIK');
         $this->M_employee->deleteEmployee($policyholderNIK);
 
