@@ -36,6 +36,24 @@ class M_companies extends CI_Model {
         return $this->db->delete('company');
     }
 
+    public function getPolicyholderByNIK($policyholderNIK) {
+        $this->db->select('p.*, c.companyName');
+        $this->db->from('policyholder p');
+        $this->db->join('compolder cp', 'cp.policyholderNIK = p.policyholderNIK', 'left');
+        $this->db->join('company c', 'c.companyId = cp.companyId', 'left');
+        $this->db->where('p.policyholderNIK', $policyholderNIK);
+        return $this->db->get()->row_array();
+    }
+    public function getFamilyByNIK($familyNIK) {
+        $this->db->select('f.*, c.companyName');
+        $this->db->from('family f');
+        $this->db->join('compolder cp', 'cp.policyholderNIK = f.policyholderNIK', 'left');
+        $this->db->join('company c', 'c.companyId = cp.companyId', 'left');
+        $this->db->where('f.familyNIK', $familyNIK);
+        return $this->db->get()->row_array();
+    }
+
+
 }
 
 /* End of file M_companies.php */

@@ -36,7 +36,7 @@
                     <img src="<?= base_url("assets/images/pria.png") ?>" alt="" class="image-patient">
                 </div>
                 <div class="col-md-6">
-                    <table class="table" id="patientTable" style="width:100%">
+                    <table class="table" id="" style="width:100%">
                         <tbody>
                             <tr>
                                 <th>Name:</th>
