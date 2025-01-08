@@ -6,7 +6,7 @@
         <img src="<?= base_url("assets/images/logo.p")?>ng" class="img-logo-profile" alt="" />
       </div>
       <div class="text-center fw-bold text-white title-profile">
-        Selamat Datang Angga Prayoga
+        Selamat Datang <?= isset($policyholderDatas['policyholderName']) && $policyholderDatas['policyholderName'] ? $policyholderDatas['policyholderName'] : (isset($policyholderDatas['familyName']) ? $policyholderDatas['familyName'] : '') ?>
       </div>
       <div class="d-flex justify-content-center align-items-center">
         <button
@@ -81,226 +81,35 @@
       <div
         class="d-flex justify-content-between flex-wrap flex-column flex-lg-row"
       >
-        <!-- card -->
-        <div class="card shadow-lg rounded mb-2 p-3 pt-4">
+         <!-- card -->
+         <div class="card shadow-lg rounded mb-2 p-3 pt-4">
+        <?php if (!empty($policyholderDatas['policyholderName'])): ?>
           <p class="fw-bold text-secondary text-center text-lg-start">
-            Kepala Keluarga
+            Penanggung Jawab
           </p>
+        <?php else: ?>
+          <p class="fw-bold text-secondary text-center text-lg-start">
+            Keluarga
+          </p>
+        <?php endif; ?>
           <div
             class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column"
           >
             <!-- gambar -->
             <div class="me-4">
-              <img
-                src="<?= base_url("assets/images/pria.p")?>ng"
+            <?php if (isset($policyholderDatas['policyholderPhoto']) && $policyholderDatas['policyholderPhoto'] != ''): ?>
+                <img src="<?= base_url('uploads/logos/' . $policyholderDatas['policyholderPhoto']) ?>" alt="Policyholder Photo"
                 class="rounded-circle border border-white shadow-sm bg-hijau"
                 alt="Profile Picture"
-                style="width: 120px; height: 120px; object-fit: cover"
+                style="width: 100px; height: 100px; object-fit: cover"
               />
-            </div>
-
-            <!-- data-data -->
-            <div>
-              <table
-                class="table table-borderless mt-3 mt-lg-0 d-flex justify-content-center align-items-center"
-              >
-                <tbody>
-                  <tr>
-                    <td class="fw-bold">NIK</td>
-                    <td>:</td>
-                    <td>51727273810231031</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Nama</td>
-                    <td>:</td>
-                    <td>I Gede Angga Prayoga</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Tanggal Lahir</td>
-                    <td>:</td>
-                    <td>22 November 1999</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Kelamin</td>
-                    <td>:</td>
-                    <td>Laki - Laki</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Alamat</td>
-                    <td>:</td>
-                    <td>
-                      Jl. Tukad Balian No.126, Renon, Denpasar Selatan, Kota
-                      Denpasar, Bali 80225
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Telepon</td>
-                    <td>:</td>
-                    <td>0812-3456-7890</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Email</td>
-                    <td>:</td>
-                    <td>igedeangga@gmail.com</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- card -->
-        <div class="card shadow-lg p-3 pt-4 rounded mb-2">
-          <p class="fw-bold text-secondary text-center text-lg-start">
-            Istri
-          </p>
-          <div
-            class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column"
-          >
-            <!-- gambar -->
-            <div class="me-4">
-              <img
-                src="<?= base_url("assets/images/wanita")?>.png"
-                class="rounded-circle border border-white shadow-sm bg-biru"
-                alt="Profile Picture"
-                style="width: 120px; height: 120px; object-fit: cover"
-              />
-            </div>
-
-            <!-- data-data -->
-            <div>
-              <table
-                class="table table-borderless mt-3 mt-lg-0 d-flex justify-content-center align-items-center"
-              >
-                <tbody>
-                  <tr>
-                    <td class="fw-bold">NIK</td>
-                    <td>:</td>
-                    <td>51727273810231031</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Nama</td>
-                    <td>:</td>
-                    <td>Kevin Bin Susanti</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Tanggal Lahir</td>
-                    <td>:</td>
-                    <td>22 November 1999</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Kelamin</td>
-                    <td>:</td>
-                    <td>Perempuan</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Alamat</td>
-                    <td>:</td>
-                    <td>
-                      Jl. Tukad Balian No.126, Renon, Denpasar Selatan, Kota
-                      Denpasar, Bali 80225
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Telepon</td>
-                    <td>:</td>
-                    <td>0812-3456-7890</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Email</td>
-                    <td>:</td>
-                    <td>igedeangga@gmail.com</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- card -->
-        <div class="card shadow-lg p-3 pt-4 rounded mb-2">
-          <p class="fw-bold text-secondary text-center text-lg-start">
-            Anak Pertama
-          </p>
-          <div
-            class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column"
-          >
-            <!-- gambar -->
-            <div class="me-4">
-              <img
-                src="<?= base_url("assets/images/wanita")?>.png"
-                class="rounded-circle border border-white shadow-sm bg-biru"
-                alt="Profile Picture"
-                style="width: 120px; height: 120px; object-fit: cover"
-              />
-            </div>
-
-            <!-- data-data -->
-            <div>
-              <table
-                class="table table-borderless mt-3 mt-lg-0 d-flex justify-content-center align-items-center"
-              >
-                <tbody>
-                  <tr>
-                    <td class="fw-bold">NIK</td>
-                    <td>:</td>
-                    <td>51727273810231031</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Nama</td>
-                    <td>:</td>
-                    <td>Wiriawan Bin Meimei</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Tanggal Lahir</td>
-                    <td>:</td>
-                    <td>22 November 1999</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Kelamin</td>
-                    <td>:</td>
-                    <td>Perempuan</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Alamat</td>
-                    <td>:</td>
-                    <td>
-                      Jl. Tukad Balian No.126, Renon, Denpasar Selatan, Kota
-                      Denpasar, Bali 80225
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Telepon</td>
-                    <td>:</td>
-                    <td>0812-3456-7890</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Email</td>
-                    <td>:</td>
-                    <td>igedeangga@gmail.com</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- card -->
-        <div class="card shadow-lg p-3 pt-4 rounded mb-2">
-          <p class="fw-bold text-secondary text-center text-lg-start">
-            Anak Kedua
-          </p>
-          <div
-            class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column"
-          >
-            <!-- gambar -->
-            <div class="me-4">
-              <img
-                src="<?= base_url("assets/images/pria.p")?>ng"
+            <?php else: ?>
+                <img src="<?= base_url('uploads/logos/' . $policyholderDatas['familyPhoto']) ?>" alt="Default Photo"
                 class="rounded-circle border border-white shadow-sm bg-hijau"
                 alt="Profile Picture"
-                style="width: 120px; height: 120px; object-fit: cover"
+                style="width: 100px; height: 100px; object-fit: cover"
               />
+            <?php endif; ?>
             </div>
 
             <!-- data-data -->
@@ -312,48 +121,109 @@
                   <tr>
                     <td class="fw-bold">NIK</td>
                     <td>:</td>
-                    <td>51727273810231031</td>
+                    <td><?= isset($policyholderDatas['familyNIK']) && $policyholderDatas['familyNIK'] ? $policyholderDatas['familyNIK'] : (isset($policyholderDatas['policyholderNIK']) ? $policyholderDatas['policyholderNIK'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Nama</td>
                     <td>:</td>
-                    <td>Sagita Bin Juno</td>
+                    <td><?= isset($policyholderDatas['policyholderName']) && $policyholderDatas['policyholderName'] ? $policyholderDatas['policyholderName'] : (isset($policyholderDatas['familyName']) ? $policyholderDatas['familyName'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Tanggal Lahir</td>
                     <td>:</td>
-                    <td>22 November 1999</td>
+                    <td><?= isset($policyholderDatas['policyholderBirth']) && $policyholderDatas['policyholderBirth'] ? $policyholderDatas['policyholderBirth'] : (isset($policyholderDatas['familyBirth']) ? $policyholderDatas['familyBirth'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Kelamin</td>
                     <td>:</td>
-                    <td>Laki - Laki</td>
+                    <td><?= isset($policyholderDatas['policyholderGender']) && $policyholderDatas['policyholderGender'] ? $policyholderDatas['policyholderGender'] : (isset($policyholderDatas['familyGender']) ? $policyholderDatas['familyGender'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Alamat</td>
                     <td>:</td>
                     <td>
-                      Jl. Tukad Balian No.126, Renon, Denpasar Selatan, Kota
-                      Denpasar, Bali 80225
+                    <?= isset($policyholderDatas['policyholderAddress']) && $policyholderDatas['policyholderAddress'] ? $policyholderDatas['policyholderAddress'] : (isset($policyholderDatas['familyAddress']) ? $policyholderDatas['familyAddress'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Telepon</td>
                     <td>:</td>
-                    <td>0812-3456-7890</td>
+                    <td><?= isset($policyholderDatas['policyholderPhone']) && $policyholderDatas['policyholderPhone'] ? $policyholderDatas['policyholderPhone'] : (isset($policyholderDatas['familyPhone']) ? $policyholderDatas['familyPhone'] : '') ?></td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Email</td>
                     <td>:</td>
-                    <td>igedeangga@gmail.com</td>
+                    <td><?= isset($policyholderDatas['policyholderEmail']) && $policyholderDatas['policyholderEmail'] ? $policyholderDatas['policyholderEmail'] : (isset($policyholderDatas['familyEmail']) ? $policyholderDatas['familyEmail'] : '') ?></td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+
+        <!-- card -->
+        <?php if (!empty($familyMembers) && is_array($familyMembers)): ?>
+          <?php foreach ($familyMembers as $index => $member): ?>
+        <div class="card shadow-lg p-3 pt-4 rounded mb-2">
+          <p class="fw-bold text-secondary text-center text-lg-start">
+            Keluarga
+          </p>
+          <div
+            class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column"
+          >
+            <!-- Gambar -->
+            <div class="me-4">
+              <?php
+                // Menentukan gambar berdasarkan gender
+                $image = $member['familyGender'] == 'male' ? base_url('uploads/logos/pria.png') : base_url('assets/images/wanita.png');
+              ?>
+              <img src="<?= $image; ?>" class="rounded-circle border border-white shadow-sm <?= $member['familyGender'] == 'Laki-Laki' ? 'bg-hijau' : 'bg-biru'; ?>" alt="Profile Picture" style="width: 100px; height: 100px; object-fit: cover" />
+            </div>
+
+            <!-- Data anggota keluarga -->
+            <div>
+              <table class="table table-borderless mt-3 mt-lg-0 d-flex justify-content-center align-items-center">
+                <tbody>
+                  <tr>
+                    <td class="fw-bold">NIK</td>
+                    <td>:</td>
+                    <td><?= $member['familyNIK']; ?></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Nama</td>
+                    <td>:</td>
+                    <td><?= $member['familyName']; ?></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Tanggal Lahir</td>
+                    <td>:</td>
+                    <td><?= $member['familyBirth']; ?></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Kelamin</td>
+                    <td>:</td>
+                    <td><?= $member['familyGender']; ?></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Alamat</td>
+                    <td>:</td>
+                    <td><?= $member['familyAddress']; ?></td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Telepon</td>
+                    <td>:</td>
+                    <td><?= $member['familyStatus']; ?></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+    <?php endif; ?>
+  </div>
+</section>
 
     <!-- bagian total total -->
     <div
