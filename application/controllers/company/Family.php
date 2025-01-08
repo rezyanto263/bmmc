@@ -62,14 +62,14 @@ class Family extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function savePolicyholderNIN() {
-        $policyholderNIN = $this->input->post('policyholderNIN');
+    public function savePolicyholderNIK() {
+        $policyholderNIK = $this->input->post('policyholderNIK');
     
-        if (!empty($policyholderNIN)) {
-            $this->session->set_userdata('policyholderNIN', $policyholderNIN);
+        if (!empty($policyholderNIK)) {
+            $this->session->set_userdata('policyholderNIK', $policyholderNIK);
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Policyholder NIN tidak valid.']);
+            echo json_encode(['success' => false, 'message' => 'Policyholder NIK tidak valid.']);
         }
     }
     
@@ -83,17 +83,17 @@ class Family extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getFamiliesByPolicyholderNIN($policyholderNIN = null) {
-        if (empty($policyholderNIN)) {
-            // Ambil NIN dari session jika parameter kosong
-            $policyholderNIN = $this->session->userdata('policyholderNIN');
+    public function getFamiliesByPolicyholderNIK($policyholderNIK = null) {
+        if (empty($policyholderNIK)) {
+            // Ambil NIK dari session jika parameter kosong
+            $policyholderNIK = $this->session->userdata('policyholderNIK');
         }
     
-        if (empty($policyholderNIN)) {
+        if (empty($policyholderNIK)) {
             // Jika tetap kosong, kembalikan semua data keluarga atau error
             $familyDatas = $this->M_family->getAllFamilyDatas();
         } else {
-            $familyDatas = $this->M_family->getFamiliesByPolicyholderNIN($policyholderNIN);
+            $familyDatas = $this->M_family->getFamiliesByPolicyholderNIK($policyholderNIK);
         }
     
         // Siapkan data untuk dikembalikan dalam format JSON
@@ -112,7 +112,7 @@ class Family extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'familyNIN',
+                'field' => 'familyNIK',
                 'label' => 'NIN',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -157,8 +157,8 @@ class Family extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             $familyData = array(
-                'familyNIN' => htmlspecialchars($this->input->post('familyNIN')),
-                'policyholderNIN' => $this->input->post('policyholderNIN'),
+                'familyNIK' => htmlspecialchars($this->input->post('familyNIK')),
+                'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyPassword' => password_hash(htmlspecialchars($this->input->post('familyPassword')), PASSWORD_DEFAULT),
@@ -219,11 +219,11 @@ class Family extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
-            $familyNIN = $this->input->post('familyNIN');
+            $familyNIK = $this->input->post('familyNIK');
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $familyData = array(
-                'familyNIN' => $this->input->post('familyNIN'),
-                'policyholderNIN' => $this->input->post('policyholderNIN'),
+                'familyNIK' => $this->input->post('familyNIK'),
+                'policyholderNIK' => $this->input->post('policyholderNIK'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyAddress' => $this->input->post('familyAddress'),
@@ -236,14 +236,14 @@ class Family extends CI_Controller {
                 $familyData['familyPassword'] = $newPassword;
             }
     
-            $this->M_family->updateFamily($familyNIN, $familyData);
+            $this->M_family->updateFamily($familyNIK, $familyData);
             echo json_encode(array('status' => 'success'));
         }
     }
     
     public function deleteFamily() {
-        $familyNIN = $this->input->post('familyNIN');
-        $this->M_family->deleteFamily($familyNIN);
+        $familyNIK = $this->input->post('familyNIK');
+        $this->M_family->deleteFamily($familyNIK);
     
         echo json_encode(array('status' => 'success'));
     }    

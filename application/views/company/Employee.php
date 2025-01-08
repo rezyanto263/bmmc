@@ -46,12 +46,19 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
+                        <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                                <div class="imgContainer">
+                                    <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
+                                </div>
+                                <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD LOGO</label>
+                                <input type="file" accept="image/jpg, image/jpeg, image/png" name="policyholderPhoto" class="imgFile" id="addImgFile" hidden>
+                            </div>
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIN">
+                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIK">
                             </div>
                         </div>
                         <div class="col-12">
@@ -121,7 +128,8 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Gender">
                                     <i class="las la-venus-mars fs-4"></i>
                                 </span>
-                                <select class="form-control" name="policyholderGender">
+                                <select class="form-control" id="policyholderGender" name="policyholderGender">
+                                    <option hidden></option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
@@ -132,7 +140,8 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Status">
                                     <i class="las la-user-check fs-4"></i>
                                 </span>
-                                <select class="form-control" name="policyholderStatus">
+                                <select class="form-control" id="policyholderStatus" name="policyholderStatus">
+                                    <option hidden></option>
                                     <option value="Active">Active</option>
                                     <option value="Inactive">Inactive</option>
                                 </select>
@@ -162,14 +171,20 @@
                 <div class="modal-body border-0">
                     <div class="row gy-4">
                         <input type="number" id="employeeId" name="employeeId" hidden>
-
+                        <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                            <div class="imgContainer">
+                                <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
+                            </div>
+                            <label class="btn-warning mt-3 text-center w-50" for="editImgFile">UPLOAD LOGO</label>
+                            <input type="file" accept="image/jpg, image/jpeg, image/png" name="policyholderPhoto" class="imgFile" id="editImgFile" hidden>
+                        </div>
                         <!-- National ID -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIN" id="editNIN">
+                                <input class="form-control" type="text" placeholder="National ID Number" name="policyholderNIK" id="editNIK">
                             </div>
                         </div>
 
@@ -291,7 +306,7 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="policyholderName"></span> Employee?
-                    <input type="number" id="policyholderNIN" name="policyholderNIN" hidden>
+                    <input type="number" id="policyholderNIK" name="policyholderNIK" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>

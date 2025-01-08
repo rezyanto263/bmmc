@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Family NIN</th>
+                <th>Family NIK</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
@@ -22,7 +22,7 @@
         <tfoot>
             <tr>
                 <th>#</th>
-                <th>Family NIN</th>
+                <th>Family NIK</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
@@ -47,22 +47,22 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
-                        <!-- Family NIN -->
+                        <!-- Family NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIN" id="familyNIN">
+                                <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIK" id="familyNIK">
                             </div>
                         </div>
-                        <!-- Policyholder NIN -->
+                        <!-- Policyholder NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIN" id="policyholderNIN">
+                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIK" id="policyholderNIK">
                             </div>
                         </div>
                         <!-- Family Name -->
@@ -186,22 +186,22 @@
                     <div class="row gy-4">
                         <input type="number" id="familyId" name="familyId" hidden>
 
-                        <!-- Family NIN -->
+                        <!-- Family NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIN" id="familyNIN">
+                                <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIK" id="familyNIK">
                             </div>
                         </div>
-                        <!-- Policyholder NIN -->
+                        <!-- Policyholder NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIN">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIN" id="policyholderNIN">
+                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIK" id="policyholderNIK">
                             </div>
                         </div>
                         <!-- Family Name -->
@@ -325,7 +325,7 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="familyName"></span> Family?
-                    <input type="number" id="familyNIN" name="familyNIN" hidden>
+                    <input type="number" id="familyNIK" name="familyNIK" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>

@@ -19,20 +19,20 @@ class AuthUser extends CI_Controller {
 
         if ($loginKey) {
             $policyholderDatas = $this->M_auth->checkPolicyHolder('policyholderId', $keyReference);
-            if ($loginKey === hash('sha256', $policyholderDatas['policyholderNIN'])) {
+            if ($loginKey === hash('sha256', $policyholderDatas['policyholderNIK'])) {
                 $this->_setSession($policyholderDatas, 'policyholder');
                 redirect('user/profile');
             }
 
             $familyDatas = $this->M_auth->checkFamily('policyholderId', $keyReference);
-            if ($loginKey === hash('sha256', $familyDatas['familyNIN'])) {
+            if ($loginKey === hash('sha256', $familyDatas['familyNIK'])) {
                 $this->_setSession($familyDatas, 'family');
                 redirect('user/profile');
             }
         }
 
         // Check Session
-        if ($this->session->userdata('familyNIN')) {
+        if ($this->session->userdata('familyNIK')) {
             redirect('home');
         }
 
@@ -52,21 +52,21 @@ class AuthUser extends CI_Controller {
     }
 
     public function loginUser() {
-        $userNIN = htmlspecialchars($this->input->post('userNIN'));
+        $userNIK = htmlspecialchars($this->input->post('userNIK'));
         $userPassword = $this->input->post('userPassword');
         $rememberMe = $this->input->post('rememberMe') ?: FALSE;
-        // $userDatas = $this->M_auth->checkPolicyHolder('policyholderNIN', $userNIN);
+        // $userDatas = $this->M_auth->checkPolicyHolder('policyholderNIK', $userNIK);
         // var_dump($userDatas);
         // die();
-        if ($userDatas = $this->M_auth->checkPolicyHolder('policyholderNIN', $userNIN)) {
+        if ($userDatas = $this->M_auth->checkPolicyHolder('policyholderNIK', $userNIK)) {
             $userType = 'policyholder';
-        } else if ($userDatas = $this->M_auth->checkFamily('familyNIN', $userNIN)) {
+        } else if ($userDatas = $this->M_auth->checkFamily('familyNIK', $userNIK)) {
             $userType = 'family';
         }
         
         $validate = array(
             array(
-                'field' => 'userNIN',
+                'field' => 'userNIK',
                 'label' => 'NIN/NIK',
                 'rules' => 'required|trim|numeric|min_length[16]|max_length[16]',
                 'errors' => array(
@@ -103,7 +103,7 @@ class AuthUser extends CI_Controller {
             if (!empty($userDatas)) {
                 if (password_verify($userPassword, $userDatas['policyholderPassword'])) {
                     if ($rememberMe) {
-                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIN']), 0);
+                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIK']), 0);
                         $this->input->set_cookie('keyReference', $userDatas['policyholderId'], 0);
                     }
     
@@ -121,7 +121,7 @@ class AuthUser extends CI_Controller {
             if (!empty($userDatas)) {
                 if (password_verify($userPassword, $userDatas['familyPassword'])) {
                     if ($rememberMe) {
-                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIN']), 0);
+                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIK']), 0);
                         $this->input->set_cookie('keyReference', $userDatas['policyholderId'], 0);
                     }
     
@@ -145,7 +145,7 @@ class AuthUser extends CI_Controller {
     //     if (!empty($familyDatas)) {
     //         if (password_verify($userPassword, $familyDatas['familyPassword'])) {
     //             if ($rememberMe) {
-    //                 $this->input->set_cookie('loginKey', hash('sha256',$familyDatas['userNIN']), 0);
+    //                 $this->input->set_cookie('loginKey', hash('sha256',$familyDatas['userNIK']), 0);
     //                 $this->input->set_cookie('keyReference', $familyDatas['policyholderId'], 0);
     //             }
 
@@ -165,7 +165,7 @@ class AuthUser extends CI_Controller {
         if ($userType == 'policyholder') {
 
             $sessionDatas = array(
-                'userNIN' => $userDatas['policyholderNIN'],
+                'userNIK' => $userDatas['policyholderNIK'],
                 'userName' => $userDatas['policyholderName'],
                 'userEmail' => $userDatas['policyholderEmail'],
                 'userAddress' => $userDatas['policyholderAddress'],
@@ -173,20 +173,22 @@ class AuthUser extends CI_Controller {
                 'userGender' => $userDatas['policyholderGender'],
                 'userPassword' => $userDatas['policyholderPassword'],
                 'userStatus' => $userDatas['policyholderStatus'],
+                'userPhoto' => $userDatas['policyholderPhoto'],
             );
 
         } else if ($userType == 'family') {
 
             $sessionDatas = array(
-                'userNIN' => $userDatas['familyNIN'],
+                'userNIK' => $userDatas['familyNIK'],
                 'userName' => $userDatas['familyName'],
                 'userEmail' => $userDatas['familyEmail'],
-                'policyholderNIN' => $userDatas['policyholderNIN'],
+                'policyholderNIK' => $userDatas['policyholderNIK'],
                 'userAddress' => $userDatas['familyAddress'],
                 'userBirth' => $userDatas['familyBirth'],
                 'userGender' => $userDatas['familyGender'],
                 'userPassword' => $userDatas['familyPassword'],
                 'userStatus' => $userDatas['familyStatus'],
+                'userPhoto' => $userDatas['familyPhoto'],
             );
 
         }
@@ -200,7 +202,7 @@ class AuthUser extends CI_Controller {
         delete_cookie('keyReference');
 
         $userType = $this->session->userdata('userType');
-        $sessionDatas = array('userNIN', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
+        $sessionDatas = array('userNIK', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
 
         $userType == 'family'? $sessionDatas[]='policyholderId' : '';
 

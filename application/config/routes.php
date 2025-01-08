@@ -89,3 +89,6 @@ $route['landing'] = 'user/landing/Landing';
 $route['hospitals/doctors'] = 'hospitals/doctors';
 $route['hospitals/hHistories'] = 'hospitals/hHistories';
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';
+
+//user
+$route['user/profile/editEmployee'] = 'user/profile/editEmployee';

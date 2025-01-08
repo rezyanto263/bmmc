@@ -26,9 +26,9 @@
                                 <span class="input-group-text bg-transparent">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="NIN/NIK" name="userNIN" value="<?= set_value('userNIN'); ?>" required>
+                                <input class="form-control" type="text" placeholder="NIN/NIK" name="userNIK" value="<?= set_value('userNIK'); ?>" required>
                             </div>
-                            <?= form_error('userNIN', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
+                            <?= form_error('userNIK', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                         </div>
                         <div class="p-0">
                             <div class="input-group p-0">
