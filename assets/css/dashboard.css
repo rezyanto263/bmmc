@@ -520,3 +520,7 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
     color: var(--dark);
     box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.3) !important;
 }
+
+.modal#viewHistoryHealthDetailsModal {
+    z-index: 1056 !important;
+}

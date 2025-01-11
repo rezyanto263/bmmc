@@ -23,6 +23,7 @@
             <div class="modal-body p-0 d-flex flex-column justify-content-center">
                 <video class="m-0" id="qrScanner"></video>
                 <form id="qrForm" class="text-center px-5">
+                    <div id="adminRole" data-admin-role="<?php echo base64_encode($this->session->userdata('adminRole')); ?>" hidden></div>
                     <input class="border border-1 rounded my-3 text-center w-100" readonly type="text" placeholder="Scan your QR please!" name="qrData">
                 </form>
             </div>

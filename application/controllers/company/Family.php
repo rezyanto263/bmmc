@@ -29,7 +29,7 @@ class Family extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
+            'floatingMenu' => 'partials/company/floatingMenu',
             'contentHeader' => 'partials/company/contentHeader',
             'contentBody' => 'company/Family',
             'footer' => 'partials/dashboard/footer',
@@ -51,7 +51,7 @@ class Family extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
+            'floatingMenu' => 'partials/company/floatingMenu',
             'contentHeader' => 'partials/company/contentHeader',
             'contentBody' => 'company/AllFamily',
             'footer' => 'partials/dashboard/footer',

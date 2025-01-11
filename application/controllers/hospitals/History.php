@@ -14,9 +14,8 @@ class History extends CI_Controller {
         $this->load->model('M_admins');
         $this->load->model('M_hospitals');
         $this->load->model('M_historyhealth');
-        $this->load->model('M_hisealthtals');
         
-    }    
+    } 
 
     public function index()
     {
@@ -45,7 +44,7 @@ class History extends CI_Controller {
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
         if ($hospitalDatas) {
-            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $hisealthtalsDatas = $this->M_historyhealth->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
             $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
         
             if ($historyhealthIds) {
@@ -60,6 +59,14 @@ class History extends CI_Controller {
         } else {
             echo json_encode(['data' => []]);
         }
+    }
+
+    public function getHPatientHistoryHealthDetailsByNIK($patientNIK) {
+        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+        $datas = array(
+            'data' => $historyhealthDatas
+        );
+        echo json_encode($datas);
     }
     
 }

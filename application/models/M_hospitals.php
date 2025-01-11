@@ -50,6 +50,10 @@ class M_hospitals extends CI_Model {
         $this->db->group_by('hh.patientNIK');
         return $this->db->get()->result_array();
     }
+
+    public function getActiveHospitalsDatas() {
+        return $this->db->get_where('hospital', array('hospitalStatus' => 'active'))->result_array();
+    }
 }
 
 /* End of file M_hospitals.php */

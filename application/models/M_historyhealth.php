@@ -37,6 +37,9 @@ class M_historyhealth extends CI_Model {
         }
         return $results;
     }
+    public function getHospitalHisealthtalsDatas($param, $data) {
+        return $this->db->get_where('hisealthtal', array($param => $data))->result_array();
+    }
 }
 
 /* End of file M_historyhealth.php */

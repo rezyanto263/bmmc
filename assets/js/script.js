@@ -78,7 +78,7 @@ function floatingMenuHandler() {
 // QR Scanner
 var scanner;
 var cameraStream;
-$
+
 $('#scannerModal').on('show.bs.modal', function() {
     $('#scannerModal .btn-close').hide();
     $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
@@ -88,9 +88,14 @@ $('#scannerModal').on('show.bs.modal', function() {
         });
         scanner = new Instascan.Scanner({ video: $('#qrScanner').get(0) });
         scanner.addListener('scan', function (content) {
-            $('#qrData').val(content);
             $('[name="qrData"]').val(content);
-            $('#qrHospitalForm').submit();
+            if (atob($('#adminRole').data('admin-role')) === 'admin') {
+                $('#qrForm').submit();
+            } else if (atob($('#adminRole').data('admin-role')) === 'hospital') {
+                $('#qrHospitalForm').submit();
+            } else if (atob($('#adminRole').data('admin-role')) === 'company') {
+                $('#qrCompanyForm').submit();
+            }
             console.log(content);
         });
         Instascan.Camera.getCameras().then(function (cameras) {
@@ -109,6 +114,7 @@ $('#scannerModal').on('show.bs.modal', function() {
         console.error('Instascan initialization error:', error);
     }
 });
+
 $('#qrHospitalForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
@@ -137,7 +143,7 @@ $('#qrHospitalForm').on('submit', function(e) {
                     $('#scanResultModal [name="address"]').val(data.policyholderAddress ? data.policyholderAddress : data.familyAddress);
                     $('#scanResultModal [name="status"]').val(capitalizeWords(data.policyholderStatus ? data.policyholderStatus : data.familyStatus));
                     displayAlert('scan qr success');
-                    getPatientHistoryHealth(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
+                    getHPatientHistoryHealth(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
                 });
             } else if (res.status === 'failed') {
                 displayAlert(res.failedMsg);
@@ -146,6 +152,42 @@ $('#qrHospitalForm').on('submit', function(e) {
     });
 });
 
+$('#qrCompanyForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'hospitals/getPatientByNIK',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function (response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
+                // resultModal.show();
+                $('#scanResultModal').modal('show');
+                $('#scannerModal').modal('hide');
+                const data = res.data;
+                $('#scanResultModal').on('shown.bs.modal', function() {
+                    var photo = data.policyholderPhoto || data.familyPhoto;
+                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
+                    $('#scanResultModal [name="nik"]').val(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
+                    $('#scanResultModal [name="name"]').val(data.policyholderName ? data.policyholderName : data.familyName);
+                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Policyholder');
+                    $('#scanResultModal [name="birth"]').val(data.policyholderBirth ? data.policyholderBirth : data.familyBirth);
+                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.policyholderGender ? data.policyholderGender : data.familyGender));
+                    $('#scanResultModal [name="companyName"]').val(data.companyName);
+                    $('#scanResultModal [name="email"]').val(data.policyholderEmail ? data.policyholderEmail : data.familyEmail);
+                    $('#scanResultModal [name="phone"]').val(data.policyholderPhone ? data.policyholderPhone : data.familyPhone);
+                    $('#scanResultModal [name="address"]').val(data.policyholderAddress ? data.policyholderAddress : data.familyAddress);
+                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.policyholderStatus ? data.policyholderStatus : data.familyStatus));
+                    displayAlert('scan qr success');
+                    getCPatientHistoryHealth(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
+                });
+            } else if (res.status === 'failed') {
+                displayAlert(res.failedMsg);
+            }
+        }
+    });
+});
 
 $('#qrForm').on('submit', function(e) {
     e.preventDefault();

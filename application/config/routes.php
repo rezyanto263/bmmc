@@ -72,16 +72,23 @@ $route['dashboard/getAllUnconnectedHospitalAdminsDatas'] = 'dashboard/Admins/get
 $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedCompanyAdminsDatas';
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
+$route['dashboard/getAllCompanyBillingDatas'] = 'dashboard/Billings/getAllCompanyBillingDatas';
+$route['dashboard/getPatientByNIK'] = 'dashboard/Companies/scanQR';
+$route['dashboard/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'dashboard/Hospitals/getPatientHistoryHealthDetailsByNIK/$1';
 
 $route['hospitals/getHospitalDoctorsDatas'] = 'hospitals/Doctors/getHospitalDoctorsDatas';
 $route['hospitals/getHospitalHistoriesDatas'] = 'hospitals/History/getHospitalHistoriesDatas';
-$route['hospitals/getPatientDataByNIK'] = 'hospitals/Patient/getPatientDataByNIK';
+// $route['hospitals/getPatientDataByNIK'] = 'hospitals/Patient/getPatientDataByNIK';
 $route['hospitals/getPatientByNIK'] = 'hospitals/Patient/scanQR';
-$route['hospitals/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospitals/Patient/getPatientHistoryHealthDetailsByNIK/$1';
+$route['hospitals/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospitals/History/getHPatientHistoryHealthDetailsByNIK/$1';
 
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
 $route['company/Family/getFamiliesByPolicyholderNIK'] = 'company/Family/getFamiliesByPolicyholderNIK';
+$route['company/getPatientByNIK'] = 'company/Patient/scanQR';
+$route['company/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'company/Patient/getCPatientHistoryHealthDetailsByNIK/$1';
+
+$route['landing/getActiveHospitalDatas'] = 'user/LandingPage/getActiveHospitalDatas';
 
 // Route baru untuk tampilan profil pengguna
 $route['profile'] = 'user/User';
