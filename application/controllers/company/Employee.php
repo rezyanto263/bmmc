@@ -61,19 +61,19 @@ class Employee extends CI_Controller {
         $validate = array(
             // Aturan validasi untuk setiap field
             array(
-                'field' => 'policyholderName',
+                'field' => 'employeeName',
                 'label' => 'Nama',
                 'rules' => 'required',
                 'errors' => array('required' => 'Karyawan harus memberikan %s.')
             ),
             array(
-                'field' => 'policyholderNIK',
+                'field' => 'employeeNIK',
                 'label' => 'NIK',
                 'rules' => 'required|trim',
                 'errors' => array('required' => 'Karyawan harus memberikan %s.')
             ),
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -82,7 +82,7 @@ class Employee extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderPassword',
+                'field' => 'employeePassword',
                 'label' => 'Password',
                 'rules' => 'required|trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
                 'errors' => array(
@@ -95,7 +95,7 @@ class Employee extends CI_Controller {
             array(
                 'field' => 'confirmPassword',
                 'label' => 'Konfirmasi Password',
-                'rules' => 'required|matches[policyholderPassword]',
+                'rules' => 'required|matches[employeePassword]',
                 'errors' => array(
                     'required' => 'Anda harus memberikan %s.',
                     'matches' => '%s tidak cocok dengan Password.'
@@ -111,24 +111,24 @@ class Employee extends CI_Controller {
         } else {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
-                'policyholderNIK' => htmlspecialchars($this->input->post('policyholderNIK')),
-                'policyholderName' => $this->input->post('policyholderName'),
-                'policyholderEmail' => $this->input->post('policyholderEmail'),
-                'policyholderPassword' => password_hash(htmlspecialchars($this->input->post('policyholderPassword')), PASSWORD_DEFAULT),
-                'policyholderAddress' => $this->input->post('policyholderAddress'),
-                'policyholderPhone' => $this->input->post('policyholderPhone'),
-                'policyholderBirth' => $this->input->post('policyholderBirth'),
-                'policyholderGender' => $this->input->post('policyholderGender'),
-                'policyholderStatus' => $this->input->post('policyholderStatus'),
+                'employeeNIK' => htmlspecialchars($this->input->post('employeeNIK')),
+                'employeeName' => $this->input->post('employeeName'),
+                'employeeEmail' => $this->input->post('employeeEmail'),
+                'employeePassword' => password_hash(htmlspecialchars($this->input->post('employeePassword')), PASSWORD_DEFAULT),
+                'employeeAddress' => $this->input->post('employeeAddress'),
+                'employeePhone' => $this->input->post('employeePhone'),
+                'employeeBirth' => $this->input->post('employeeBirth'),
+                'employeeGender' => $this->input->post('employeeGender'),
+                'employeeStatus' => $this->input->post('employeeStatus'),
             );
     
             // Handle file upload if a photo is provided
-            if ($_FILES['policyholderPhoto']['name']) {
-                $fileName = strtoupper(trim(str_replace('.', ' ', $employeeData['policyholderName']))) . '-' . time();
-                $policyholderPhoto = $this->_uploadLogo('policyholderPhoto', array('file_name' => $fileName));
+            if ($_FILES['employeePhoto']['name']) {
+                $fileName = strtoupper(trim(str_replace('.', ' ', $employeeData['employeeName']))) . '-' . time();
+                $employeePhoto = $this->_uploadLogo('employeePhoto', array('file_name' => $fileName));
     
-                if ($policyholderPhoto['status']) {
-                    $employeeData['policyholderPhoto'] = $policyholderPhoto['data']['file_name'];
+                if ($employeePhoto['status']) {
+                    $employeeData['employeePhoto'] = $employeePhoto['data']['file_name'];
     
                     // Insert employee data into the database
                     $this->M_employee->insertEmployee($employeeData);
@@ -136,14 +136,14 @@ class Employee extends CI_Controller {
                     // Insert data into the compolder table
                     $compolderData = array(
                         'companyId' => $companyId,
-                        'policyholderNIK' => $this->input->post('policyholderNIK')
+                        'employeeNIK' => $this->input->post('employeeNIK')
                     );
                     $this->M_employee->insertCompolder($compolderData);
     
                     echo json_encode(array('status' => 'success'));
                     return;
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'Upload failed', 'errorMsg' => $policyholderPhoto['error']));
+                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'Upload failed', 'errorMsg' => $employeePhoto['error']));
                     return; // Stop execution if upload fails
                 }
             } else {
@@ -153,7 +153,7 @@ class Employee extends CI_Controller {
                 // Insert data into the compolder table
                 $compolderData = array(
                     'companyId' => $companyId,
-                    'policyholderNIK' => $this->input->post('policyholderNIK')
+                    'employeeNIK' => $this->input->post('employeeNIK')
                 );
                 $this->M_employee->insertCompolder($compolderData);
     
@@ -182,16 +182,16 @@ class Employee extends CI_Controller {
         }
     }
 
-    private function _deleteLogo($policyholderNIK) {
-        $employeeData = $this->M_employee->checkEmployee('policyholderNIK', $policyholderNIK);
-        unlink(FCPATH . 'uploads/logos/' . $employeeData['policyholderPhoto']);
+    private function _deleteLogo($employeeNIK) {
+        $employeeData = $this->M_employee->checkEmployee('employeeNIK', $employeeNIK);
+        unlink(FCPATH . 'uploads/logos/' . $employeeData['employeePhoto']);
     }
 
     public function editEmployee() {
         // Validation rules
         $validate = array(
             array(
-                'field' => 'policyholderName',
+                'field' => 'employeeName',
                 'label' => 'Name',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -199,7 +199,7 @@ class Employee extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -237,30 +237,30 @@ class Employee extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             // Retrieve form data
-            $policyholderNIK = $this->input->post('policyholderNIK');
-            $policyholderNIK = $this->input->post('policyholderNIK');
-            $password = $this->input->post('policyholderPassword');
+            $employeeNIK = $this->input->post('employeeNIK');
+            $employeeNIK = $this->input->post('employeeNIK');
+            $password = $this->input->post('employeePassword');
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $employeeData = array(
-                'policyholderNIK' => $this->input->post('policyholderNIK'),
-                'policyholderName' => $this->input->post('policyholderName'),
-                'policyholderEmail' => $this->input->post('policyholderEmail'),
-                'policyholderAddress' => $this->input->post('policyholderAddress'),
-                'policyholderPhone' => $this->input->post('policyholderPhone'),
-                'policyholderBirth' => $this->input->post('policyholderBirth'),
-                'policyholderGender' => $this->input->post('policyholderGender'),
-                'policyholderStatus' => $this->input->post('policyholderStatus'),
+                'employeeNIK' => $this->input->post('employeeNIK'),
+                'employeeName' => $this->input->post('employeeName'),
+                'employeeEmail' => $this->input->post('employeeEmail'),
+                'employeeAddress' => $this->input->post('employeeAddress'),
+                'employeePhone' => $this->input->post('employeePhone'),
+                'employeeBirth' => $this->input->post('employeeBirth'),
+                'employeeGender' => $this->input->post('employeeGender'),
+                'employeeStatus' => $this->input->post('employeeStatus'),
             );
-            !empty($newPassword)? $employeeData['policyholderPassword'] = $newPassword : '';
+            !empty($newPassword)? $employeeData['employeePassword'] = $newPassword : '';
 
-            $this->M_employee->updateEmployee($policyholderNIK, $employeeData);
+            $this->M_employee->updateEmployee($employeeNIK, $employeeData);
             echo json_encode(array('status' => 'success'));
         }
     }    
 
     public function deleteEmployee() {
-        $policyholderNIK = $this->input->post('policyholderNIK');
-        $this->M_employee->deleteEmployee($policyholderNIK);
+        $employeeNIK = $this->input->post('employeeNIK');
+        $this->M_employee->deleteEmployee($employeeNIK);
 
         echo json_encode(array('status' => 'success'));
     }
