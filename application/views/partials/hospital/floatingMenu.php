@@ -195,6 +195,14 @@
                             <textarea class="form-control" type="text" placeholder="Details" name="historyhealthDetails" disabled></textarea>
                         </div>
                     </div>
+                    <div class="col-12">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Details">
+                                <i class="las la-stethoscope fs-4"></i>
+                            </span>
+                            <textarea class="form-control" type="text" placeholder="Details" name="historyhealthDetails" disabled></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

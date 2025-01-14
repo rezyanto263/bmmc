@@ -12,6 +12,7 @@ class Hospitals extends CI_Controller {
         }
 
         $this->load->model('M_hospitals');
+        $this->load->model('M_companies');
     }    
 
     public function index()
@@ -324,6 +325,14 @@ class Hospitals extends CI_Controller {
                 'failedMsg' => 'scan not found'
             ));
         }
+    }
+
+    public function getCPatientHistoryHealthDetailsByNIK($patientNIK) {
+        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+        $datas = array(
+            'data' => $historyhealthDatas
+        );
+        echo json_encode($datas);
     }
 
 }

@@ -236,16 +236,15 @@
         </table>
       </div>
     </div>
-
   </div>
   <!-- riwayat -->
   <div class="content-body py-3">
     <div class="d-flex justify-content-between align-items-end p-0 mt-4">
-      <h3 class="my-0">History Patient</h3>
+      <h3 class="my-0">Riwayat Berobat</h3>
     </div>
     <div class="content-body py-3">
       <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-      <table class="table" id="" style="width:100%">
+      <table class="table" id="riwayatTable" style="width:100%">
         <thead>
           <tr>
             <th>#</th>

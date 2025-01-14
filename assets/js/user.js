@@ -1,3 +1,125 @@
+// Configuration
+var DataTableSettings = {
+    processing: true,
+    columnDefs: [
+        {width: '70px', target: 0},
+    ],
+    buttons: [
+        {
+            extend: 'copyHtml5',
+            text: 'Copy',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'pdfHtml5',
+            text: 'PDF',
+            orientation: 'portrait',
+            pageSize: 'A4',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            },
+            customize: function (doc) {
+                doc.content[1].table.widths = 
+                    Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+            }
+        }
+    ],
+    layout: {
+        topStart: 'buttons',
+        topEnd: {
+            pageLength: {
+                menu: [10, 20, 50, 100]
+            },
+            search: {
+                placeholder: 'Search'
+            },
+        },
+        bottomStart: 'info',
+        bottomEnd: 'paging',
+    },
+    paging: true,
+    searching: true,
+    ordering: true,
+}
+
+var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'user/getUserHistories', 
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: 'historyhealthFamilyRole',
+            render: function (data, type, row) {
+                if (data === 'policyholder') {
+                    return row.policyholderName;
+                } else {
+                    return row.familyName;
+                }
+            }
+        },
+        {data: 'historyhealthFamilyRole'},
+        {data: 'companyName'},
+        {data: 'doctorName'},
+        {
+            data: 'historyhealthBill',
+            render: function (data) {
+                return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+        },
+        {
+            data: 'historyhealthDate',
+            render: function (data, type, row) {
+                if (type === 'display' || type === 'filter') {
+                    if (data) {
+                        return moment(data).format('DD MMMM YYYY');
+                    } else {
+                        return '';
+                    }
+                }
+                return data;
+            }
+        },
+        {data: 'historyhealthStatus'},
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#detailHistoryModal"
+                    title="View History">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+            `
+        },
+        { 
+            data: 'patientNIK',
+            visible: false, 
+            searchable: true
+        }
+    ],
+    columnDefs: [
+        {width: '180px', target: 4}
+    ]
+}));
+
 document.addEventListener("DOMContentLoaded", function () {
     $.ajax({
         url: baseUrl + 'landing/getActiveHospitalDatas',

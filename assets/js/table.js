@@ -783,11 +783,11 @@ $('#deleteCompanyForm').on('submit', function(e) {
 var cPatientTable;
 function getCPatientHistoryHealth(patientNIK) {
     if ($.fn.DataTable.isDataTable('#cPatientTable')) {
-        $('#cPatientTable').DataTable().ajax.url(baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        $('#cPatientTable').DataTable().ajax.url(baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
         return;
     }
     cPatientTable = $('#cPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        ajax: baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
         columns: [
             {
                 data: null,
@@ -1099,6 +1099,15 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
     ],
     columnDefs: [
         {width: '180px', target: 4}
+    ],
+    buttons: [
+        {
+            text: '<i class="fa-solid fa-arrows-rotate fs-5 pt-1 px-0 px-md-1"></i>',
+            className: '',
+            action: function (e, dt, node, config) {
+                dt.ajax.reload(null, false);
+            }
+        },
     ]
 }));
 

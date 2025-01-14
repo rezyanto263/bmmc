@@ -85,20 +85,19 @@ $route['hospitals/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospitals/His
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
 $route['company/Family/getFamiliesByPolicyholderNIK'] = 'company/Family/getFamiliesByPolicyholderNIK';
-$route['company/getPatientByNIK'] = 'company/Patient/scanQR';
-$route['company/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'company/Patient/getCPatientHistoryHealthDetailsByNIK/$1';
+$route['company/getPatientByNIK'] = 'company/Hospitals/scanQR';
+$route['company/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'company/Hospitals/getCPatientHistoryHealthDetailsByNIK/$1';
 
 $route['landing/getActiveHospitalDatas'] = 'user/LandingPage/getActiveHospitalDatas';
 
 // Route baru untuk tampilan profil pengguna
-$route['profile'] = 'user/User';
+$route['user/getUserHistories'] = 'user/profile/getUserHistories';
 $route['user/editEmployee'] = 'user/User/editEmployee';
 $route['user/editFamily'] = 'user/User/editFamily';
 $route['company/dashboard'] = 'company/dashboard';
 $route['landing'] = 'user/landing/Landing';
 
 // Hospital
-$route['hospitals/doctors'] = 'hospitals/doctors';
 $route['hospitals/hHistories'] = 'hospitals/hHistories';
 $route['company/dashboard/editCompany'] = 'company/dashboard/editCompany';
 

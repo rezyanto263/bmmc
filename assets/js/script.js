@@ -155,7 +155,7 @@ $('#qrHospitalForm').on('submit', function(e) {
 $('#qrCompanyForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'hospitals/getPatientByNIK',
+        url: baseUrl + 'company/getPatientByNIK',
         method: 'POST',
         data: $(this).serialize(),
         success: function (response) {

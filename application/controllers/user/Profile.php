@@ -14,6 +14,7 @@ class Profile extends CI_Controller {
         }
 
         $this->load->model('M_auth');
+        $this->load->model('M_historyhealth');
     }
 
     public function index()
@@ -49,6 +50,37 @@ class Profile extends CI_Controller {
 
         $this->load->vars($datas);
         $this->load->view('master', $partials);
+    }
+
+    public function getUserHistories() {
+        $userDatas = $this->M_auth->checkPolicyHolder('policyholderNIK', $this->session->userdata('userNIK'));
+        if (!$userDatas) {
+            $familyDatas = $this->M_auth->checkFamily('familyNIK', $this->session->userdata('userNIK'));
+        }
+        if (!$userDatas['familyNIK']) {
+            var_dump($userDatas);
+            exit;
+        }
+        var_dump('test');
+        exit;
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+
+        if ($hospitalDatas) {
+            $hisealthtalsDatas = $this->M_historyhealth->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+        
+            if ($historyhealthIds) {
+                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+                $datas = array(
+                    'data' => $historiesDatas,
+                );
+                echo json_encode($datas);
+            } else {
+                echo json_encode(['data' => []]);
+            }
+        } else {
+            echo json_encode(['data' => []]);
+        }
     }
 
     public function editEmployee() {
