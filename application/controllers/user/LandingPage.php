@@ -4,10 +4,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class LandingPage extends CI_Controller {    
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('M_hospitals');
+    }
+
     public function index()
     {
         $datas = array(
-            'title' => 'BIM | User',
+            'title' => 'BMMC | User',
             'subtitle' => 'Landing Page',
             'contentType' => 'user'
         );
@@ -22,6 +28,19 @@ class LandingPage extends CI_Controller {
 
         $this->load->vars($datas);
         $this->load->view('master', $partials);
+    }
+
+    public function getActiveHospitalDatas() {
+        $hospitalDatas = $this->M_hospitals->getActiveHospitalsDatas();
+        if ($hospitalDatas) {
+            $datas = array(
+                'status' => 'success',
+                'data' => $hospitalDatas
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['status' => 'failed', 'data' => []]);
+        }
     }
 
 }

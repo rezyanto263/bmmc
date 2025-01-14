@@ -98,3 +98,163 @@ body {
     width: 50%;
   }
 }
+
+/* Datatables */
+.dt-buttons {
+  border: none;
+  display: flex;
+  
+}
+
+.dt-buttons .btn-secondary  {
+  background-color: var(--primary) !important;
+  border: none;
+  box-shadow: none;
+  outline: 1px solid var(--primary) !important;
+  margin-inline: 0 !important;
+  box-shadow: none;
+}
+
+.dt-buttons .btn-secondary:hover {
+  background-color: transparent !important;
+  color: var(--primary) !important;
+}
+
+:where(.dt-length, .dt-search) label {
+  display: none;
+}
+
+.dt-length select, .dt-search input {
+  margin: 0 !important;
+  padding-block: 8px !important;
+  font-size: 16px;
+}
+
+.dt-length, .dt-search, .dt-buttons {
+  margin-bottom: 16px;
+}
+
+.dt-length, .dt-search {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dt-length{
+  float: left;
+}
+
+.dt-search {
+  float: right;
+}
+
+.dt-search input {
+  background-color: transparent !important;
+  border-radius: 8px;
+  color: var(--seconddark) !important;
+  border: 1px solid var(--grey) !important;
+}
+
+.dt-search input::placeholder {
+  content: "Search...";
+  color: var(--dark);
+}
+
+.dt-length select {
+  background-color: transparent;
+  color: var(--seconddark);
+  box-shadow: none !important;
+  outline: 1px solid var(--grey) !important;
+  border: none;
+  border-radius: 8px;
+}
+
+.dt-length select option {
+  background-color: var(--lightgrey);
+  color: var(--dark);
+  border-radius: 0 !important;
+}
+
+.dt-length select option:hover::after {
+  background: var(--primary) !important;
+  color: var(--dark) !important;
+}
+
+.table td {
+  background-color: transparent !important;
+  color: var(--dark) !important;
+  border-block: 1px solid var(--secondlightgrey)
+}
+
+.table tbody tr:hover {
+  background-color: var(--lightgrey) !important;
+  color: var(--dark) !important;
+}
+ 
+.table th {
+  background-color: transparent !important;
+  color: var(--dark);
+  border-block: 2px solid var(--primary);
+  padding-block: 20px;
+  vertical-align: middle;
+}
+
+.table th:hover {
+  background-color: var(--primary) !important;
+}
+
+.dt-paging nav {
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.dt-paging nav .page-link {
+  background-color: var(--primary);
+  color: var(--dark);
+  border: none;
+  padding-block: 8px;
+  outline: 1px solid var(--primary) !important;
+  box-shadow: none;
+  z-index: 0;
+}
+
+.dt-paging nav .page-link:not(.previous, .next, .first, .last) {
+  background-color: transparent;
+  margin: 0;
+}
+
+.dt-paging nav .page-link:hover {
+  background-color: var(--primary);
+  outline: 1px solid var(--primary) !important;
+}
+
+.dt-paging nav .active .page-link {
+  background-color: var(--primary) !important;
+  outline: 2px solid var(--dark);
+  color: white;
+}
+
+.dt-paging nav .disabled .page-link {
+  color: rgb(87, 87, 87) !important;
+}
+
+.dropdown-menu {
+  background-color: var(--secondlightgrey) !important;
+}
+
+.dropdown-menu .dropdown-item {
+  color: var(--primary) !important;
+  background-color: var(--secondlightgrey) !important;
+}
+
+.dropdown-menu .dropdown-item:active {
+  color: var(--seconddark) !important;
+  background-color: var(--primary) !important;
+}
+
+.dt-button-info {
+  background-color: transparent !important;
+  border: 1px solid var(--grey);
+  backdrop-filter: blur(10px) saturate(120%) brightness(95%);
+  color: var(--dark);
+  box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.3) !important;
+}

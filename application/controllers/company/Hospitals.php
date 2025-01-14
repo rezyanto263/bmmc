@@ -12,6 +12,7 @@ class Hospitals extends CI_Controller {
         }
 
         $this->load->model('M_hospitals');
+        $this->load->model('M_companies');
     }    
 
     public function index()
@@ -25,7 +26,7 @@ class Hospitals extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
+            'floatingMenu' => 'partials/company/floatingMenu',
             'contentHeader' => 'partials/company/contentHeader',
             'contentBody' => 'company/Hospitals',
             'footer' => 'partials/dashboard/footer',
@@ -245,6 +246,93 @@ class Hospitals extends CI_Controller {
         $this->M_hospitals->deleteHospital($hospitalId);
 
         echo json_encode(array('status' => 'success'));
+    }
+
+    public function getPatientDataByNIK() {
+        $patientNIK = $this->input->post('patientNIK');
+        $patient = $this->M_patient->getPatientDataByNIK($patientNIK);
+        var_dump($patient);
+        exit;
+        if ($hospitalDatas) {
+            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+        
+            if ($historyhealthIds) {
+                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+                $datas = array(
+                    'data' => $historiesDatas,
+                );
+                echo json_encode($datas);
+            } else {
+                echo json_encode(['data' => []]);
+            }
+        } else {
+            echo json_encode(['data' => []]);
+        }
+    }
+
+    public function scanQR() {
+        $qrInput = $this->input->post('qrData');
+        if (!$qrInput) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'qr data missing'
+            ));
+            return;
+        }
+    
+        $decodedData = base64_decode($qrInput, true);
+        if ($decodedData === false) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'invalid qr'
+            ));
+            return;
+        }
+
+        
+        $qrData = explode('-', $decodedData);
+        if (!(count($qrData) == 2)) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incorrect format qr data'
+            ));
+            return;
+        }
+        
+        $NIK = trim($qrData[0]) ?: NULL;
+        $role = trim($qrData[1]) ?: NULL;
+        if (!$NIK || !$role) {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'incomplete qr data'
+            ));
+            return;
+        }
+    
+        $patientData = $role == 'policyholder' 
+            ? $this->M_companies->getPolicyholderByNIK($NIK) 
+            : $this->M_companies->getFamilyByNIK($NIK);
+    
+        if ($patientData) {
+            echo json_encode(array(
+                'status' => 'success',
+                'data' => $patientData,
+            ));
+        } else {
+            echo json_encode(array(
+                'status' => 'failed',
+                'failedMsg' => 'scan not found'
+            ));
+        }
+    }
+
+    public function getCPatientHistoryHealthDetailsByNIK($patientNIK) {
+        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+        $datas = array(
+            'data' => $historyhealthDatas
+        );
+        echo json_encode($datas);
     }
 
 }

@@ -22,7 +22,7 @@
             </div>
             <div class="modal-body p-0 d-flex flex-column justify-content-center">
                 <video class="m-0" id="qrScanner"></video>
-                <form id="qrHospitalForm" class="text-center px-5">
+                <form id="qrCompanyForm" class="text-center px-5">
                     <div id="adminRole" data-admin-role="<?php echo base64_encode($this->session->userdata('adminRole')); ?>" hidden></div>
                     <input class="border border-1 rounded my-3 text-center w-100" readonly type="text" placeholder="Scan your QR please!" name="qrData">
                 </form>
@@ -136,7 +136,7 @@
                 </div>
                 <h1>History Health</h1>
                 <div class="row">
-                    <table id="hPatientTable" class="table" style="width:100%">
+                    <table id="cPatientTable" class="table" style="width:100%">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -185,14 +185,6 @@
                                 <i class="las la-comment-dots fs-4"></i>  
                             </span>
                             <textarea class="form-control" type="text" placeholder="Complaint" name="historyhealthComplaint" disabled></textarea>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="input-group p-0">
-                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Details">
-                                <i class="las la-stethoscope fs-4"></i>
-                            </span>
-                            <textarea class="form-control" type="text" placeholder="Details" name="historyhealthDetails" disabled></textarea>
                         </div>
                     </div>
                     <div class="col-12">

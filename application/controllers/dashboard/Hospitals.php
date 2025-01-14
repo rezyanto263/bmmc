@@ -45,6 +45,14 @@ class Hospitals extends CI_Controller {
         echo json_encode($datas);
     }
 
+    public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
+        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+        $datas = array(
+            'data' => $historyhealthDatas
+        );
+        echo json_encode($datas);
+    }
+    
     public function addHospital() {
         $validate = array(
             array(

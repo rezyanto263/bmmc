@@ -779,6 +779,89 @@ $('#deleteCompanyForm').on('submit', function(e) {
     });
 });
 
+// Scan QR Patient For Company
+var cPatientTable;
+function getCPatientHistoryHealth(patientNIK) {
+    if ($.fn.DataTable.isDataTable('#cPatientTable')) {
+        $('#cPatientTable').DataTable().ajax.url(baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        return;
+    }
+    cPatientTable = $('#cPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
+        ajax: baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        columns: [
+            {
+                data: null,
+                className: 'text-start',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {data: 'hospitalName'},
+            {data: 'doctorName'},
+            {
+                data: 'diseaseNames',
+                render: function(data, type, row) {
+                    return data.split('|').join(', ');
+                }
+            },
+            {
+                data: 'historyhealthDate',
+                render: function(data, type, row) {
+                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
+                }
+            },
+            {
+                data: 'historyhealthBill',
+                render: function(data, type, row) {
+                    return formatToRupiah(data);
+                }
+            },
+            {
+                data: 'historyhealthStatus',
+                render: function(data, type, row) {
+                    var statusColor;
+                    if (data === 'not paid') {
+                        statusColor = 'bg-danger';
+                    } else if (data === 'paid') {
+                        statusColor = 'bg-success';
+                    } else if (data === 'free') {
+                        statusColor = 'bg-info';
+                    }
+                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                }
+            },
+            {
+                data: null,
+                className: 'text-end user-select-none no-export',
+                orderable: false,
+                defaultContent: `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `
+            }
+        ],
+        columnDefs: [
+            {width: '80px', target: 7}
+        ]
+    }));
+}
+
+var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
+$('#cPatientTable').on('click', '.btn-view', function() {
+    viewHistoryHealthDetailsModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    if (backdrops.length >= 2) {
+        backdrops[1].style.zIndex = "1055";
+    }
+    var data = cPatientTable.row($(this).parents('tr')).data();
+    console.log(data);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
+});
+
 // CRUD Data Doctors
 var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'hospitals/getHospitalDoctorsDatas', 
@@ -1016,6 +1099,15 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
     ],
     columnDefs: [
         {width: '180px', target: 4}
+    ],
+    buttons: [
+        {
+            text: '<i class="fa-solid fa-arrows-rotate fs-5 pt-1 px-0 px-md-1"></i>',
+            className: '',
+            action: function (e, dt, node, config) {
+                dt.ajax.reload(null, false);
+            }
+        },
     ]
 }));
 
@@ -1048,13 +1140,13 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
 });
 
 // Scan QR Patient For Hospital
-var patientTable;
-function getPatientHistoryHealth(patientNIK) {
+var hPatientTable;
+function getHPatientHistoryHealth(patientNIK) {
     if ($.fn.DataTable.isDataTable('#hPatientTable')) {
         $('#hPatientTable').DataTable().ajax.url(baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
         return;
     }
-    patientTable = $('#hPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
+    hPatientTable = $('#hPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
         ajax: baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
         columns: [
             {
@@ -1117,111 +1209,17 @@ function getPatientHistoryHealth(patientNIK) {
     }));
 }
 
-// Inisialisasi DataTables untuk patientTable
-// var patientTable = $('#patientTable').DataTable({
-//     paging: false,
-//     searching: false,
-//     info: false,
-//     ordering: false,
-//     columns: [
-//         { data: null, render: function(data, type, row) { return 'Name:'; } },
-//         { data: 'patientName' },
-//         { data: null, render: function(data, type, row) { return 'NIK:'; } },
-//         { data: 'patientNIK' },
-//         { data: null, render: function(data, type, row) { return 'Company:'; } },
-//         { data: 'patientCompany' },
-//         { data: null, render: function(data, type, row) { return 'Birth Date:'; } },
-//         { data: 'patientBirthDate', render: function(data) { return moment(data).format('DD MMMM YYYY'); } },
-//         { data: null, render: function(data, type, row) { return 'Gender:'; } },
-//         { data: 'patientGender' },
-//         { data: null, render: function(data, type, row) { return 'Address:'; } },
-//         { data: 'patientAddress' },
-//         { data: null, render: function(data, type, row) { return 'Phone:'; } },
-//         { data: 'patientPhone' },
-//         { data: null, render: function(data, type, row) { return 'Status:'; } },
-//         { data: 'patientStatus' }
-//     ]
-// });
-
-// // Inisialisasi DataTables untuk hPatientTable
-// var hPatientTable = $('#hPatientTable').DataTable({
-//     paging: true,
-//     searching: true,
-//     info: true,
-//     columns: [
-//         {
-//             data: null,
-//             className: 'text-start',
-//             render: function (data, type, row, meta) {
-//                 return meta.row + 1;
-//             }
-//         },
-//         { data: 'patientName', title: 'Patient Name' },
-//         { data: 'doctorName', title: 'Doctor Name' },
-//         {
-//             data: 'bill',
-//             title: 'Bill',
-//             render: function (data) {
-//                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Format mata uang
-//             }
-//         },
-//         {
-//             data: 'date',
-//             title: 'Date',
-//             render: function (data) {
-//                 return moment(data).format('DD MMMM YYYY');
-//             }
-//         },
-//         { data: 'historyStatus', title: 'History Status' },
-//         {
-//             data: null,
-//             className: 'text-end user-select-none no-export',
-//             orderable: false,
-//             defaultContent: `
-//                 <button 
-//                     type="button" 
-//                     class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-//                     data-bs-toggle="modal" 
-//                     data-bs-target="#detailHistoryModal"
-//                     title="View History">
-//                     <i class="fa-regular fa-eye"></i>
-//                 </button>
-//             `
-//         }
-//     ]
-// });
-
-// // Event listener untuk form submit
-// $('#testCheckPatientForm').on('submit', function (e) {
-//     e.preventDefault(); // Mencegah form dari submit default
-//     var patientNIK = $('#patientNIK').val();
-
-//     // AJAX request untuk mendapatkan data pasien
-//     $.ajax({
-//         url: baseUrl + 'hospitals/getPatientDataByNIK', // Endpoint untuk mendapatkan data pasien
-//         method: 'POST',
-//         data: { patientNIK },
-//         success: function (response) {
-//             console.log('Response dari Server:', response);
-//             // Mengisi data ke patientTable
-//             patientTable.clear().rows.add([response.patient]).draw();
-
-//             // Mengisi data ke hPatientTable
-//             hPatientTable.clear().rows.add(response.histories).draw();
-
-//             // Menutup modal setelah data dimuat
-//             $('#testCheckPatientModal').modal('hide');
-
-//             // Menjalankan kondisi else untuk menampilkan tabel
-//             $('#btn-scan').hide(); // Sembunyikan tombol scan
-//             $('content').show(); // Tampilkan konten
-//         },
-//         error: function (xhr, status, error) {
-//             console.error('Error fetching patient data:', error);
-//             alert('Failed to fetch patient data. Please try again.');
-//         }
-//     });
-// });
+$('#hPatientTable').on('click', '.btn-view', function() {
+    viewHistoryHealthDetailsModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    if (backdrops.length >= 2) {
+        backdrops[1].style.zIndex = "1055";
+    }
+    var data = hPatientTable.row($(this).parents('tr')).data();
+    console.log(data);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
+});
 
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {

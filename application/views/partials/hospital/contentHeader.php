@@ -1,6 +1,6 @@
-<div class="content-header <?= $subtitle != 'Dashboard'? 'mt-5':'mt-2 d-lg-flex flex-lg-row' ?> align-items-center justify-content-between">
-    <h1 class="mb-0 mt-5 <?= $subtitle != 'Dashboard'? 'd-none':'' ?>">Hello, <?= $this->session->userdata('adminName'); ?></h1>
-    <div class="d-flex <?= $subtitle != 'Dashboard'? '':'flex-lg-column' ?> justify-content-between align-items-end p-0 mt-1">
+<div class="content-header <?= $subtitle != 'Hospital'? 'mt-5':'mt-2 d-lg-flex flex-lg-row' ?> align-items-center justify-content-between">
+    <h1 class="mb-0 mt-5 <?= $subtitle != 'Hospital'? 'd-none':'' ?>">Hello, <?= $this->session->userdata('adminName'); ?></h1>
+    <div class="d-flex <?= $subtitle != 'Hospital'? '':'flex-lg-column' ?> justify-content-between align-items-end p-0 mt-1">
         <h3 class="my-0"><?= $subtitle ?></h3>
         <button class="rounded-2 p-2 mt-3 d-flex align-items-center gap-1" id="btn-notification" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotification">
             <i class="las la-bell fs-5"></i>
