@@ -2,12 +2,6 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\OAuth;
-use PHPMailer\PHPMailer\Exception;
-use League\OAuth2\Client\Provider\Google;
-
 class AuthDashboard extends CI_Controller {
 
     public function __construct()
@@ -28,7 +22,6 @@ class AuthDashboard extends CI_Controller {
                 $sessionDatas = array(
                     'adminName' => $adminDatas['adminName'],
                     'adminEmail' => $adminDatas['adminEmail'],
-                    'adminPassword' => $adminDatas['adminPassword'],
                     'adminRole' => $adminDatas['adminRole']
                 );
                 $this->session->set_userdata($sessionDatas);
@@ -89,14 +82,34 @@ class AuthDashboard extends CI_Controller {
             $adminPassword = htmlspecialchars($this->input->post('adminPassword'));
             $rememberMe = $this->input->post('rememberMe') ?: FALSE;
 
+            $ch = curl_init('https://www.google.com/recaptcha/api/siteverify');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'secret' => $_ENV['CAPTCHA_SECRET_KEY'],
+                'response' => $this->input->post('g-recaptcha-response')
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $captchaResult = json_decode($response);
+
             $adminDatas = $this->M_auth->checkAdmin('adminEmail', $adminEmail);
 
-            $this->_login($adminPassword, $adminDatas, $rememberMe);
+            $this->_login($adminPassword, $adminDatas, $captchaResult, $rememberMe);
         }
     }
 
-    private function _login($adminPassword, $adminDatas, $rememberMe = FALSE) {
-        if (!empty($adminDatas)) {
+    private function _login($adminPassword, $adminDatas, $captchaResult, $rememberMe = FALSE) {
+        if (!$captchaResult->success) {
+            $this->session->set_flashdata('flashdata', 'you are a robot');
+            redirect('dashboard/login');
+        }
+
+        if (!empty($adminDatas) && !($adminDatas['adminRole'] !== 'admin' && $adminDatas['status'] == NULL)) {
+            if ($adminDatas['status'] == 'unverified') {
+                $this->session->set_flashdata('flashdata', 'account unverified');
+                redirect('dashboard/login');
+            }
+
             if (password_verify($adminPassword, $adminDatas['adminPassword'])) {
                 if ($rememberMe) {
                     $this->input->set_cookie('adminLoginKey', hash('sha256',$adminDatas['adminEmail']), 0);
@@ -104,16 +117,16 @@ class AuthDashboard extends CI_Controller {
                 }
 
                 $sessionDatas = array(
+                    'adminId' => $adminDatas['adminId'],
                     'adminName' => $adminDatas['adminName'],
                     'adminEmail' => $adminDatas['adminEmail'],
-                    'adminPassword' => $adminDatas['adminPassword'],
                     'adminRole' => $adminDatas['adminRole']
                 );
                 $this->session->set_userdata($sessionDatas);
 
                 redirect('dashboard');
             } else {
-                $this->session->set_flashdata('flashdata', 'wrong password');
+                $this->session->set_flashdata('flashdata', 'wrong email or password');
                 redirect('dashboard/login');
             }
         } else {
@@ -126,7 +139,7 @@ class AuthDashboard extends CI_Controller {
         delete_cookie('adminLoginKey');
         delete_cookie('adminKeyReference');
 
-        $sessionDatas = array('adminName', 'adminEmail', 'adminPassword', 'adminRole');
+        $sessionDatas = array('adminId', 'adminName', 'adminEmail', 'adminRole');
         $this->session->unset_userdata($sessionDatas);
 
         redirect('dashboard/login');
@@ -149,7 +162,6 @@ class AuthDashboard extends CI_Controller {
     }
 
     public function forgotPassword() {
-        
         $validate = array(
             array(
                 'field' => 'adminEmail',
@@ -171,59 +183,18 @@ class AuthDashboard extends CI_Controller {
             $adminDatas = $this->M_auth->checkAdmin('adminEmail', $adminEmail);
             
             if (!empty($adminDatas)) {
+                $this->load->library('sendemail');
+
                 $datas = array(
                     'name' => $adminDatas['adminName'],
                     'token' => base64_encode(random_bytes(16).'~'.date('d-m-Y H:i:s', strtotime('+1 days')))
                 );
+                $subject = 'Reset Account Password';
+                $body = $this->load->view('dashboard/forgotPassEmail', $datas, TRUE);
 
-                $mail = new PHPMailer();
-
-                $mail->isSMTP();
-
-                //Enable SMTP debugging
-                //SMTP::DEBUG_OFF = off (for production use)
-                //SMTP::DEBUG_CLIENT = client messages
-                //SMTP::DEBUG_SERVER = client and server messages
-                $mail->SMTPDebug = SMTP::DEBUG_OFF;
-                $mail->Host = 'smtp.gmail.com';
-                $mail->Port = 465;
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->SMTPAuth = true;
-                $mail->AuthType = 'XOAUTH2';
-
-                $clientId = $_ENV['CLIENT_ID'];
-                $clientSecret = $_ENV['CLIENT_SECRET'];
-                $refreshToken = $_ENV['REFRESH_TOKEN'];
-
-                $provider = new Google(
-                    [
-                        'clientId' => $clientId,
-                        'clientSecret' => $clientSecret,
-                    ]
-                );
-
-                $mail->setOAuth(
-                    new OAuth(
-                        [
-                            'provider' => $provider,
-                            'clientId' => $clientId,
-                            'clientSecret' => $clientSecret,
-                            'refreshToken' => $refreshToken,
-                            'userName' => $_ENV['SMTP_USER'],
-                        ]
-                    )
-                );
-
-                $mail->isHTML(true);
-                $mail->setFrom($_ENV['SMTP_USER'], 'Bali Inti Medika');
-                $mail->addAddress($adminEmail);
-                $mail->Subject = 'Reset Account Password';
-                $mail->CharSet = PHPMailer::CHARSET_UTF8;
-                $mail->Body = $this->load->view('dashboard/forgotPassEmail', $datas, TRUE);
-
-                if (!$mail->send()) {
+                if (!$this->sendemail->send($adminEmail, $subject, $body)) {
                     $this->session->set_flashdata('flashdata', 'send email failed');
-                    $this->session->set_flashdata('errorflashdata', $mail->ErrorInfo);
+                    $this->session->set_flashdata('errorflashdata', "Sorry, we can't send you an email right now");
                     redirect('dashboard/forgotpassword');
                 } else {
                     $this->M_auth->setAdminToken($adminDatas['adminEmail'], $datas['token']);
@@ -300,6 +271,7 @@ class AuthDashboard extends CI_Controller {
             $adminPassword = password_hash($this->input->post('newPassword'), PASSWORD_DEFAULT);
 
             $this->M_auth->changeAdminPassword($adminToken, $adminPassword);
+            $this->session->unset_userdata('resetPassToken');
 
             $this->session->set_flashdata('flashdata', 'reset password success');
             redirect('dashboard/login');

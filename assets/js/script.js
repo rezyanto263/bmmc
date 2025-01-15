@@ -74,93 +74,7 @@ function floatingMenuHandler() {
             $('.floating-btn').addClass('flex-column');
         }
     }
-}
-
-
-// QR Scanner
-var scanner;
-var cameraStream;
-
-$('#scannerModal').on('show.bs.modal', function() {
-    $('#scannerModal .btn-close').hide();
-    $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
-    try {
-        cameraStream = navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-            cameraStream = stream;
-        });
-        scanner = new Instascan.Scanner({ video: $('#qrScanner').get(0) });
-        scanner.addListener('scan', function (content) {
-            $('[name="qrData"]').val(content);
-            $('#qrForm').submit();
-        });
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-                $('#scannerModal .btn-close').show();
-            } else {
-                alert('No cameras found.');
-            }
-        }).catch(function (e) {
-            $('#scannerModal .btn-close').show();
-            alert(e);
-        });
-    } catch (error) {
-        console.error('Instascan initialization error:', error);
-    }
-});
-
-$('#qrForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'dashboard/getPatientByNIK',
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function (response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
-                // resultModal.show();
-                $('#scanResultModal').modal('show');
-                $('#scannerModal').modal('hide');
-                const data = res.data;
-                $('#scanResultModal').on('shown.bs.modal', function() {
-                    var photo = data.policyholderPhoto || data.familyPhoto;
-                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
-                    $('#scanResultModal [name="nik"]').val(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
-                    $('#scanResultModal [name="name"]').val(data.policyholderName ? data.policyholderName : data.familyName);
-                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Policyholder');
-                    $('#scanResultModal [name="birth"]').val(data.policyholderBirth ? data.policyholderBirth : data.familyBirth);
-                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.policyholderGender ? data.policyholderGender : data.familyGender));
-                    $('#scanResultModal [name="companyName"]').val(data.companyName);
-                    $('#scanResultModal [name="email"]').val(data.policyholderEmail ? data.policyholderEmail : data.familyEmail);
-                    $('#scanResultModal [name="phone"]').val(data.policyholderPhone ? data.policyholderPhone : data.familyPhone);
-                    $('#scanResultModal [name="address"]').val(data.policyholderAddress ? data.policyholderAddress : data.familyAddress);
-                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.policyholderStatus ? data.policyholderStatus : data.familyStatus));
-                    displayAlert('scan qr success');
-                    getPatientHistoryHealth(data.policyholderNIK ? data.policyholderNIK : data.familyNIK);
-                });
-            } else if (res.status === 'failed') {
-                displayAlert(res.failedMsg);
-            }
-        }
-    });
-});
-
-$('#scannerModal').on('hidden.bs.modal', function () {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(function(track) {
-            track.stop();
-        });
-        cameraStream = null;
-    }
-
-    if (scanner) {
-        scanner.stop()
-    }
-
-    scanner = null;
-});	
-
+}	
 
 // Show Password
 $('.input-group #btnShowPassword').on('click', function(event) {
@@ -221,3 +135,106 @@ $('.imgFile').on('change', function(e) {
         $(e.target).closest('.col-12').find('.imgContainer img').attr('src', URL.createObjectURL(file));
     }
 });
+
+// Flatpickr
+$('input[type="date"]').each(function() {
+    $(this).flatpickr({
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'j F Y',
+        minDate: $(this).attr('min') || null,
+        maxDate: $(this).attr('max') || null,
+        disableMobile: true
+    });
+});
+
+// Cleave (Input Rupiah Format)
+function formatCurrencyInput() {
+    $('.currency-input').each(function() {
+        const cleaveInstance = new Cleave(this, {
+            numeral: true,
+            numeralDecimalMark: ',',
+            delimiter: '.',
+            prefix: 'Rp ',
+            noImmediatePrefix: true,
+            rawValueTrimPrefix: true,
+        });
+    
+        $(this).data('cleave', cleaveInstance);
+    
+        $(this).on('blur', function() {
+            const rawValue = cleaveInstance.getRawValue();
+            if (rawValue === '') {
+                cleaveInstance.setRawValue('');
+                $(this).val('');
+            }
+        });
+    });
+}
+formatCurrencyInput();
+
+// Cleave (Input Indonesia Phone Number)
+function formatPhoneInput() {
+    $('.phone-input').each(function() {
+        const cleaveInstance = new Cleave(this, {
+            phone: true,
+            phoneRegionCode: 'ID',
+            prefix: '08',
+            delimiter: ' ',
+            noImmediatePrefix: true,
+        });
+    
+        $(this).data('cleave', cleaveInstance);
+    
+        $(this).on('blur', function() {
+            const rawValue = cleaveInstance.getRawValue();
+            if (rawValue === '08') {
+                cleaveInstance.setRawValue('');
+                $(this).val('');
+            }
+        });
+    });
+}
+formatPhoneInput();
+
+function removeCleaveFormat() {
+    $('.currency-input, .phone-input').each(function() {
+        const cleaveInstance = $(this).data('cleave');
+        if (cleaveInstance) {
+            const rawValue = cleaveInstance.getRawValue();
+            $(this).val(rawValue);
+        }
+    });    
+}
+
+// Status Color
+function statusColor(data) {
+    switch (data) {
+        case 'active':
+        case 'current':
+        case 'in use':
+        case 'published':
+        case 'paid':
+            return 'bg-success';
+
+        case 'free':
+        case 'unverified':
+        case 'draft':
+            return 'bg-secondary-subtle';
+
+        case 'on hold':
+            return 'bg-warning';
+
+        case 'discontinued':
+        case 'archived':
+        case 'finished':
+            return 'bg-secondary';
+
+        case 'unpaid':
+        case 'stopped':
+            return 'bg-danger';
+
+        default:
+            return 'border-2 border-dashed border-secondary'
+    }
+}

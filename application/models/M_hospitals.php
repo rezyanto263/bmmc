@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class M_hospitals extends CI_Model {
 
     public function getAllHospitalsDatas() {
-        $this->db->select('h.*, a.adminEmail, a.adminName, a.adminStatus');
+        $this->db->select('h.*, a.adminEmail, a.adminName');
         $this->db->from('hospital h');
         $this->db->join('admin a', 'a.adminId = h.adminId', 'left');
         return $this->db->get()->result_array();
@@ -42,11 +42,10 @@ class M_hospitals extends CI_Model {
                             GROUP_CONCAT(DISTINCT ds.diseaseName SEPARATOR "|") AS diseaseNames,
                             GROUP_CONCAT(DISTINCT ds.diseaseInformation SEPARATOR "|") AS diseaseInformations');
         $this->db->from('historyhealth hh');
-        $this->db->join('hisealthtal hhh', 'hhh.historyhealthId = hh.historyhealthId', 'left');
-        $this->db->join('hospital h', 'h.hospitalId = hhh.hospitalId', 'left');
+        $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
         $this->db->join('doctor d', 'd.doctorId = hh.doctorId', 'left');
-        $this->db->join('hisealtheas hhd', 'hhd.historyhealthId = hh.historyhealthId', 'left');
-        $this->db->join('disease ds', 'ds.diseaseId = hhd.diseaseId', 'left');
+        $this->db->join('hisealtheas hd', 'hd.historyhealthId = hh.historyhealthId', 'left');
+        $this->db->join('disease ds', 'ds.diseaseId = hd.diseaseId', 'left');
         $this->db->where('hh.patientNIK', $patientNIK);
         $this->db->group_by('hh.patientNIK');
         return $this->db->get()->result_array();

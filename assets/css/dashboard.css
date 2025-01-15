@@ -218,7 +218,16 @@ option:hover:focus {
 
 .select2-container--default .select2-dropdown {
     border: 1px solid var(--grey);
+    border-top: 0;
     background-color: var(--bgcolor);
+}
+
+.select2-selection__rendered {
+    pointer-events: none !important;
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--single {
+    background-color: transparent;
 }
 
 

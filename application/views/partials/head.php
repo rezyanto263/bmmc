@@ -9,6 +9,9 @@
 <!-- Select2 -->
 <link rel="stylesheet" href="<?= base_url('node_modules/select2/dist/css/select2.min.css') ?>">
 
+<!-- Flatpickr -->
+<link rel="stylesheet" href="<?= base_url('node_modules/flatpickr/dist/flatpickr.min.css') ?>">
+
 <!-- Line Awesome -->
 <link rel= "stylesheet" href= "https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" >
 
@@ -42,4 +45,6 @@
 <script>
     // Base URL
     var baseUrl = <?= json_encode(base_url()); ?>;
+
+    var csrfName = <?= json_encode($this->security->get_csrf_token_name()); ?>;
 </script>

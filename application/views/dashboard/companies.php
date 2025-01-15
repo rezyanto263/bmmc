@@ -12,6 +12,7 @@
                 <th>Admin</th>
                 <th>Address</th>
                 <th>Phone</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <th>Admin</th>
                 <th>Address</th>
                 <th>Phone</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </tfoot>
@@ -31,7 +33,7 @@
 
 <!-- Modal Add -->
 <div class="modal fade" id="addCompanyModal">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="addCompanyForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
@@ -40,12 +42,19 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
-                        <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                        <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center">
                             <div class="imgContainer">
                                 <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
                             </div>
                             <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD LOGO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyLogo" class="imgFile" id="addImgFile" hidden>
+                        </div>
+                        <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center">
+                            <div class="imgContainer">
+                                <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
+                            </div>
+                            <label class="btn-warning mt-3 text-center w-50" for="addImgFile2">UPLOAD PHOTO</label>
+                            <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyPhoto" class="imgFile" id="addImgFile2" hidden>
                         </div>
                         <div class="col-12">
                             <div class="input-group p-0">
@@ -55,22 +64,32 @@
                                 <input class="form-control" type="text" placeholder="Name" name="companyName">
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6">   
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="company Phone">
+                                    <i class="las la-phone fs-4"></i>
+                                </span>
+                                <input class="form-control phone-input" placeholder="Phone Number" name="companyPhone">
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">   
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Status">
+                                    <i class="las la-tag fs-4"></i>
+                                </span>
+                                <select class="form-control" name="companyStatus">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
-                                <select class="form-control" data-live-search="true" title="Choose Admin" id="adminId" name="adminId">
+                                <select class="form-control" data-live-search="true" title="Choose Admin" name="adminId">
                                     <option hidden></option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-12">   
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="company Phone">
-                                    <i class="las la-phone fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Company Phone Number" name="companyPhone">
                             </div>
                         </div>
                         <div class="col-12">   
@@ -89,6 +108,7 @@
                                 <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate">
                             </div>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -134,12 +154,20 @@
                                     <input class="form-control" type="text" placeholder="Admin Account" name="adminId" disabled>
                                 </div>
                             </div>
-                            <div class="col-12">   
+                            <div class="col-12 col-lg-7 col-xl-6">
                                 <div class="input-group p-0">
                                     <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
                                         <i class="las la-phone fs-4"></i>
                                     </span>
-                                    <input class="form-control" type="text" placeholder="Company Phone Number" name="companyPhone" disabled>
+                                    <input class="form-control phone-input" type="text" placeholder="Phone Number" name="companyPhone" disabled>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-5 col-xl-6">
+                                <div class="input-group p-0">
+                                    <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
+                                        <i class="las la-tag fs-4"></i>
+                                    </span>
+                                    <div class="form-control" placeholder="Company Status" id="companyStatus"></div>
                                 </div>
                             </div>
                             <div class="col-12">   
@@ -172,7 +200,7 @@
 
 <!-- Modal Edit -->
 <div class="modal fade" id="editCompanyModal">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="editCompanyForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
@@ -181,13 +209,20 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
-                        <input type="number" id="companyId" name="companyId" hidden>
-                        <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                        <input type="hidden" name="companyId">
+                        <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center">
                             <div class="imgContainer">
                                 <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
                             </div>
                             <label class="btn-warning mt-3 text-center w-50" for="editImgFile">UPLOAD LOGO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyLogo" class="imgFile" id="editImgFile" hidden>
+                        </div>
+                        <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center">
+                            <div class="imgContainer">
+                                <img src="<?= base_url('assets/images/company-placeholder.jpg'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Company Photo" draggable="false" id="imgPreview2" data-bs-toggle="tooltip" data-bs-title="Company Photo">
+                            </div>
+                            <label class="btn-warning mt-3 text-center w-50" for="editImgFile2">UPLOAD PHOTO</label>
+                            <input type="file" accept="image/jpg, image/jpeg, image/png" name="companyPhoto" class="imgFile" id="editImgFile2" hidden>
                         </div>
                         <div class="col-12">
                             <div class="input-group p-0">
@@ -197,22 +232,32 @@
                                 <input class="form-control" type="text" placeholder="Name" name="companyName">
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
+                                    <i class="las la-phone fs-4"></i>
+                                </span>
+                                <input class="form-control phone-input" type="text" placeholder="Phone Number" name="companyPhone">
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">   
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Status">
+                                    <i class="las la-tag fs-4"></i>
+                                </span>
+                                <select class="form-control" id="companyStatus" name="companyStatus">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
-                                <select class="form-control" data-live-search="true" title="Choose Admin" id="adminId" name="adminId">
+                                <select class="form-control" title="Choose Admin" id="adminId" name="adminId">
                                     <option hidden></option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-12">   
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
-                                    <i class="las la-phone fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Company Phone Number" name="companyPhone">
                             </div>
                         </div>
                         <div class="col-12">   
@@ -235,6 +280,7 @@
                                 <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate">
                             </div>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -260,7 +306,8 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="companyName"></span> company?
-                    <input type="number" id="companyId" name="companyId" hidden>
+                    <input type="hidden" name="companyId">
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>

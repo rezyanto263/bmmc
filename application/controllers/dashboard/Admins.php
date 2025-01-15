@@ -2,11 +2,12 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Ramsey\Uuid\Uuid;
+
 class Admins extends CI_Controller {
 
     
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
         if ($this->session->userdata('adminRole') != 'admin') {
@@ -15,10 +16,8 @@ class Admins extends CI_Controller {
 
         $this->load->model('M_admins');
     }
-    
 
-    public function index()
-    {
+    public function index(){
         $datas = array(
             'title' => 'BMMC Dashboard | Admins',
             'subtitle' => 'Admins',
@@ -71,27 +70,20 @@ class Admins extends CI_Controller {
             array(
                 'field' => 'adminName',
                 'label' => 'Name',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
+                'rules' => 'required|trim|max_length[40]|regex_match[/^[a-zA-Z\s\'-]+$/]',
                 'errors' => array(
                     'required' => 'You should provide a %s.',
+                    'max_length' => '%s max 40 characters in length.',
                     'regex_match' => '%s can only contain letters, spaces, hyphens, and apostrophes.'
                 )
             ),
             array(
                 'field' => 'adminRole',
                 'label' => 'Role',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s]+$/]',
+                'rules' => 'required|trim|in_list[admin,company,hospital]|regex_match[/^[a-zA-Z\s]+$/]',
                 'errors' => array(
                     'required' => 'You should provide a %s.',
-                    'regex_match' => '%s can only contain letters and spaces.'
-                )
-            ),
-            array(
-                'field' => 'adminStatus',
-                'label' => 'Status',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => array(
-                    'required' => 'You should provide a %s.',
+                    'in_list' => 'Invalid selection. Please choose a valid option from the list.',
                     'regex_match' => '%s can only contain letters and spaces.'
                 )
             ),
@@ -129,22 +121,23 @@ class Admins extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
+            $uuid = Uuid::uuid7();
             $checkAdminEmail = $this->M_admins->checkAdmin('adminEmail', htmlspecialchars($this->input->post('adminEmail')));
             if ($checkAdminEmail) {
-                echo json_encode(array('status' => 'failed', 'failedMsg' => 'email used'));
+                echo json_encode(array('status' => 'failed', 'failedMsg' => 'email used', 'csrfToken' => $this->security->get_csrf_hash()));
             } else {
                 $adminDatas = array(
+                    'adminId' => $uuid->toString(),
                     'adminName' => $this->input->post('adminName'),
                     'adminEmail' => htmlspecialchars($this->input->post('adminEmail')),
                     'adminRole' => htmlspecialchars($this->input->post('adminRole')),
-                    'adminStatus' => htmlspecialchars($this->input->post('adminStatus')),
                     'adminPassword' => password_hash(htmlspecialchars($this->input->post('adminPassword')), PASSWORD_DEFAULT)
                 );
                 $this->M_admins->insertAdmin($adminDatas);
 
-                echo json_encode(array('status' => 'success'));
+                echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
             }
         }
     }
@@ -154,27 +147,20 @@ class Admins extends CI_Controller {
             array(
                 'field' => 'adminName',
                 'label' => 'Name',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
+                'rules' => 'required|trim|max_length[40]|regex_match[/^[a-zA-Z\s\'-]+$/]',
                 'errors' => array(
                     'required' => 'You should provide a %s.',
+                    'max_length' => '%s max 40 characters in length.',
                     'regex_match' => '%s can only contain letters, spaces, hyphens, and apostrophes.'
                 )
             ),
             array(
                 'field' => 'adminRole',
                 'label' => 'Role',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s]+$/]',
+                'rules' => 'required|trim|in_list[admin,company,hospital]|regex_match[/^[a-zA-Z\s]+$/]',
                 'errors' => array(
                     'required' => 'You should provide a %s.',
-                    'regex_match' => '%s can only contain letters and spaces.'
-                )
-            ),
-            array(
-                'field' => 'adminStatus',
-                'label' => 'Status',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => array(
-                    'required' => 'You should provide a %s.',
+                    'in_list' => 'Invalid selection. Please choose a valid option from the list.',
                     'regex_match' => '%s can only contain letters and spaces.'
                 )
             ),
@@ -212,35 +198,55 @@ class Admins extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            $newEmail = htmlspecialchars($this->input->post('newEmail'));
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
-
-            $checkEmail = $this->M_admins->checkAdmin('adminEmail', $newEmail);
+            $adminId = htmlspecialchars($this->input->post('adminId'));
+            $checkAdmin = $this->M_admins->checkAdmin('adminId', $adminId);
 
             $adminDatas = array(
-                'adminName' => $this->input->post('adminName'),
-                'adminRole' => htmlspecialchars($this->input->post('adminRole')),
-                'adminStatus' => htmlspecialchars($this->input->post('adminStatus')),
+                'adminName' => $this->input->post('adminName')
             );
-            !empty($newEmail) && empty($checkEmail)? $adminDatas['adminEmail'] = $newEmail : '';
-            !empty($newPassword)? $adminDatas['adminPassword'] = $newPassword : '';
 
-            $this->M_admins->updateAdmin($this->input->post('adminId'), $adminDatas);
+            $newEmail = htmlspecialchars($this->input->post('newEmail'));
+            if ($newEmail) {
+                $checkEmail = $this->M_admins->checkAdmin('adminEmail', $newEmail);
+                if ($checkEmail) {
+                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'email used', 'csrfToken' => $this->security->get_csrf_hash()));
+                    return;
+                }
+            }
 
-            echo json_encode(array('status' => 'success'));
+            $newPassword = htmlspecialchars($this->input->post('newPassword'));
+            if ($newPassword && !password_verify($newPassword, $checkAdmin['adminPassword'])) {
+                $adminDatas['adminPassword'] = password_hash($newPassword, PASSWORD_DEFAULT);
+            }
+
+            $newRole = htmlspecialchars($this->input->post('adminRole'));
+            if ($newRole != $checkAdmin['adminRole']) {
+                $adminDatas['adminRole'] = $newRole;
+            }
+
+            $this->M_admins->updateAdmin($adminId, $adminDatas);
+
+            echo json_encode(array('status' => 'success', 'data' => $adminDatas, 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
     public function deleteAdmin() {
         $adminId = $this->input->post('adminId');
-        $this->load->model('M_hospitals');
-        $this->load->model('M_companies');
+        $checkAdmin = $this->M_admins->checkAdmin('adminId', $adminId);
 
-        
+        if (!empty($checkAdmin['status'])) {
+            echo json_encode(array(
+                'status' => 'failed', 
+                'failedMsg' => 'can not delete linked data', 
+                'csrfToken' => $this->security->get_csrf_hash()
+            ));
+            return;
+        }
+
         $this->M_admins->deleteAdmin($adminId);
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
 
 }

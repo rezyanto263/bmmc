@@ -11,7 +11,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Status</th>
+                <th>Partner Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -21,7 +21,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Status</th>
+                <th>Partner Status</th>
                 <th>Actions</th>
             </tr>
         </tfoot>
@@ -47,30 +47,16 @@
                                 <input class="form-control" type="text" placeholder="Full Name" name="adminName">
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <select class="form-control" id="adminRole" name="adminRole">
+                                <select class="form-control" name="adminRole">
                                     <option hidden></option>
                                     <option value="admin">Admin</option>
                                     <option value="hospital">Hospital</option>  
                                     <option value="company">Company</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Status">
-                                    <i class="las la-user-clock fs-4"></i>
-                                </span>
-                                <select class="form-control" id="adminStatus" name="adminStatus">
-                                    <option hidden></option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
-                                    <option value="disabled">Disabled</option>
                                 </select>
                             </div>
                         </div>
@@ -87,7 +73,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Password">
                                     <i class="las la-key fs-4"></i>
                                 </span>
-                                <input type="password" class="form-control" id="adminPassword" placeholder="Password" name="adminPassword">
+                                <input type="password" class="form-control" placeholder="Password" name="adminPassword">
                                 <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
                                     <i class="las la-eye-slash fs-4"></i>
                                 </span>
@@ -105,6 +91,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
@@ -125,7 +112,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    <input type="number" id="adminId" name="adminId" hidden>
+                    <input type="hidden" name="adminId">
                     <div class="row gy-4 gx-3">
                         <div class="col-12">
                             <div class="input-group p-0">
@@ -135,30 +122,16 @@
                                 <input class="form-control" type="text" placeholder="Full Name" name="adminName">
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <select class="form-select" id="adminRole" name="adminRole">
+                                <select class="form-select" name="adminRole">
                                     <option hidden></option>
                                     <option value="admin">Admin</option>
                                     <option value="hospital">Hospital</option>
                                     <option value="company">Company</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Status">
-                                    <i class="las la-user-clock fs-4"></i>
-                                </span>
-                                <select class="form-control" id="adminStatus" name="adminStatus">
-                                    <option hidden></option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
-                                    <option value="disabled">Disabled</option>
                                 </select>
                             </div>
                         </div>
@@ -185,7 +158,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin New Password">
                                     <i class="las la-key fs-4"></i>
                                 </span>
-                                <input type="password" class="form-control" id="adminPassword" placeholder="Password" name="newPassword">
+                                <input type="password" class="form-control" placeholder="Password" name="newPassword">
                                 <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
                                     <i class="las la-eye-slash fs-4"></i>
                                 </span>
@@ -203,6 +176,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
@@ -226,7 +200,8 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="adminName"></span> account?
-                    <input type="number" id="adminId" name="adminId" hidden>
+                    <input type="hidden" name="adminId">
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>

@@ -81,8 +81,16 @@ function reloadTableData(table) {
     table.ajax.reload(null, false);
 }
 
+function generateStatusData(statuses) {
+    return statuses.map(status => ({
+        id: status.toLowerCase(),
+        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline-block">${capitalizeWords(status)}</span>`
+    }));
+}
+
 $('.modal').on('hidden.bs.modal', function(e) {
-    $('#imgPreview').attr('src', $('#imgPreview').data('originalsrc'));
+    $(this).find('#imgPreview').attr('src', $(this).find('#imgPreview').data('originalsrc'));
+    $(this).find('#imgPreview2').attr('src', $(this).find('#imgPreview2').data('originalsrc'));
     $(this).find('select.form-control').select2('destroy');
     $(e.target).find('form').trigger('reset');
     $('.error-message').remove();
@@ -230,9 +238,12 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
             }
         },
         {
-            data: 'adminStatus',
+            data: 'status',
             render: function(data, type, row) {
-                return capitalizeWords(data);
+                if (!data) {
+                    data = row.adminRole == 'admin' ? 'not partner' : 'not linked';
+                }
+                return `<div class="${statusColor(data)} status-circle"></div>  ` + capitalizeWords(data);
             }
         },
         {
@@ -258,7 +269,7 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
         }
     ],
     columnDefs: [
-        {width: '180px', target: 4}
+        {width: '180px', target: 5}
     ]
 }));
 
@@ -271,6 +282,7 @@ $('#addAdminForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addAdminModal').modal('hide');
                 reloadTableData(adminsTable);
@@ -286,14 +298,10 @@ $('#addAdminForm').on('submit', function(e) {
     });
 });
 
-$('#addAdminModal').on('shown.bs.modal', function () {
-    $(this).find('select#adminRole').select2({
+$('#addAdminModal').on('show.bs.modal', function () {
+    $(this).find('select[name="adminRole"]').select2({
         placeholder: 'Choose Role',
-        dropdownParent: $('#addAdminModal .modal-body')
-    });
-    $(this).find('select#adminStatus').select2({
-        placeholder: 'Choose Status',
-        dropdownParent: $('#addAdminModal .modal-body')
+        dropdownParent: $('#addAdminModal .modal-body'),
     });
 });
 
@@ -302,19 +310,15 @@ $('#adminsTable').on('click', '.btn-edit', function() {
     var data = adminsTable.row($(this).parents('tr')).data();
     $('#editAdminForm [name="adminId"]').val(data.adminId);
     $('#editAdminForm [name="adminName"]').val(data.adminName);
-    $('#editAdminForm [name="adminRole"]').val(data.adminRole);
-    $('#editAdminForm [name="adminStatus"]').val(data.adminStatus);
-});
-
-$('#editAdminModal').on('shown.bs.modal', function () {
-    $(this).find('select#adminRole').select2({
-        placeholder: 'Choose',
-        dropdownParent: $('#editAdminModal .modal-body')
+    $('#editAdminForm [name="adminRole"]').select2({
+        placeholder: 'Choose Role',
+        dropdownParent: $('#editAdminModal .modal-body'),
+        disabled: data.status ? true : false
     });
-    $(this).find('select#adminStatus').select2({
-        placeholder: 'Choose',
-        dropdownParent: $('#editAdminModal .modal-body')
-    });
+    $('#editAdminForm [name="adminRole"]').val(data.adminRole).trigger('change');
+    if (data.status) {
+        $('#editAdminForm [name="adminRole"]').closest('.col-12').hide();
+    }
 });
 
 
@@ -326,6 +330,7 @@ $('#editAdminForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editAdminModal').modal('hide');
                 displayAlert('edit success');
@@ -354,23 +359,25 @@ $('#newEmailCheck, #newPasswordCheck').change(function() {
 // Delete Data Admin
 $('#adminsTable').on('click', '.btn-delete', function() {
     var data = adminsTable.row($(this).parents('tr')).data();
-    $('#deleteAdminForm #adminName').html(data.adminName);
-    $('#deleteAdminForm #adminId').val(data.adminId);
+    $('#deleteAdminForm [name="adminName"]').html(data.adminName);
+    $('#deleteAdminForm [name="adminId"]').val(data.adminId);
 })
 
 $('#deleteAdminForm').on('submit', function(e) {
     e.preventDefault();
-    var adminId = $('#deleteAdminForm #adminId').val();
     $.ajax({
         url: baseUrl + 'dashboard/admins/deleteAdmin',
         method: 'POST',
-        data: {adminId: adminId},
+        data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteAdminModal').modal('hide');
                 displayAlert('delete success');
                 reloadTableData(adminsTable);
+            } else if (res.status === 'failed') {
+                displayAlert(res.failedMsg);
             }
         }
     });
@@ -398,6 +405,12 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
         },
         {data: 'hospitalAddress'},
         {data: 'hospitalPhone'},
+        {
+            data: 'hospitalStatus',
+            render: function(data, type, row) {
+                return generateStatusData([data]).find((d) => d.id === data)?.text || '';
+            }
+        },
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -428,25 +441,46 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
-        {width: '240px', target: 5}
+        {width: '240px', target: 6}
     ]
 }));
 
+$('#addHospitalButton, #editHospitalButton, #deleteHospitalButton').on('click', function() {
+    reloadTableData(hospitalsTable);
+});
+
 $('#addHospitalModal').on('shown.bs.modal', function() {
-    $(this).find('select#adminId').select2({
+    $(this).find('select[name="hospitalStatus"]').select2({
+        placeholder: 'Choose Status',
+        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        dropdownParent: $('#addHospitalModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
+    });
+
+    $(this).find('select[name="adminId"]').select2({
         ajax: {
             url: baseUrl + 'dashboard/getAllUnconnectedHospitalAdminsDatas',
             type: 'GET',
             dataType: 'json',
             delay: 250,
-            processResults: function (response) {
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
                 return {
-                    results: $.map(response.data, function (data) {
-                        return {
-                            id: data.adminId,
-                            text: data.adminEmail + ' | ' + data.adminName
-                        };
-                    })
+                    results: response.data
+                        .filter(function (data) {
+                            const emailMatch = data.adminEmail.toLowerCase().includes(searchTerm);
+                            const nameMatch = data.adminName.toLowerCase().includes(searchTerm);
+                            return emailMatch || nameMatch;
+                        })
+                        .map(function (data) {
+                            return {
+                                id: data.adminId,
+                                text: `
+                                ${data.adminEmail} | 
+                                ${data.adminName} | 
+                                ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`
+                            };
+                        })
                 };
             },
             cache: true
@@ -455,16 +489,14 @@ $('#addHospitalModal').on('shown.bs.modal', function() {
         placeholder: 'Choose Admin',
         allowClear: true,
         dropdownParent: $('#addHospitalModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
     });
-});
-
-$('#addHospitalButton, #editHospitalButton, #deleteHospitalButton').on('click', function() {
-    reloadTableData(hospitalsTable);
 });
 
 // Add Data Hospital
 $('#addHospitalForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'dashboard/hospitals/addHospital',
@@ -474,6 +506,7 @@ $('#addHospitalForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addHospitalModal').modal('hide');
                 reloadTableData(hospitalsTable);
@@ -482,8 +515,10 @@ $('#addHospitalForm').on('submit', function(e) {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
+                formatPhoneInput();
             } else if (res.status === 'invalid') {
                 displayFormValidation('#addHospitalForm', res.errors);
+                formatPhoneInput();
             }
         }
     });
@@ -493,22 +528,20 @@ $('#addHospitalForm').on('submit', function(e) {
 // View Data Hospital
 $('#hospitalsTable').on('click', '.btn-view', function() {
     var data = hospitalsTable.row($(this).parents('tr')).data();
-    let imageFilePath = baseUrl + 'assets/images/hospital-placeholder.jpg';
-    if (data.hospitalLogo) {
-        imageFilePath = baseUrl + 'uploads/logos/' + data.hospitalLogo;
-        $('#viewHospitalModal #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.hospitalLogo);
-    }
+    let imageFilePath = `${baseUrl}assets/images/hospital-placeholder.jpg`;
+
+    data.hospitalPhoto ? (imageFilePath = `${baseUrl}uploads/photos/${data.hospitalPhoto}`) : data.hospitalLogo ? (imageFilePath = `${baseUrl}uploads/logos/${data.hospitalLogo}`) : '';
+    data.hospitalLogo && $('#viewHospitalModal #imgPreview').attr('src', `${baseUrl}uploads/logos/${data.hospitalLogo}`);
     $('#viewHospitalModal [name="hospitalId"]').val(data.hospitalId);
     $('#viewHospitalModal [name="hospitalName"]').val(data.hospitalName);
-    $('#viewHospitalModal [name="hospitalPhone"]').val(data.hospitalPhone);
     $('#viewHospitalModal [name="hospitalAddress"]').val(data.hospitalAddress);
     $('#viewHospitalModal [name="hospitalCoordinate"]').val(data.hospitalCoordinate);
+    $('#viewHospitalModal [name="hospitalPhone"]').val(data.hospitalPhone);
+    $('#viewHospitalModal [name="adminId"]').val(`${data.adminName} | ${data.adminEmail}`);
 
-    if (data.adminId) {
-        $('#viewHospitalModal [name="adminId"]').val(data.adminName + ' | ' + data.adminEmail);
-    } else {
-        $('#viewHospitalModal [name="adminId"]').val('No Admin');
-    }
+    formatPhoneInput();
+
+    $('#viewHospitalModal div#hospitalStatus').html(generateStatusData([data.hospitalStatus]).find((d) => d.id === data.hospitalStatus)?.text || '');
 
     $('#viewHospitalModal').on('shown.bs.modal', function() {
         var coordsArray = data.hospitalCoordinate.split(',');
@@ -524,45 +557,79 @@ $('#hospitalsTable').on('click', '.btn-view', function() {
 
 // Edit Data Hospital
 $('#hospitalsTable').on('click', '.btn-edit', function() {
-    var data = hospitalsTable.row($(this).parents('tr')).data();
-    if (data.hospitalLogo) {
-        $('#editHospitalForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.hospitalLogo);
-    }
-    $('#editHospitalForm [name="hospitalId"]').val(data.hospitalId);
-    $('#editHospitalForm [name="hospitalName"]').val(data.hospitalName);
-    $('#editHospitalForm [name="hospitalPhone"]').val(data.hospitalPhone);
-    $('#editHospitalForm [name="hospitalAddress"]').val(data.hospitalAddress);
+    var d = hospitalsTable.row($(this).parents('tr')).data();
 
-    var adminId = data.adminId;
-    if (adminId) {
-        var selectedAdmin = '<option value="'+adminId+'">'+data.adminName+' | '+data.adminEmail+'</option>';
-    }
-    $('#editHospitalForm select#adminId').html(selectedAdmin);
-    $('#editHospitalForm select#adminId').select2({
+    d.hospitalLogo && $('#editHospitalForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+d.hospitalLogo);
+    d.hospitalPhoto && $('#editHospitalForm #imgPreview2').attr('src', baseUrl+'uploads/photos/'+d.hospitalPhoto);
+    $('#editHospitalForm [name="hospitalId"]').val(d.hospitalId);
+    $('#editHospitalForm [name="hospitalName"]').val(d.hospitalName);
+    $('#editHospitalForm [name="hospitalAddress"]').val(d.hospitalAddress);
+    $('#editHospitalForm [name="hospitalPhone"]').val(d.hospitalPhone);
+
+    formatPhoneInput();
+
+    $('#editHospitalForm [name="hospitalStatus"]').select2({
+        placeholder: 'Choose Status',
+        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        dropdownParent: $('#editHospitalModal .modal-body'),
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        templateResult: function (data) {
+            return data.text ? $(data.text) : data.text;
+        },
+        templateSelection: function (data) {
+            return data.text ? $(data.text) : data.text;
+        }
+    });
+    $('#editHospitalForm [name="hospitalStatus"]').val(d.hospitalStatus).trigger('change');
+
+    $('#editHospitalForm [name="adminId"]').empty();
+    $('#editHospitalForm [name="adminId"]').select2({
         placeholder: 'Choose Admin',
         allowClear: true,
         dropdownParent: $('#editHospitalModal .modal-body'),
+        escapeMarkup: function(markup) {
+            return markup;
+        },
+        templateResult: function(data) {
+            return data.text;
+        },
+        templateSelection: function(data) {
+            return data.text || 'Choose Admin';
+        }
     });
+
+    var preselectedOption = new Option(
+        `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
+        d.adminId,
+        true, 
+        true  
+    );
+    $('#editHospitalForm [name="adminId"]').append(preselectedOption).trigger('change');
 
     $.ajax({
         url: baseUrl + 'dashboard/getAllUnconnectedHospitalAdminsDatas',
         method: 'GET',
         success: function(response) {
             var res = JSON.parse(response);
-
-            let optionList = [selectedAdmin];
-            $.each(res.data, function(index, data) {
-                optionList += '<option value="'+data.adminId+'">'+data.adminName+' | '+data.adminEmail+'</option>';
+            res.data.forEach(function(data) {
+                var option = new Option(
+                    `${data.adminEmail} | ${data.adminName} | ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`,
+                    data.adminId
+                );
+                $('#editHospitalForm [name="adminId"]').append(option);
             });
-
-            $('#editHospitalForm select#adminId').html(optionList);
-            $('#editHospitalForm select#adminId').val(adminId).trigger('change');
+        },
+        error: function(err) {
+            console.error('Error fetching admin data:', err);
         }
     });
 });
 
 $('#editHospitalForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
         url: baseUrl + 'dashboard/hospitals/editHospital',
         method: 'POST',
@@ -571,6 +638,7 @@ $('#editHospitalForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editHospitalModal').modal('hide');
                 reloadTableData(hospitalsTable);
@@ -579,8 +647,10 @@ $('#editHospitalForm').on('submit', function(e) {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
+                formatPhoneInput();
             } else if (res.status === 'invalid') {
                 displayFormValidation('#editHospitalForm', res.errors);
+                formatPhoneInput();
             }
         }
     });
@@ -598,7 +668,7 @@ $('#newCoordinateCheck').change(function() {
 $('#hospitalsTable').on('click', '.btn-delete', function() {
     var data = hospitalsTable.row($(this).parents('tr')).data();
     $('#deleteHospitalForm #hospitalName').html(data.hospitalName);
-    $('#deleteHospitalForm #hospitalId').val(data.hospitalId);
+    $('#deleteHospitalForm [name="hospitalId"]').val(data.hospitalId);
 });
 
 $('#deleteHospitalForm').on('submit', function(e) {
@@ -609,6 +679,7 @@ $('#deleteHospitalForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteHospitalModal').modal('hide');
                 reloadTableData(hospitalsTable)
@@ -635,14 +706,15 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
             }
         },
         {data: 'companyName'},
-        {
-            data: 'adminEmail',
-            render: function(data, type, row) {
-                return data ? data : 'No Admin';
-            }
-        },
+        {data: 'adminEmail'},
         {data: 'companyAddress'},
         {data: 'companyPhone'},
+        {
+            data: 'companyStatus',
+            render: function(data, type, row) {
+                return generateStatusData([data]).find((d) => d.id === data)?.text || '';
+            }
+        },
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -673,25 +745,39 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
-        {width: '240px', target: 5}
+        {width: '240px', target: 6}
     ]
 }));
 
-$('#addCompanyModal').on('shown.bs.modal', function() {
-    $(this).find('select#adminId').select2({
+$('#addCompanyButton, #editCompanyButton, #deleteCompanyButton').on('click', function() {
+    reloadTableData(companiesTable);
+});
+
+$('#addCompanyModal').on('show.bs.modal', function() {
+    $(this).find('select[name="adminId"]').select2({
         ajax: {
             url: baseUrl + 'dashboard/getAllUnconnectedCompanyAdminsDatas',
             type: 'GET',
             dataType: 'json',
             delay: 250,
-            processResults: function (response) {
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
                 return {
-                    results: $.map(response.data, function (data) {
-                        return {
-                            id: data.adminId,
-                            text: data.adminEmail + ' | ' + data.adminName
-                        };
-                    })
+                    results: response.data
+                        .filter(function (data) {
+                            const emailMatch = data.adminEmail.toLowerCase().includes(searchTerm);
+                            const nameMatch = data.adminName.toLowerCase().includes(searchTerm);
+                            return emailMatch || nameMatch;
+                        })
+                        .map(function (data) {
+                            return {
+                                id: data.adminId,
+                                text: `
+                                ${data.adminEmail} | 
+                                ${data.adminName} | 
+                                ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`
+                            };
+                        })
                 };
             },
             cache: true
@@ -699,17 +785,22 @@ $('#addCompanyModal').on('shown.bs.modal', function() {
         minimumInputLength: 0,
         placeholder: 'Choose Admin',
         allowClear: true,
-        dropdownParent: $('#addCompanyModal .modal-body')
+        dropdownParent: $('#addCompanyModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
     });
-});
 
-$('#addCompanyButton, #editCompanyButton, #deleteCompanyButton').on('click', function() {
-    reloadTableData(companiesTable);
+    $(this).find('select[name="companyStatus"]').select2({
+        placeholder: 'Choose Status',
+        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        dropdownParent: $('#addCompanyModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
+    });
 });
 
 // Add Data Company
 $('#addCompanyForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'dashboard/companies/addCompany',
@@ -719,6 +810,7 @@ $('#addCompanyForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addCompanyModal').modal('hide');
                 reloadTableData(companiesTable);
@@ -727,8 +819,10 @@ $('#addCompanyForm').on('submit', function(e) {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
+                formatPhoneInput();
             } else if (res.status === 'invalid') {
                 displayFormValidation('#addCompanyForm', res.errors);
+                formatPhoneInput();
             }
         }
     });
@@ -738,20 +832,18 @@ $('#addCompanyForm').on('submit', function(e) {
 $('#companiesTable').on('click', '.btn-view', function() {
     var data = companiesTable.row($(this).parents('tr')).data();
     let imageFilePath = baseUrl + 'assets/images/company-placeholder.jpg';
-    if (data.companyLogo) {
-        imageFilePath = baseUrl + 'uploads/logos/' + data.companyLogo;
-        $('#viewCompanyModal #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.companyLogo);
-    }
+
+    data.companyPhoto ? imageFilePath = baseUrl + 'uploads/photos/' + data.companyPhoto : data.companyLogo ? imageFilePath = baseUrl + 'uploads/logos/' + data.companyLogo : imageFilePath;
+    data.companyLogo && $('#viewCompanyModal #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.companyLogo);
     $('#viewCompanyModal [name="companyName"]').val(data.companyName);
-    $('#viewCompanyModal [name="companyPhone"]').val(data.companyPhone);
     $('#viewCompanyModal [name="companyAddress"]').val(data.companyAddress);
     $('#viewCompanyModal [name="companyCoordinate"]').val(data.companyCoordinate);
+    $('#viewCompanyModal [name="companyPhone"]').val(data.companyPhone);
+    $('#viewCompanyModal [name="adminId"]').val(`${data.adminName} | ${data.adminEmail}`);
 
-    if (data.adminId) {
-        $('#viewCompanyModal [name="adminId"]').val(data.adminName + ' | ' + data.adminEmail);
-    } else {
-        $('#viewCompanyModal [name="adminId"]').val('No Admin');
-    }
+    formatPhoneInput();
+
+    $('#viewCompanyModal div#companyStatus').html(generateStatusData([data.companyStatus]).find((d) => d.id === data.companyStatus)?.text || '');
 
     $('#viewCompanyModal').on('shown.bs.modal', function() {
         var coordsArray = data.companyCoordinate.split(',');
@@ -766,45 +858,79 @@ $('#companiesTable').on('click', '.btn-view', function() {
 
 // Edit Data Company
 $('#companiesTable').on('click', '.btn-edit', function() {
-    var data = companiesTable.row($(this).parents('tr')).data();
-    if (data.companyLogo) {
-        $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.companyLogo);
-    }
-    $('#editCompanyForm [name="companyId"]').val(data.companyId);
-    $('#editCompanyForm [name="companyName"]').val(data.companyName);
-    $('#editCompanyForm [name="companyPhone"]').val(data.companyPhone);
-    $('#editCompanyForm [name="companyAddress"]').val(data.companyAddress);
+    var d = companiesTable.row($(this).parents('tr')).data();
 
-    var adminId = data.adminId;
-    if (adminId) {
-        var selectedAdmin = '<option value="'+adminId+'">'+data.adminName+' | '+data.adminEmail+'</option>';
-    }
-    $('#editCompanyForm select#adminId').html(selectedAdmin);
-    $('#editCompanyForm select#adminId').select2({
+    d.companyLogo && $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+d.companyLogo);
+    d.companyPhoto && $('#editCompanyForm #imgPreview2').attr('src', baseUrl+'uploads/photos/'+d.companyPhoto);
+    $('#editCompanyForm [name="companyId"]').val(d.companyId);
+    $('#editCompanyForm [name="companyName"]').val(d.companyName);
+    $('#editCompanyForm [name="companyAddress"]').val(d.companyAddress);
+    $('#editCompanyForm [name="companyPhone"]').val(d.companyPhone);
+
+    formatPhoneInput();
+
+    $('#editCompanyForm [name="companyStatus"]').select2({
+        placeholder: 'Choose Status',
+        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        dropdownParent: $('#editCompanyModal .modal-body'),
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        templateResult: function (data) {
+            return data.text ? $(data.text) : data.text;
+        },
+        templateSelection: function (data) {
+            return data.text ? $(data.text) : data.text;
+        }
+    });
+    $('#editCompanyForm [name="companyStatus"]').val(d.companyStatus).trigger('change');
+
+    $('#editCompanyForm [name="adminId"]').empty();
+    $('#editCompanyForm [name="adminId"]').select2({
         placeholder: 'Choose Admin',
         allowClear: true,
         dropdownParent: $('#editCompanyModal .modal-body'),
+        escapeMarkup: function(markup) {
+            return markup;
+        },
+        templateResult: function(data) {
+            return data.text;
+        },
+        templateSelection: function(data) {
+            return data.text || 'Choose Admin';
+        }
     });
+
+    var preselectedOption = new Option(
+        `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
+        d.adminId,
+        true, 
+        true  
+    );
+    $('#editCompanyForm [name="adminId"]').append(preselectedOption).trigger('change');
 
     $.ajax({
         url: baseUrl + 'dashboard/getAllUnconnectedCompanyAdminsDatas',
         method: 'GET',
         success: function(response) {
             var res = JSON.parse(response);
-
-            let optionList = [selectedAdmin];
-            $.each(res.data, function(index, data) {
-                optionList += '<option value="'+data.adminId+'">'+data.adminName+' | '+data.adminEmail+'</option>';
+            res.data.forEach(function(data) {
+                var option = new Option(
+                    `${data.adminEmail} | ${data.adminName} | ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`,
+                    data.adminId
+                );
+                $('#editCompanyForm [name="adminId"]').append(option);
             });
-
-            $('#editCompanyForm select#adminId').html(optionList);
-            $('#editCompanyForm select#adminId').val(adminId).trigger('change');
+        },
+        error: function(err) {
+            console.error('Error fetching admin data:', err);
         }
     });
 });
 
 $('#editCompanyForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
         url: baseUrl + 'dashboard/companies/editCompany',
         method: 'POST',
@@ -813,6 +939,7 @@ $('#editCompanyForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editCompanyModal').modal('hide');
                 reloadTableData(companiesTable);
@@ -821,8 +948,10 @@ $('#editCompanyForm').on('submit', function(e) {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
+                formatPhoneInput();
             } else if (res.status === 'invalid') {
                 displayFormValidation('#editCompanyForm', res.errors);
+                formatPhoneInput();
             }
         }
     });
@@ -832,7 +961,7 @@ $('#editCompanyForm').on('submit', function(e) {
 $('#companiesTable').on('click', '.btn-delete', function() {
     var data = companiesTable.row($(this).parents('tr')).data();
     $('#deleteCompanyForm #companyName').html(data.companyName);
-    $('#deleteCompanyForm #companyId').val(data.companyId);
+    $('#deleteCompanyForm [name="companyId"]').val(data.companyId);
 });
 
 $('#deleteCompanyForm').on('submit', function(e) {
@@ -843,6 +972,7 @@ $('#deleteCompanyForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteCompanyModal').modal('hide');
                 reloadTableData(companiesTable);
@@ -921,16 +1051,9 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
         },
         {
             data: 'billingStatus',
+            className: 'align-middle',
             render: function(data, type, row) {
-                var statusColor;
-                if (data === 'active') {
-                    statusColor = 'bg-success';
-                } else if (data === 'finished') {
-                    statusColor = 'bg-secondary';
-                } else if (data === 'stopped') {
-                    statusColor = 'bg-danger';
-                }
-                return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                return generateStatusData([data]).find((d) => d.id === data)?.text || '';
             }
         },
         {
@@ -968,27 +1091,65 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
     ]
 }));
 
-// Add Billing
+// Add Data Modal
+$('#addBillingForm').on('submit', function(e) {
+    e.preventDefault();
+    removeCleaveFormat();
+    $.ajax({
+        url: baseUrl + 'dashboard/billings/addBilling',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#addBillingModal').modal('hide');
+                reloadTableData(billingsTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg);
+                formatCurrencyInput();
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addBillingForm', res.errors);
+                formatCurrencyInput();
+            }
+        }
+    });
+});
+
 $('#addBillingModal').on('shown.bs.modal', function () {
-    $(this).find('select#billingStatus').select2({
+    $(this).find('select[name="billingStatus"]').select2({
         placeholder: 'Choose Status',
-        dropdownParent: $('#addBillingModal .modal-body')
+        data: generateStatusData(['Unverified', 'In Use', 'Stopped', 'Finished']),
+        dropdownParent: $('#addBillingModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; },
     });
 
-    $(this).find('select#companyId').select2({
+    $(this).find('select[name="companyId"]').select2({
         ajax: {
             url: baseUrl + 'dashboard/getAllCompaniesDatas',
             type: 'GET',
             dataType: 'json',
             delay: 250,
-            processResults: function (response) {
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+
                 return {
-                    results: $.map(response.data, function (data) {
-                        return {
-                            id: data.companyId,
-                            text: data.companyName + ' | ' + capitalizeWords(data.companyStatus)
-                        };
-                    })
+                    results: response.data
+                        .filter(function(data) {
+                            const companyName = data.companyName.toLowerCase().includes(searchTerm);
+                            const companyStatus = data.companyStatus.toLowerCase().includes(searchTerm);
+                            return companyName || companyStatus;
+                        })
+                        .map(function (data) {
+                            return {
+                                id: data.companyId,
+                                text: `${data.companyName} | 
+                                ${generateStatusData([data.companyStatus]).find((d) => d.id == data.companyStatus).text}`
+                            };
+                        })
                 };
             },
             cache: true
@@ -996,92 +1157,7 @@ $('#addBillingModal').on('shown.bs.modal', function () {
         minimumInputLength: 0,
         placeholder: 'Choose Company',
         allowClear: true,
-        dropdownParent: $('#addBillingModal .modal-body')
+        dropdownParent: $('#addBillingModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
     });
-})
-
-
-// Scan QR Details Table
-var patientTable;
-function getPatientHistoryHealth(patientNIK) {
-    if ($.fn.DataTable.isDataTable('#patientTable')) {
-        $('#patientTable').DataTable().ajax.url(baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
-        return;
-    }
-    patientTable = $('#patientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
-        columns: [
-            {
-                data: null,
-                className: 'text-start',
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                }
-            },
-            {data: 'hospitalName'},
-            {data: 'doctorName'},
-            {
-                data: 'diseaseNames',
-                render: function(data, type, row) {
-                    return data.split('|').join(', ');
-                }
-            },
-            {
-                data: 'historyhealthDate',
-                render: function(data, type, row) {
-                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
-                }
-            },
-            {
-                data: 'historyhealthBill',
-                render: function(data, type, row) {
-                    return formatToRupiah(data);
-                }
-            },
-            {
-                data: 'historyhealthStatus',
-                render: function(data, type, row) {
-                    var statusColor;
-                    if (data === 'not paid') {
-                        statusColor = 'bg-danger';
-                    } else if (data === 'paid') {
-                        statusColor = 'bg-success';
-                    } else if (data === 'free') {
-                        statusColor = 'bg-info';
-                    }
-                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
-                }
-            },
-            {
-                data: null,
-                className: 'text-end user-select-none no-export',
-                orderable: false,
-                defaultContent: `
-                    <button 
-                        type="button" 
-                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
-                        <i class="fa-regular fa-eye"></i>
-                    </button>
-                `
-            }
-        ],
-        columnDefs: [
-            {width: '80px', target: 7}
-        ]
-    }));
-}
-
-var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
-$('#patientTable').on('click', '.btn-view', function() {
-    viewHistoryHealthDetailsModal.show();
-    const backdrops = document.querySelectorAll('.modal-backdrop.show');
-    if (backdrops.length >= 2) {
-        backdrops[1].style.zIndex = "1055";
-    }
-    var data = patientTable.row($(this).parents('tr')).data();
-
-    console.log(data);
-
-    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
 });

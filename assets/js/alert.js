@@ -14,12 +14,19 @@ const Toast = Swal.mixin({
 // Authentication
 var flashdata = $('#loginAlert').data('flashdata');
 
-if (flashdata == 'wrong password') {
+if (flashdata == 'wrong email or password') {
     Swal.fire({
         title: 'Failed!',
-        text: 'Wrong password',
+        text: 'Wrong email or password',
         icon: 'error',
         confirmButtonText: 'Try again'
+    });
+} else if (flashdata == 'account unverified') {
+    Swal.fire({
+        title: 'Failed!',
+        text: 'Your account has not been verified yet. Please verify your account to proceed',
+        icon: 'error',
+        confirmButtonText: 'OK'
     });
 } else if (flashdata == 'not found') {
     Swal.fire({
@@ -35,6 +42,13 @@ if (flashdata == 'wrong password') {
         icon: 'success',
         confirmButtonText: 'OK'
     });
+} else if (flashdata == 'you are a robot') {
+    Swal.fire({
+        title: 'Failed!',
+        text: "You're a Robot!",
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
 }
 
 flashdata = $('#forgotPassAlert').data('flashdata');
@@ -43,7 +57,7 @@ var errorflashdata = $('#forgotPassAlert').data('errorflashdata');
 if (flashdata == 'send email failed') {
     Swal.fire({
         title: 'Failed!',
-        text: 'Email not send. ' + errorflashdata,
+        text: errorflashdata,
         icon: 'error',
         confirmButtonText: 'Try again'
     });
@@ -141,6 +155,16 @@ function displayAlert(flashdata, message = null) {
     } else if (flashdata == 'incomplete qr data') {
         Toast.fire({
             title: "QR data is incomplete",
+            icon: 'error'
+        });
+    } else if (flashdata == 'billing date not valid') {
+        Toast.fire({
+            title: "Billing started date or ended date is not valid!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'billing date already used') {
+        Toast.fire({
+            title: "Billing started date or ended date already used!",
             icon: 'error'
         });
     }

@@ -12,8 +12,8 @@
                 <th>Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
-                <th>Status</th>
                 <th>Billing</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -24,8 +24,8 @@
                 <th>Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
-                <th>Status</th>
                 <th>Billing</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </tfoot>
@@ -49,7 +49,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company">
                                     <i class="las la-building fs-4"></i>
                                 </span>
-                                <select class="form-control" data-live-search="true" title="Choose Company" id="companyId" name="companyId">
+                                <select class="form-control" data-live-search="true" title="Choose Company" name="companyId">
                                     <option hidden></option>
                                 </select>
                             </div>
@@ -59,7 +59,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Billing Start Date">
                                     <i class="las la-calendar-check fs-4"></i>
                                 </span>
-                                <input class="form-control" type="date" name="billingStartedAt">
+                                <input class="form-control" type="date" name="billingStartedAt" min="<?= date('Y-m-d'); ?>" placeholder="Start Date">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -67,7 +67,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Billing End Date">
                                     <i class="las la-calendar-times fs-4"></i>
                                 </span>
-                                <input class="form-control" type="date" name="billingEndedAt">
+                                <input class="form-control" type="date" name="billingEndedAt" min="<?= date('Y-m-d'); ?>" placeholder="End Date">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -75,11 +75,8 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Billing Status">
                                     <i class="las la-tag fs-4"></i>
                                 </span>
-                                <select class="form-control" id="billingStatus" name="billingStatus">
+                                <select class="form-control" name="billingStatus">
                                     <option hidden></option>
-                                    <option value="active">Active</option>
-                                    <option value="finished">Finished</option>
-                                    <option value="stopped">Stopped</option>
                                 </select>
                             </div>
                         </div>
@@ -88,9 +85,10 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Billing Amount">
                                     <i class="las la-credit-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="number" placeholder="Billing Amount" min="0" name="billingAmount">
+                                <input class="form-control currency-input" placeholder="Billing Amount" min="0" name="billingAmount">
                             </div>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
