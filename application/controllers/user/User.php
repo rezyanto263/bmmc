@@ -9,7 +9,7 @@ class User extends CI_Controller {
         parent::__construct();
         
         // Check if the user is logged in by verifying session data
-        if ($this->session->userdata('userType') != 'policyholder' && $this->session->userdata('userType') != 'family') {
+        if ($this->session->userdata('userType') != 'employee' && $this->session->userdata('userType') != 'family') {
             redirect('login');
         }
 
@@ -19,33 +19,33 @@ class User extends CI_Controller {
 
     public function index()
     {
-        // Retrieve the logged-in policyholder's data from session
+        // Retrieve the logged-in employee's data from session
         $userType = $this->session->userdata('userType');
-        if ($userType == 'policyholder') {
-            // Use session data for the logged-in policyholder
-            $policyholderId = $this->session->userdata('userNIK');
-            $policyholderDatas = $this->M_auth->getPolicyHolderDataById($policyholderId);
-            $familyMembers = $this->M_auth->getFamilyMembersByPolicyHolder($policyholderId);
+        if ($userType == 'employee') {
+            // Use session data for the logged-in employee
+            $employeeId = $this->session->userdata('userNIK');
+            $employeeDatas = $this->M_auth->getEmployeeDataById($employeeId);
+            $familyMembers = $this->M_auth->getFamilyMembersByEmployee($employeeId);
         } else {
             // Assuming you are also retrieving family data if logged in as family
             $familyId = $this->session->userdata('userNIK');
-            $policyholderDatas = $this->M_auth->getFamilyDataById($familyId);
+            $employeeDatas = $this->M_auth->getFamilyDataById($familyId);
             $familyMembers = null;
         }
 
-        // Pass policyholder data to view
+        // Pass employee data to view
         $datas = array(
             'title' => 'BIM | User',
             'subtitle' => 'User',
             'contentType' => 'profile',
-            'policyholderDatas' => $policyholderDatas, // Send data to the view
+            'employeeDatas' => $employeeDatas, // Send data to the view
             'familyMembers' => $familyMembers
         );
 
         $partials = array(
             'head' => 'partials/head',
             'navbar' => 'partials/user/navbar',
-            'content' => 'user/Profile', // You can access policyholderData here
+            'content' => 'user/Profile', // You can access employeeData here
             'script' => 'partials/script'
         );
 
@@ -56,7 +56,7 @@ class User extends CI_Controller {
     public function editEmployee() {
         $validate = array(
             array(
-                'field' => 'policyholderName',
+                'field' => 'employeeName',
                 'label' => 'Name',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -64,7 +64,7 @@ class User extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -73,7 +73,7 @@ class User extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -108,20 +108,20 @@ class User extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
-            $policyholderNIK = $this->input->post('policyholderNIK');
-            $password = $this->input->post('policyholderPassword');
+            $employeeNIK = $this->input->post('employeeNIK');
+            $password = $this->input->post('employeePassword');
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            $gender = $this->input->post('policyholderGender');
+            $gender = $this->input->post('employeeGender');
             $employeeData = array(
-                'policyholderNIK' => $this->input->post('policyholderNIK'),
-                'policyholderName' => $this->input->post('policyholderName'),
-                'policyholderEmail' => $this->input->post('policyholderEmail'),
-                'policyholderAddress' => $this->input->post('policyholderAddress'),
-                'policyholderBirth' => $this->input->post('policyholderBirth'),
+                'employeeNIK' => $this->input->post('employeeNIK'),
+                'employeeName' => $this->input->post('employeeName'),
+                'employeeEmail' => $this->input->post('employeeEmail'),
+                'employeeAddress' => $this->input->post('employeeAddress'),
+                'employeeBirth' => $this->input->post('employeeBirth'),
             );
-            !empty($newPassword)? $employeeData['policyholderPassword'] = $newPassword : '';
-            !empty($gender)? $employeeData['policyholderGender'] = $gender : '';
-            $this->M_auth->updateEmployee($policyholderNIK, $employeeData);
+            !empty($newPassword)? $employeeData['employeePassword'] = $newPassword : '';
+            !empty($gender)? $employeeData['employeeGender'] = $gender : '';
+            $this->M_auth->updateEmployee($employeeNIK, $employeeData);
             redirect('profile');
         }
     }
@@ -129,7 +129,7 @@ class User extends CI_Controller {
     public function editFamily() {
         $validate = array(
             array(
-                'field' => 'policyholderName',
+                'field' => 'employeeName',
                 'label' => 'Name',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -137,7 +137,7 @@ class User extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -175,14 +175,14 @@ class User extends CI_Controller {
     
         $familyNIK = $this->input->post('familyNIK', TRUE);
         $newPassword = $this->input->post('newPassword', TRUE);
-        $gender = $this->input->post('policyholderGender');
+        $gender = $this->input->post('employeeGender');
         // Data utama keluarga
         $familyData = array(
             'familyNIK' => $this->input->post('familyNIK', TRUE),
-            'familyName' => htmlspecialchars($this->input->post('policyholderName')),
-            'familyEmail' => htmlspecialchars($this->input->post('policyholderEmail')),
-            'familyAddress' => htmlspecialchars($this->input->post('policyholderAddress')),
-            'familyBirth' => $this->input->post('policyholderBirth', TRUE),
+            'familyName' => htmlspecialchars($this->input->post('employeeName')),
+            'familyEmail' => htmlspecialchars($this->input->post('employeeEmail')),
+            'familyAddress' => htmlspecialchars($this->input->post('employeeAddress')),
+            'familyBirth' => $this->input->post('employeeBirth', TRUE),
         );
     
         // Enkripsi password jika ada perubahan

@@ -56,13 +56,13 @@
                                 <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIK" id="familyNIK">
                             </div>
                         </div>
-                        <!-- Policyholder NIK -->
+                        <!-- Employee NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIK">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Employee NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIK" id="policyholderNIK">
+                                <input class="form-control" type="text" placeholder="Employee National ID Number" name="employeeNIK" id="employeeNIK">
                             </div>
                         </div>
                         <!-- Family Name -->
@@ -195,13 +195,13 @@
                                 <input class="form-control" type="text" placeholder="Family National ID Number" name="familyNIK" id="familyNIK">
                             </div>
                         </div>
-                        <!-- Policyholder NIK -->
+                        <!-- Employee NIK -->
                         <div class="col-12">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Policyholder NIK">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Employee NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Policyholder National ID Number" name="policyholderNIK" id="policyholderNIK">
+                                <input class="form-control" type="text" placeholder="Employee National ID Number" name="employeeNIK" id="employeeNIK">
                             </div>
                         </div>
                         <!-- Family Name -->

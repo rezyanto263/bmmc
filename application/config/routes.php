@@ -84,7 +84,7 @@ $route['hospitals/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospitals/His
 
 $route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
 $route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
-$route['company/Family/getFamiliesByPolicyholderNIK'] = 'company/Family/getFamiliesByPolicyholderNIK';
+$route['company/Family/getFamiliesByEmployeeNIK'] = 'company/Family/getFamiliesByEmployeeNIK';
 $route['company/getPatientByNIK'] = 'company/Hospitals/scanQR';
 $route['company/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'company/Hospitals/getCPatientHistoryHealthDetailsByNIK/$1';
 

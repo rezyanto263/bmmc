@@ -62,16 +62,16 @@ var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSett
             }
         },
         {
-            data: 'historyhealthFamilyRole',
+            data: 'historyhealthRole',
             render: function (data, type, row) {
-                if (data === 'policyholder') {
-                    return row.policyholderName;
+                if (data === 'employee') {
+                    return row.employeeName;
                 } else {
                     return row.familyName;
                 }
             }
         },
-        {data: 'historyhealthFamilyRole'},
+        {data: 'historyhealthRole'},
         {data: 'companyName'},
         {data: 'doctorName'},
         {

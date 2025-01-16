@@ -1044,20 +1044,20 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             }
         },
         {
-            data: 'historyhealthFamilyRole',
+            data: 'historyhealthRole',
             render: function (data, type, row) {
-                if (data === 'policyholder') {
-                    return row.policyholderName;
+                if (data === 'employee') {
+                    return row.employeeName;
                 } else {
                     return row.familyName;
                 }
             }
         },
-        {data: 'historyhealthFamilyRole'},
+        {data: 'historyhealthRole'},
         {data: 'companyName'},
         {data: 'doctorName'},
         {
-            data: 'historyhealthBill',
+            data: 'historyhealthTotalBill',
             render: function (data) {
                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
@@ -1075,27 +1075,51 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 return data;
             }
         },
-        {data: 'historyhealthStatus'},
+        {
+            data: 'invoiceStatus',
+                render: function(data, type, row) {
+                    if (row.historyhealthTotalBill > 0) {
+                        return data;
+                    } else {
+                        return 'free';
+                    }
+                }
+        },
         {
             data: null,
             className: 'text-end user-select-none no-export',
             orderable: false,
-            defaultContent: `
-                <button 
-                    type="button" 
-                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#detailHistoryModal"
-                    title="View History">
-                    <i class="fa-regular fa-eye"></i>
-                </button>
-            `
+            render: function(data, type, row, meta) {
+                if (data.historyhealthTotalBill == 0 && data.historyhealthDiscount == 0) {
+                    return `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detailHistoryModal"
+                        title="View History">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `;
+                } else {
+                    return `
+                        <button 
+                            type="button" 
+                            class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#detailHistoryModal"
+                            title="View History">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    `;
+                }
+            }
         },
         { 
             data: 'patientNIK',
             visible: false, 
             searchable: true
-        }
+        },
     ],
     columnDefs: [
         {width: '180px', target: 4}
@@ -1115,28 +1139,37 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
 $('#hHistoriesTable').on('click', '.btn-view', function() {
     var data = hHistoriesTable.row($(this).parents('tr')).data();
 
-    const formattedDate = moment(data.historyhealthDate).format('DD MMM YYYY, HH:mm');
-    const formattedCreateAt = moment(data.createdAt).format('DD MMM YYYY, HH:mm');
-    const formattedUpdateAt = moment(data.updatedAt).format('DD MMM YYYY, HH:mm');
-    const formattedBill = 'Rp ' + parseFloat(data.historyhealthBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedDate = moment(data.historyhealthDate).format('DD MMMM YYYY, HH:mm');
+    const formattedCreateAt = moment(data.createdAt).format('DD MMMM YYYY, HH:mm');
+    const formattedUpdateAt = moment(data.updatedAt).format('DD MMMM YYYY, HH:mm');
+    const formattedBill = 'Rp ' + parseFloat(data.historyhealthTotalBill).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedDFee = 'Rp ' + parseFloat(data.historyhealthDoctorFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedMFee = 'Rp ' + parseFloat(data.historyhealthMedicineFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedLFee = 'Rp ' + parseFloat(data.historyhealthLabFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedAFee = 'Rp ' + parseFloat(data.historyhealthActionFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedDiscount = 'Rp ' + parseFloat(data.historyhealthDiscount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    if (data.historyhealthFamilyRole == "policyholder") {
-        $('#detailContent #patientName').text(data.policyholderName);
+    if (data.historyhealthRole == "employee") {
+        $('#detailContent #patientName').text(data.employeeName);
     } else {
         $('#detailContent #patientName').text(data.familyName);
     }
 
     $('#detailContent #detailDoctorName').text(data.doctorName);
-    $('#detailContent #historyhealthComplaint').text(data.historyhealthComplaint);
-    $('#detailContent #historyhealthFamilyRole').text(data.historyhealthFamilyRole);
-    $('#detailContent #historyhealthDetails').text(data.historyhealthDetails);
-    $('#detailContent #policyholderName').text(data.policyholderName);
+    $('#detailContent #diseaseName').text(data.diseaseName ? data.diseaseName : 'Rujukan');
+    $('#detailContent #historyhealthRole').text(data.historyhealthRole);
+    $('#detailContent #employeeName').text(data.employeeName);
     $('#detailContent #companyName').text(data.companyName);
     $('#detailContent #historyhealthDate').text(formattedDate);
-    $('#detailContent #historyhealthStatus').text(data.historyhealthStatus);
+    $('#detailContent #invoiceStatus').text(data.historyhealthTotalBill > 0 ? data.invoiceStatus : 'free');
     $('#detailContent #createdAt').text(formattedCreateAt);
     $('#detailContent #updatedAt').text(formattedUpdateAt);
-    $('#detailContent #historyhealthBill').text(formattedBill);
+    $('#detailContent #historyhealthDoctorFee').text(formattedDFee);
+    $('#detailContent #historyhealthMedicineFee').text(formattedMFee);
+    $('#detailContent #historyhealthLabFee').text(formattedLFee);
+    $('#detailContent #historyhealthActionFee').text(formattedAFee);
+    $('#detailContent #historyhealthDiscount').text(formattedDiscount);
+    $('#detailContent #historyhealthTotalBill').text(formattedBill);
 });
 
 // Scan QR Patient For Hospital
@@ -1232,13 +1265,13 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
                 return meta.row + 1;
             }
         },
-        {data: 'policyholderNIK'},
-        {data: 'policyholderName'},
-        {data: 'policyholderEmail'},
-        {data: 'policyholderAddress'},
-        {data: 'policyholderPhone'},
-        {data: 'policyholderBirth'},
-        {data: 'policyholderGender'},
+        {data: 'employeeNIK'},
+        {data: 'employeeName'},
+        {data: 'employeeEmail'},
+        {data: 'employeeAddress'},
+        {data: 'employeePhone'},
+        {data: 'employeeBirth'},
+        {data: 'employeeGender'},
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -1275,15 +1308,15 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
 function viewEmployeeInNewTab(button) {
     // Dapatkan data baris dari tombol yang diklik
     var rowData = employeesTable.row($(button).closest('tr')).data();
-    var policyholderNIK = rowData.policyholderNIK;
+    var employeeNIK = rowData.employeeNIK;
 
-    // Simpan policyholderNIK ke dalam session melalui AJAX
-    $.post(baseUrl + 'company/Family/savePolicyholderNIK', { policyholderNIK: policyholderNIK }, function(response) {
+    // Simpan employeeNIK ke dalam session melalui AJAX
+    $.post(baseUrl + 'company/Family/saveEmployeeNIK', { employeeNIK: employeeNIK }, function(response) {
         if (response.success) {
             // Buka halaman baru untuk melihat data keluarga
             window.open(baseUrl + 'company/Family', '_blank');
         } else {
-            alert("Gagal menyimpan Policyholder NIK.");
+            alert("Gagal menyimpan Employee NIK.");
         }
     }, 'json');
 }
@@ -1325,11 +1358,11 @@ $('#addEmployeeForm').on('submit', function(e) {
 });
 
 $('#addEmployeeModal').on('shown.bs.modal', function() {
-    $(this).find('select#policyholderGender').select2({
+    $(this).find('select#employeeGender').select2({
         placeholder: 'Choose Gender',
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
-    $(this).find('select#policyholderStatus').select2({
+    $(this).find('select#employeeStatus').select2({
         placeholder: 'Choose Status',
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
@@ -1338,17 +1371,17 @@ $('#addEmployeeModal').on('shown.bs.modal', function() {
 // Edit Data Employee
 $('#employeesTable').on('click', '.btn-edit', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
-    if (data.policyholderPhoto) {
-        $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.policyholderPhoto);
+    if (data.employeePhoto) {
+        $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.employeePhoto);
     }
-    $('#editEmployeeForm [name="policyholderNIK"]').val(data.policyholderNIK);
-    $('#editEmployeeForm [name="policyholderName"]').val(data.policyholderName);
-    $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
-    $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
-    $('#editEmployeeForm [name="policyholderAddress"]').val(data.policyholderAddress);
-    $('#editEmployeeForm [name="policyholderBirth"]').val(data.policyholderBirth);
-    $('#editEmployeeForm [name="policyholderGender"]').val(data.policyholderGender);
-    $('#editEmployeeForm [name="policyholderStatus"]').val(data.policyholderStatus);
+    $('#editEmployeeForm [name="employeeNIK"]').val(data.employeeNIK);
+    $('#editEmployeeForm [name="employeeName"]').val(data.employeeName);
+    $('#editEmployeeForm [name="employeeEmail"]').val(data.employeeEmail);
+    $('#editEmployeeForm [name="employeePassword"]').val(data.employeeEmail);
+    $('#editEmployeeForm [name="employeeAddress"]').val(data.employeeAddress);
+    $('#editEmployeeForm [name="employeeBirth"]').val(data.employeeBirth);
+    $('#editEmployeeForm [name="employeeGender"]').val(data.employeeGender);
+    $('#editEmployeeForm [name="employeeStatus"]').val(data.employeeStatus);
 });
 
 $('#editEmployeeForm').on('submit', function(e) {
@@ -1379,8 +1412,8 @@ $('#editEmployeeForm').on('submit', function(e) {
 // Delete Employee
 $('#employeesTable').on('click', '.btn-delete', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
-    $('#deleteEmployeeForm #employeeName').html(data.policyholderName);
-    $('#deleteEmployeeForm #policyholderNIK').val(data.policyholderNIK);
+    $('#deleteEmployeeForm #employeeName').html(data.employeeName);
+    $('#deleteEmployeeForm #employeeNIK').val(data.employeeNIK);
 });
 
 $('#deleteEmployeeForm').on('submit', function(e) {
@@ -1489,7 +1522,7 @@ $('#addFamilyForm2').on('submit', function(e) {
 $('#allfamiliesTable').on('click', '.btn-edit', function() {
     var data = allfamiliesTable.row($(this).parents('tr')).data();
     $('#editFamilyForm2 [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm2 [name="policyholderNIK"]').val(data.policyholderNIK);
+    $('#editFamilyForm2 [name="employeeNIK"]').val(data.employeeNIK);
     $('#editFamilyForm2 [name="familyName"]').val(data.familyName);
     $('#editFamilyForm2 [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm2 [name="familyAddress"]').val(data.familyAddress);
@@ -1548,7 +1581,7 @@ $('#deleteFamilyForm2').on('submit', function(e) {
 
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
-        url: baseUrl + 'company/Family/getFamiliesByPolicyholderNIK',
+        url: baseUrl + 'company/Family/getFamiliesByEmployeeNIK',
         dataSrc: 'data', 
         error: function (xhr, error, thrown) {
             console.error("AJAX Error:", error);
@@ -1635,7 +1668,7 @@ $('#addFamilyForm').on('submit', function(e) {
 $('#familiesTable').on('click', '.btn-edit', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
     $('#editFamilyForm [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm [name="policyholderNIK"]').val(data.policyholderNIK);
+    $('#editFamilyForm [name="employeeNIK"]').val(data.employeeNIK);
     $('#editFamilyForm [name="familyName"]').val(data.familyName);
     $('#editFamilyForm [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm [name="familyAddress"]').val(data.familyAddress);

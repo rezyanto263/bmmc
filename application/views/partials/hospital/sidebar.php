@@ -34,6 +34,18 @@
                         <span>Doctors</span>
                     </a>
                 </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospitals/Doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
+                        <i class="las la-stethoscope fs-4"></i>
+                        <span>Doctors</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospitals/Doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
+                        <i class="las la-stethoscope fs-4"></i>
+                        <span>Doctors</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="sidebar-extramenu">

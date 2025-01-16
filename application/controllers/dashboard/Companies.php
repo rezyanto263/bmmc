@@ -286,8 +286,8 @@ class Companies extends CI_Controller {
             return;
         }
     
-        $patientData = $role == 'policyholder' 
-            ? $this->M_companies->getPolicyholderByNIK($NIK) 
+        $patientData = $role == 'employee' 
+            ? $this->M_companies->getEmployeeByNIK($NIK) 
             : $this->M_companies->getFamilyByNIK($NIK);
     
         if ($patientData) {

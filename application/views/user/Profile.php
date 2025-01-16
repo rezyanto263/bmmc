@@ -7,7 +7,7 @@
       </div>
       <div class="text-center fw-bold text-white title-profile">
         Selamat Datang
-        <?= isset($policyholderDatas['policyholderName']) && $policyholderDatas['policyholderName'] ? $policyholderDatas['policyholderName'] : (isset($policyholderDatas['familyName']) ? $policyholderDatas['familyName'] : '') ?>
+        <?= isset($employeeDatas['employeeName']) && $employeeDatas['employeeName'] ? $employeeDatas['employeeName'] : (isset($employeeDatas['familyName']) ? $employeeDatas['familyName'] : '') ?>
       </div>
       <div class="d-flex justify-content-center align-items-center">
         <button type="button" class="bg-transparent border-0 me-2" data-bs-toggle="modal"
@@ -55,7 +55,7 @@
       <div class="d-flex justify-content-between flex-wrap flex-column flex-lg-row">
         <!-- card -->
         <div class="card shadow-lg rounded mb-2 p-3 pt-4">
-          <?php if (!empty($policyholderDatas['policyholderName'])): ?>
+          <?php if (!empty($employeeDatas['employeeName'])): ?>
             <p class="fw-bold text-secondary text-center text-lg-start">
               Penanggung Jawab
             </p>
@@ -67,12 +67,12 @@
           <div class="d-flex align-items-center justify-content-lg-start flex-lg-row flex-column">
             <!-- gambar -->
             <div class="me-4">
-              <?php if (isset($policyholderDatas['policyholderPhoto']) && $policyholderDatas['policyholderPhoto'] != ''): ?>
-                <img src="<?= base_url('uploads/logos/' . $policyholderDatas['policyholderPhoto']) ?>"
-                  alt="Policyholder Photo" class="rounded-circle border border-white shadow-sm bg-hijau"
+              <?php if (isset($employeeDatas['employeePhoto']) && $employeeDatas['employeePhoto'] != ''): ?>
+                <img src="<?= base_url('uploads/logos/' . $employeeDatas['employeePhoto']) ?>"
+                  alt="Employee Photo" class="rounded-circle border border-white shadow-sm bg-hijau"
                   alt="Profile Picture" style="width: 100px; height: 100px; object-fit: cover" />
               <?php else: ?>
-                <img src="<?= base_url('uploads/logos/' . $policyholderDatas['familyPhoto']) ?>" alt="Default Photo"
+                <img src="<?= base_url('uploads/logos/' . $employeeDatas['familyPhoto']) ?>" alt="Default Photo"
                   class="rounded-circle border border-white shadow-sm bg-hijau" alt="Profile Picture"
                   style="width: 100px; height: 100px; object-fit: cover" />
               <?php endif; ?>
@@ -86,49 +86,49 @@
                     <td class="fw-bold">NIK</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['familyNIK']) && $policyholderDatas['familyNIK'] ? $policyholderDatas['familyNIK'] : (isset($policyholderDatas['policyholderNIK']) ? $policyholderDatas['policyholderNIK'] : '') ?>
+                      <?= isset($employeeDatas['familyNIK']) && $employeeDatas['familyNIK'] ? $employeeDatas['familyNIK'] : (isset($employeeDatas['employeeNIK']) ? $employeeDatas['employeeNIK'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Nama</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderName']) && $policyholderDatas['policyholderName'] ? $policyholderDatas['policyholderName'] : (isset($policyholderDatas['familyName']) ? $policyholderDatas['familyName'] : '') ?>
+                      <?= isset($employeeDatas['employeeName']) && $employeeDatas['employeeName'] ? $employeeDatas['employeeName'] : (isset($employeeDatas['familyName']) ? $employeeDatas['familyName'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Tanggal Lahir</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderBirth']) && $policyholderDatas['policyholderBirth'] ? $policyholderDatas['policyholderBirth'] : (isset($policyholderDatas['familyBirth']) ? $policyholderDatas['familyBirth'] : '') ?>
+                      <?= isset($employeeDatas['employeeBirth']) && $employeeDatas['employeeBirth'] ? $employeeDatas['employeeBirth'] : (isset($employeeDatas['familyBirth']) ? $employeeDatas['familyBirth'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Kelamin</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderGender']) && $policyholderDatas['policyholderGender'] ? $policyholderDatas['policyholderGender'] : (isset($policyholderDatas['familyGender']) ? $policyholderDatas['familyGender'] : '') ?>
+                      <?= isset($employeeDatas['employeeGender']) && $employeeDatas['employeeGender'] ? $employeeDatas['employeeGender'] : (isset($employeeDatas['familyGender']) ? $employeeDatas['familyGender'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Alamat</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderAddress']) && $policyholderDatas['policyholderAddress'] ? $policyholderDatas['policyholderAddress'] : (isset($policyholderDatas['familyAddress']) ? $policyholderDatas['familyAddress'] : '') ?>
+                      <?= isset($employeeDatas['employeeAddress']) && $employeeDatas['employeeAddress'] ? $employeeDatas['employeeAddress'] : (isset($employeeDatas['familyAddress']) ? $employeeDatas['familyAddress'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Telepon</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderPhone']) && $policyholderDatas['policyholderPhone'] ? $policyholderDatas['policyholderPhone'] : (isset($policyholderDatas['familyPhone']) ? $policyholderDatas['familyPhone'] : '') ?>
+                      <?= isset($employeeDatas['employeePhone']) && $employeeDatas['employeePhone'] ? $employeeDatas['employeePhone'] : (isset($employeeDatas['familyPhone']) ? $employeeDatas['familyPhone'] : '') ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="fw-bold">Email</td>
                     <td>:</td>
                     <td>
-                      <?= isset($policyholderDatas['policyholderEmail']) && $policyholderDatas['policyholderEmail'] ? $policyholderDatas['policyholderEmail'] : (isset($policyholderDatas['familyEmail']) ? $policyholderDatas['familyEmail'] : '') ?>
+                      <?= isset($employeeDatas['employeeEmail']) && $employeeDatas['employeeEmail'] ? $employeeDatas['employeeEmail'] : (isset($employeeDatas['familyEmail']) ? $employeeDatas['familyEmail'] : '') ?>
                     </td>
                   </tr>
                 </tbody>

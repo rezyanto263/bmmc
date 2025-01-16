@@ -9,7 +9,7 @@ class Profile extends CI_Controller {
         parent::__construct();
         
         // Check if the user is logged in by verifying session data
-        if ($this->session->userdata('userType') != 'policyholder' && $this->session->userdata('userType') != 'family') {
+        if ($this->session->userdata('userType') != 'employee' && $this->session->userdata('userType') != 'family') {
             redirect('login');
         }
 
@@ -20,15 +20,15 @@ class Profile extends CI_Controller {
     public function index()
     {
         $userType = $this->session->userdata('userType');
-        if ($userType == 'policyholder') {
-            // Use session data for the logged-in policyholder
-            $policyholderId = $this->session->userdata('userNIK');
-            $policyholderDatas = $this->M_auth->getPolicyHolderDataById($policyholderId);
-            $familyMembers = $this->M_auth->getFamilyMembersByPolicyHolder($policyholderId);
+        if ($userType == 'employee') {
+            // Use session data for the logged-in employee
+            $employeeId = $this->session->userdata('userNIK');
+            $employeeDatas = $this->M_auth->getEmployeeDataById($employeeId);
+            $familyMembers = $this->M_auth->getFamilyMembersByEmployee($employeeId);
         } else {
             // Assuming you are also retrieving family data if logged in as family
             $familyId = $this->session->userdata('userNIK');
-            $policyholderDatas = $this->M_auth->getFamilyDataById($familyId);
+            $employeeDatas = $this->M_auth->getFamilyDataById($familyId);
             $familyMembers = null;
         }
 
@@ -36,7 +36,7 @@ class Profile extends CI_Controller {
             'title' => 'BIM | User',
             'subtitle' => 'Profile',
             'contentType' => 'user',
-            'policyholderDatas' => $policyholderDatas, // Send data to the view
+            'employeeDatas' => $employeeDatas, // Send data to the view
             'familyMembers' => $familyMembers
         );
 
@@ -53,7 +53,7 @@ class Profile extends CI_Controller {
     }
 
     public function getUserHistories() {
-        $userDatas = $this->M_auth->checkPolicyHolder('policyholderNIK', $this->session->userdata('userNIK'));
+        $userDatas = $this->M_auth->checkEmployee('employeeNIK', $this->session->userdata('userNIK'));
         if (!$userDatas) {
             $familyDatas = $this->M_auth->checkFamily('familyNIK', $this->session->userdata('userNIK'));
         }
@@ -87,7 +87,7 @@ class Profile extends CI_Controller {
         // Validation rules
         $validate = array(
             array(
-                'field' => 'policyholderEmail',
+                'field' => 'employeeEmail',
                 'label' => 'Email',
                 'rules' => 'required|trim|valid_email',
                 'errors' => array(
@@ -132,15 +132,15 @@ class Profile extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
         } else {
             // Get the logged-in user's NIK from the session
-            $policyholderNIK = $this->input->post('policyholderNIK');
+            $employeeNIK = $this->input->post('employeeNIK');
             $oldPassword = htmlspecialchars($this->input->post('oldPassword'));
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            $newEmail = $this->input->post('policyholderEmail');
+            $newEmail = $this->input->post('employeeEmail');
         
             // If new password is provided, verify the old password
             if (!empty($newPassword)) {
-                // Fetch the current password hash from the database (use the policyholderNIK to fetch the correct record)
-                $currentPasswordHash = $this->M_auth->getCurrentPasswordByNIK($policyholderNIK);
+                // Fetch the current password hash from the database (use the employeeNIK to fetch the correct record)
+                $currentPasswordHash = $this->M_auth->getCurrentPasswordByNIK($employeeNIK);
                 
                 // Verify if the old password matches the current password
                 if (!password_verify($oldPassword, $currentPasswordHash)) {
@@ -151,18 +151,18 @@ class Profile extends CI_Controller {
         
             // Prepare employee data for updating
             $employeeData = array(
-                'policyholderEmail' => $newEmail,
+                'employeeEmail' => $newEmail,
             );
         
             // Update the password if a new password is provided
             if (!empty($newPassword)) {
                 // Hash the new password before saving
                 $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $employeeData['policyholderPassword'] = $hashedPassword;
+                $employeeData['employeePassword'] = $hashedPassword;
             }
         
             // Call model function to update the employee data (email and password)
-            $updateResult = $this->M_auth->updateEmployee($policyholderNIK, $employeeData);
+            $updateResult = $this->M_auth->updateEmployee($employeeNIK, $employeeData);
         
             // Check if update was successful
             if ($updateResult) {
@@ -240,6 +240,7 @@ class Profile extends CI_Controller {
     }
 
 }
+
 
 /* End of file Company.php */
 

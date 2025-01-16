@@ -420,7 +420,7 @@ $config['cookie_samesite'] 	= 'Lax';
 | Standardize newlines
 |--------------------------------------------------------------------------
 |
-| Determines whether to standardize newline characters in input data,
+| Determines whether to standardize newline charactezrs in input data,
 | meaning to replace \r\n, \r, \n occurrences with the PHP_EOL value.
 |
 | WARNING: This feature is DEPRECATED and currently available only

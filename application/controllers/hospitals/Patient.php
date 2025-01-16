@@ -39,28 +39,28 @@ class Patient extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getPatientDataByNIK() {
-        $patientNIK = $this->input->post('patientNIK');
-        $patient = $this->M_patient->getPatientDataByNIK($patientNIK);
-        var_dump($patient);
-        exit;
-        if ($hospitalDatas) {
-            $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
-            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
+    // public function getPatientDataByNIK() {
+    //     $patientNIK = $this->input->post('patientNIK');
+    //     $patient = $this->M_patient->getPatientDataByNIK($patientNIK);
+    //     var_dump($patient);
+    //     exit;
+    //     if ($hospitalDatas) {
+    //         $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
+    //         $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
         
-            if ($historyhealthIds) {
-                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
-                $datas = array(
-                    'data' => $historiesDatas,
-                );
-                echo json_encode($datas);
-            } else {
-                echo json_encode(['data' => []]);
-            }
-        } else {
-            echo json_encode(['data' => []]);
-        }
-    }
+    //         if ($historyhealthIds) {
+    //             $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
+    //             $datas = array(
+    //                 'data' => $historiesDatas,
+    //             );
+    //             echo json_encode($datas);
+    //         } else {
+    //             echo json_encode(['data' => []]);
+    //         }
+    //     } else {
+    //         echo json_encode(['data' => []]);
+    //     }
+    // }
 
     public function scanQR() {
         $qrInput = $this->input->post('qrData');
@@ -101,8 +101,8 @@ class Patient extends CI_Controller {
             return;
         }
     
-        $patientData = $role == 'policyholder' 
-            ? $this->M_companies->getPolicyholderByNIK($NIK) 
+        $patientData = $role == 'employee' 
+            ? $this->M_companies->getEmployeeByNIK($NIK) 
             : $this->M_companies->getFamilyByNIK($NIK);
     
         if ($patientData) {
