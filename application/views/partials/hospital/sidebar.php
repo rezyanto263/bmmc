@@ -35,15 +35,15 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospitals/Doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
-                        <i class="las la-stethoscope fs-4"></i>
-                        <span>Doctors</span>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Queue'?'active':''; ?>" href="<?= base_url('hospitals/Queue') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Queue">
+                        <i class="las la-hourglass-half fs-4"></i>
+                        <span>Queue</span>
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospitals/Doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
-                        <i class="las la-stethoscope fs-4"></i>
-                        <span>Doctors</span>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Disease'?'active':''; ?>" href="<?= base_url('hospitals/Disease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Disease">
+                        <i class="las la-sad-tear fs-4"></i>
+                        <span>Disease</span>
                     </a>
                 </li>
             </ul>

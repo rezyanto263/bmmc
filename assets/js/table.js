@@ -1242,6 +1242,24 @@ function getHPatientHistoryHealth(patientNIK) {
     }));
 }
 
+var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {data: 'diseaseName'},
+        {data: 'diseaseInformation'},
+    ],
+    columnDefs: [
+        {width: '180px', target: 0}
+    ]
+}));
+
 $('#hPatientTable').on('click', '.btn-view', function() {
     viewHistoryHealthDetailsModal.show();
     const backdrops = document.querySelectorAll('.modal-backdrop.show');

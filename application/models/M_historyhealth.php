@@ -37,6 +37,12 @@ class M_historyhealth extends CI_Model {
         }
         return $results;
     }
+
+    // sementara
+    public function getDiseaseDatas()
+    {
+        return $this->db->get('disease')->result_array();
+    }
 }
 
 /* End of file M_historyhealth.php */
