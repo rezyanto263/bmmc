@@ -1375,13 +1375,6 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         {data: 'employeePhone'},
         {data: 'employeeBirth'},
         {data: 'employeeGender'},
-        {data: 'employeeNIK'},
-        {data: 'employeeName'},
-        {data: 'employeeEmail'},
-        {data: 'employeeAddress'},
-        {data: 'employeePhone'},
-        {data: 'employeeBirth'},
-        {data: 'employeeGender'},
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -1418,7 +1411,6 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
 function viewEmployeeInNewTab(button) {
     // Dapatkan data baris dari tombol yang diklik
     var rowData = employeesTable.row($(button).closest('tr')).data();
-    var employeeNIK = rowData.employeeNIK;
     var employeeNIK = rowData.employeeNIK;
 
     // Simpan policyholderNIK ke dalam session melalui AJAX
@@ -1468,7 +1460,6 @@ $('#addEmployeeForm').on('submit', function(e) {
 });
 
 $('#addEmployeeModal').on('shown.bs.modal', function() {
-    $(this).find('select#employeeGender').select2({
     $(this).find('select#employeeGender').select2({
         placeholder: 'Choose Gender',
         dropdownParent: $('#addEmployeeModal .modal-body')
