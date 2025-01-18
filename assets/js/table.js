@@ -1375,6 +1375,13 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         {data: 'employeePhone'},
         {data: 'employeeBirth'},
         {data: 'employeeGender'},
+        {data: 'employeeNIK'},
+        {data: 'employeeName'},
+        {data: 'employeeEmail'},
+        {data: 'employeeAddress'},
+        {data: 'employeePhone'},
+        {data: 'employeeBirth'},
+        {data: 'employeeGender'},
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -1412,9 +1419,10 @@ function viewEmployeeInNewTab(button) {
     // Dapatkan data baris dari tombol yang diklik
     var rowData = employeesTable.row($(button).closest('tr')).data();
     var employeeNIK = rowData.employeeNIK;
+    var employeeNIK = rowData.employeeNIK;
 
-    // Simpan employeeNIK ke dalam session melalui AJAX
-    $.post(baseUrl + 'company/Family/saveEmployeeNIK', { employeeNIK: employeeNIK }, function(response) {
+    // Simpan policyholderNIK ke dalam session melalui AJAX
+    $.post(baseUrl + 'company/Family/saveemployeeNIK', { employeeNIK: employeeNIK }, function(response) {
         if (response.success) {
             // Buka halaman baru untuk melihat data keluarga
             window.open(baseUrl + 'company/Family', '_blank');
@@ -1437,14 +1445,13 @@ $('#addEmployeeForm').on('submit', function(e) {
     e.preventDefault();
     var formData = new FormData(this);
     $.ajax({
-        url: baseUrl + 'company/Employee/addEmployee', // base URL diubah
+        url: baseUrl + 'company/Employee/addEmployee',
         method: 'POST',
         data: formData,
         contentType: false,
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
-            console.log(res);
             if (res.status === 'success') {
                 $('#addEmployeeModal').modal('hide');
                 reloadTableData(employeesTable);
@@ -1462,11 +1469,38 @@ $('#addEmployeeForm').on('submit', function(e) {
 
 $('#addEmployeeModal').on('shown.bs.modal', function() {
     $(this).find('select#employeeGender').select2({
+    $(this).find('select#employeeGender').select2({
         placeholder: 'Choose Gender',
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
-    $(this).find('select#employeeStatus').select2({
-        placeholder: 'Choose Status',
+    $(this).find('select#insuranceId').select2({
+        ajax: {
+            url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                return {
+                    results: response.data 
+                        .filter(function(data) {
+                            const insuranceTier = data.insuranceTier.toLowerCase().includes(searchTerm);
+                            const insuranceAmount = data.insuranceAmount.toLowerCase().includes(searchTerm);
+                            return insuranceTier || insuranceAmount;
+                        })
+                        .map(function (data) {
+                        return {
+                            id: data.insuranceId,
+                            text: data.insuranceTier + ' | ' + data.insuranceAmount
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Insurance',
+        allowClear: true,
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
 });
@@ -1475,16 +1509,43 @@ $('#addEmployeeModal').on('shown.bs.modal', function() {
 $('#employeesTable').on('click', '.btn-edit', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
     if (data.employeePhoto) {
-        $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.employeePhoto);
+        $('#editEmployeeForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.employeePhoto);
     }
     $('#editEmployeeForm [name="employeeNIK"]').val(data.employeeNIK);
     $('#editEmployeeForm [name="employeeName"]').val(data.employeeName);
     $('#editEmployeeForm [name="employeeEmail"]').val(data.employeeEmail);
-    $('#editEmployeeForm [name="employeePassword"]').val(data.employeeEmail);
+    $('#editEmployeeForm [name="employeePhone"]').val(data.employeePhone);
+    $('#editEmployeeForm [name="employeePassword"]').val(data.employeePassword);
     $('#editEmployeeForm [name="employeeAddress"]').val(data.employeeAddress);
     $('#editEmployeeForm [name="employeeBirth"]').val(data.employeeBirth);
     $('#editEmployeeForm [name="employeeGender"]').val(data.employeeGender);
     $('#editEmployeeForm [name="employeeStatus"]').val(data.employeeStatus);
+    var insuranceId = data.insuranceId;
+    if (insuranceId) {
+        var selectedInsurance = '<option value="'+insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
+    }
+    $('#editEmployeeForm select#insuranceId').html(selectedInsurance);
+    $('#editEmployeeForm select#insuranceId').select2({
+        placeholder: 'Choose Insurance',
+        allowClear: true,
+        dropdownParent: $('#editEmployeeModal .modal-body'),
+    });
+
+    $.ajax({
+        url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+        method: 'GET',
+        success: function(response) {
+            var res = JSON.parse(response);
+
+            let optionList = [selectedInsurance];
+            $.each(res.data, function(index, data) {
+                optionList += '<option value="'+data.insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
+            });
+
+            $('#editEmployeeForm select#insuranceId').html(optionList);
+            $('#editEmployeeForm select#insuranceId').val(insuranceId).trigger('change');
+        }
+    });
 });
 
 $('#editEmployeeForm').on('submit', function(e) {
@@ -1535,6 +1596,87 @@ $('#deleteEmployeeForm').on('submit', function(e) {
         }
     });
 });
+
+var insurancesTable = $('#insurancesTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: 'insuranceTier',
+            className: 'text-start'
+        },
+        {
+            data: 'insuranceAmount',
+            className: 'text-end'
+        },
+        {
+            data: 'insuranceDescription',
+            className: 'text-start'
+        },
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editInsuranceModal">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteInsuranceModal">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ]
+}));
+
+$('#addInsuranceModal').on('shown.bs.modal', function() {
+});
+
+$('#addInsuranceButton, #editInsuranceButton, #deleteInsuranceButton').on('click', function() {
+    reloadTableData(insurancesTable);
+});
+
+// Add Data Company
+$('#addInsuranceForm').on('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: baseUrl + 'company/insurance/addInsurance',
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addInsuranceModal').modal('hide');
+                reloadTableData(companiesTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addInsuranceForm', res.errors);
+            }
+        }
+    });
+});
+
 
 var allfamiliesTable = $('#allfamiliesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
@@ -1684,7 +1826,7 @@ $('#deleteFamilyForm2').on('submit', function(e) {
 
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
-        url: baseUrl + 'company/Family/getFamiliesByEmployeeNIK',
+        url: baseUrl + 'company/Family/getFamiliesByemployeeNIK',
         dataSrc: 'data', 
         error: function (xhr, error, thrown) {
             console.error("AJAX Error:", error);

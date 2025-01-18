@@ -62,14 +62,14 @@ class Family extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function saveEmployeeNIK() {
+    public function saveemployeeNIK() {
         $employeeNIK = $this->input->post('employeeNIK');
     
         if (!empty($employeeNIK)) {
             $this->session->set_userdata('employeeNIK', $employeeNIK);
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Employee NIK tidak valid.']);
+            echo json_encode(['success' => false, 'message' => 'employee NIK tidak valid.']);
         }
     }
     
@@ -83,7 +83,7 @@ class Family extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getFamiliesByEmployeeNIK($employeeNIK = null) {
+    public function getFamiliesByemployeeNIK($employeeNIK = null) {
         if (empty($employeeNIK)) {
             // Ambil NIK dari session jika parameter kosong
             $employeeNIK = $this->session->userdata('employeeNIK');
@@ -93,7 +93,7 @@ class Family extends CI_Controller {
             // Jika tetap kosong, kembalikan semua data keluarga atau error
             $familyDatas = $this->M_family->getAllFamilyDatas();
         } else {
-            $familyDatas = $this->M_family->getFamiliesByEmployeeNIK($employeeNIK);
+            $familyDatas = $this->M_family->getFamiliesByemployeeNIK($employeeNIK);
         }
     
         // Siapkan data untuk dikembalikan dalam format JSON

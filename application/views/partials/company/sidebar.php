@@ -24,8 +24,14 @@
                 </li>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Employee'?'active':''; ?>" href="<?= base_url('company/Employee') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Employee">
-                        <i class="las la-user fs-4"></i>
+                        <i class="las la-user-tie fs-4"></i>
                         <span>Employee</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insurance'?'active':''; ?>" href="<?= base_url('company/Insurance') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insurance">
+                        <i class="las la-tag fs-4"></i>
+                        <span>Insurance</span>
                     </a>
                 </li>
                 <li>

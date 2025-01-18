@@ -4,11 +4,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_employee extends CI_Model {
 
+    // public function getAllEmployeesDatas($companyId) {
+    //     $this->db->select('policyholder.*');
+    //     $this->db->from('policyholder');
+    //     $this->db->join('compolder', 'compolder.policyholderNIK = policyholder.policyholderNIK');
+    //     $this->db->where('compolder.companyId', $companyId);
+    //     return $this->db->get()->result_array();
+    // }
+
     public function getAllEmployeesDatas($companyId) {
-        $this->db->select('employee.*');
+        $this->db->select('employee.*, insurance.insuranceTier, insurance.insuranceAmount, insurance.insuranceDescription');
         $this->db->from('employee');
-        $this->db->join('compolder', 'compolder.employeeNIK = employee.employeeNIK');
-        $this->db->where('compolder.companyId', $companyId);
+        $this->db->join('insurance', 'insurance.insuranceId = employee.insuranceId');
+        $this->db->where('insurance.companyId', $companyId);
         return $this->db->get()->result_array();
     }
     
@@ -49,11 +57,7 @@ class M_employee extends CI_Model {
     
 
     public function deleteEmployee($employeeNIK) {
-        // Hapus data terkait di tabel 'compolder' berdasarkan employeeNIK
-        $this->db->where('employeeNIK', $employeeNIK);
-        $this->db->delete('compolder');
-    
-        // Setelah data di 'compolder' dihapus, hapus data di tabel 'employee'
+        // Hapus data terkait di tabel 'compolder' berdasarkan policyholderNIK
         $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->delete('employee');
     }

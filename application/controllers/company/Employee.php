@@ -112,59 +112,35 @@ class Employee extends CI_Controller {
             $companyId = $this->session->userdata('companyId');
             $employeeData = array(
                 'employeeNIK' => htmlspecialchars($this->input->post('employeeNIK')),
+                'insuranceId' => $this->input->post('insuranceId'),
                 'employeeName' => $this->input->post('employeeName'),
                 'employeeEmail' => $this->input->post('employeeEmail'),
                 'employeePassword' => password_hash(htmlspecialchars($this->input->post('employeePassword')), PASSWORD_DEFAULT),
                 'employeeAddress' => $this->input->post('employeeAddress'),
                 'employeePhone' => $this->input->post('employeePhone'),
                 'employeeBirth' => $this->input->post('employeeBirth'),
-                'employeeGender' => $this->input->post('employeeGender'),
-                'employeeStatus' => $this->input->post('employeeStatus'),
+                'employeeGender' => $this->input->post('employeeGender')
             );
     
             // Handle file upload if a photo is provided
             if ($_FILES['employeePhoto']['name']) {
-                $fileName = strtoupper(trim(str_replace('.', ' ', $employeeData['employeeName']))) . '-' . time();
-                $employeePhoto = $this->_uploadLogo('employeePhoto', array('file_name' => $fileName));
-    
+                $photoFileName = strtoupper(trim(str_replace('.', ' ',$employeeData['employeeName']))).'-'.time();
+                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/photos/'));
                 if ($employeePhoto['status']) {
                     $employeeData['employeePhoto'] = $employeePhoto['data']['file_name'];
-    
-                    // Insert employee data into the database
-                    $this->M_employee->insertEmployee($employeeData);
-    
-                    // Insert data into the compolder table
-                    $compolderData = array(
-                        'companyId' => $companyId,
-                        'employeeNIK' => $this->input->post('employeeNIK')
-                    );
-                    $this->M_employee->insertCompolder($compolderData);
-    
-                    echo json_encode(array('status' => 'success'));
-                    return;
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'Upload failed', 'errorMsg' => $employeePhoto['error']));
-                    return; // Stop execution if upload fails
+                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $employeePhoto['error']));
+                    return;
                 }
-            } else {
+            }
                 // No photo uploaded, just insert data
                 $this->M_employee->insertEmployee($employeeData);
-    
-                // Insert data into the compolder table
-                $compolderData = array(
-                    'companyId' => $companyId,
-                    'employeeNIK' => $this->input->post('employeeNIK')
-                );
-                $this->M_employee->insertCompolder($compolderData);
-    
                 echo json_encode(array('status' => 'success'));
-            }
         }
     }
 
-    private function _uploadLogo($fileLogo, $customConfig = []) {
+    private function _uploadImage($imageInputField, $customConfig = []) {
         $defaultConfig = array(
-            'upload_path'   => FCPATH . 'uploads/logos/',
             'allowed_types' => 'jpg|jpeg|png',
             'max_size'      => 1024,
             'max_width'     => 0,
@@ -173,18 +149,22 @@ class Employee extends CI_Controller {
 
         $config = array_merge($defaultConfig, $customConfig);
 
-        $this->load->library('upload', $config);
+        if (!isset($this->upload)) {
+            $this->load->library('upload');
+        }
 
-        if (!$this->upload->do_upload($fileLogo)) {
-            return array('status' => false, 'error' => $this->upload->display_errors());
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload($imageInputField)) {
+            return array('status' => false, 'error' => strip_tags($this->upload->display_errors()));
         } else {
             return array('status' => true, 'data' => $this->upload->data());
         }
     }
 
-    private function _deleteLogo($employeeNIK) {
-        $employeeData = $this->M_employee->checkEmployee('employeeNIK', $employeeNIK);
-        unlink(FCPATH . 'uploads/logos/' . $employeeData['employeePhoto']);
+    private function _deleteImage($employeeNIK, $field, $path) {
+        $companyDatas = $this->M_companies->checkCompany('employeeNIK', $employeeNIK );
+        $companyDatas[$field] && unlink($path . $companyDatas[$field]);
     }
 
     public function editEmployee() {
@@ -238,25 +218,42 @@ class Employee extends CI_Controller {
         } else {
             // Retrieve form data
             $employeeNIK = $this->input->post('employeeNIK');
-            $employeeNIK = $this->input->post('employeeNIK');
-            $password = $this->input->post('employeePassword');
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $employeeData = array(
                 'employeeNIK' => $this->input->post('employeeNIK'),
+                'insuranceId' => $this->input->post('insuranceId'),
                 'employeeName' => $this->input->post('employeeName'),
                 'employeeEmail' => $this->input->post('employeeEmail'),
                 'employeeAddress' => $this->input->post('employeeAddress'),
                 'employeePhone' => $this->input->post('employeePhone'),
                 'employeeBirth' => $this->input->post('employeeBirth'),
                 'employeeGender' => $this->input->post('employeeGender'),
-                'employeeStatus' => $this->input->post('employeeStatus'),
             );
-            !empty($newPassword)? $employeeData['employeePassword'] = $newPassword : '';
-
+            !empty($newPassword) ? $employeeData['employeePassword'] = password_hash($newPassword, PASSWORD_DEFAULT) : '';
+    
+            // Handle photo update if a new photo is uploaded
+            if ($_FILES['employeePhoto']['name']) {
+                $photoFileName = strtoupper(trim(str_replace('.', ' ', $employeeData['employeeName']))) . '-' . time();
+                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/photos/'));
+                if ($employeePhoto['status']) {
+                    // Delete old photo
+                    $existingEmployee = $this->M_employee->getEmployeeByNIK($employeeNIK);
+                    if (!empty($existingEmployee['employeePhoto'])) {
+                        $this->_deleteImage($existingEmployee['employeePhoto'], FCPATH . 'uploads/photos/');
+                    }
+    
+                    $employeeData['employeePhoto'] = $employeePhoto['data']['file_name'];
+                } else {
+                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $employeePhoto['error']));
+                    return;
+                }
+            }
+    
             $this->M_employee->updateEmployee($employeeNIK, $employeeData);
             echo json_encode(array('status' => 'success'));
         }
-    }    
+    }
+     
 
     public function deleteEmployee() {
         $employeeNIK = $this->input->post('employeeNIK');

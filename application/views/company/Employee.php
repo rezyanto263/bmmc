@@ -37,7 +37,7 @@
 
 <!-- Modal Add -->
 <div class="modal fade" id="addEmployeeModal">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="addEmployeeForm">
                 <div class="modal-header border-0">
@@ -53,7 +53,7 @@
                                 <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD LOGO</label>
                                 <input type="file" accept="image/jpg, image/jpeg, image/png" name="employeePhoto" class="imgFile" id="addImgFile" hidden>
                             </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
@@ -61,7 +61,7 @@
                                 <input class="form-control" type="text" placeholder="National ID Number" name="employeeNIK">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Name">
                                     <i class="las la-user fs-4"></i>
@@ -69,7 +69,17 @@
                                 <input class="form-control" type="text" placeholder="Name" name="employeeName">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Account">
+                                    <i class="las la-user-cog fs-4"></i>
+                                </span>
+                                <select class="form-control" data-live-search="true" title="Choose Insurance" id="insuranceId" name="insuranceId">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Email">
                                     <i class="las la-envelope fs-4"></i>
@@ -77,7 +87,7 @@
                                 <input class="form-control" type="email" placeholder="Email" name="employeeEmail">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Password">
                                     <i class="las la-key fs-4"></i>
@@ -88,7 +98,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Password Confirmation">
                                     <i class="las la-key fs-4"></i>
@@ -99,7 +109,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Phone">
                                     <i class="las la-map fs-4"></i>
@@ -107,7 +117,7 @@
                                 <input class="form-control" type="text" placeholder="Phone" name="employeePhone">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Address">
                                     <i class="las la-map fs-4"></i>
@@ -115,7 +125,7 @@
                                 <input class="form-control" type="text" placeholder="Address" name="employeeAddress">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Birth Date">
                                     <i class="las la-calendar fs-4"></i>
@@ -123,27 +133,15 @@
                                 <input class="form-control" type="date" placeholder="Birth Date" name="employeeBirth">
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Gender">
                                     <i class="las la-venus-mars fs-4"></i>
                                 </span>
                                 <select class="form-control" id="employeeGender" name="employeeGender">
                                     <option hidden></option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Status">
-                                    <i class="las la-user-check fs-4"></i>
-                                </span>
-                                <select class="form-control" id="employeeStatus" name="employeeStatus">
-                                    <option hidden></option>
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
                                 </select>
                             </div>
                         </div>
@@ -179,7 +177,7 @@
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="employeePhoto" class="imgFile" id="editImgFile" hidden>
                         </div>
                         <!-- National ID -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="NIK">
                                     <i class="las la-id-card fs-4"></i>
@@ -189,7 +187,7 @@
                         </div>
 
                         <!-- Name -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Name">
                                     <i class="las la-user fs-4"></i>
@@ -197,14 +195,34 @@
                                 <input class="form-control" type="text" placeholder="Name" name="employeeName" id="editName">
                             </div>
                         </div>
-
+                        
+                        <!-- Insurance -->
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Account">
+                                    <i class="las la-user-cog fs-4"></i>
+                                </span>
+                                <select class="form-control" title="Choose Insurance" id="insuranceId" name="insuranceId">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
                         <!-- Email -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Email">
                                     <i class="las la-envelope fs-4"></i>
                                 </span>
                                 <input class="form-control" type="email" placeholder="Email" name="employeeEmail" id="editEmail">
+                            </div>
+                        </div>
+                        <!-- Phone -->
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Phone">
+                                    <i class="las la-envelope fs-4"></i>
+                                </span>
+                                <input class="form-control" type="phone" placeholder="Phone" name="employeePhone" id="editPhone">
                             </div>
                         </div>
                         <!-- Password -->
@@ -238,7 +256,7 @@
                         </div>
 
                         <!-- Address -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Address">
                                     <i class="las la-map fs-4"></i>
@@ -248,7 +266,7 @@
                         </div>
 
                         <!-- Birth Date -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Birth Date">
                                     <i class="las la-calendar fs-4"></i>
@@ -258,7 +276,7 @@
                         </div>
 
                         <!-- Gender -->
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Gender">
                                     <i class="las la-venus-mars fs-4"></i>
@@ -266,19 +284,6 @@
                                 <select class="form-control" name="employeeGender" id="editGender">
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Status -->
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Status">
-                                    <i class="las la-user-check fs-4"></i>
-                                </span>
-                                <select class="form-control" name="employeeStatus" id="editStatus">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
                         </div>
