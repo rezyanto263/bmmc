@@ -1060,6 +1060,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         {data: 'doctorName'},
         {
             data: 'historyhealthDate',
+            name: 'historyhealthDate',
             render: function (data, type, row) {
                 if (type === 'display' || type === 'filter') {
                     if (data) {
@@ -1083,6 +1084,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {
             data: 'historyhealthTotalBill',
+            name: 'historyhealthTotalBill',
             render: function (data) {
                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
@@ -1128,28 +1130,52 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
     ],
     footerCallback: function (row, data, start, end, display) {
         var api = this.api();
-        var pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-        $(api.column(7).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+        var columnIndex = api.column('historyhealthTotalBill:name').index();
+        var pageTotal = api.column(columnIndex, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        $(api.column(columnIndex).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     },
     buttons: [
+        // {
+        //     extend: 'copyHtml5',
+        //     text: 'Copy',
+        //     exportOptions: {
+        //         columns: ':visible:not(.no-export)'
+        //     }
+        // },
+        // {
+        //     extend: 'excelHtml5',
+        //     text: 'Excel',
+        //     exportOptions: {
+        //         columns: ':visible:not(.no-export)'
+        //     }
+        // },
+        // {
+        //     extend: 'pdfHtml5',
+        //     text: 'PDF',
+        //     exportOptions: {
+        //         columns: ':visible:not(.no-export)'
+        //     }
+        // },
+        // {
+        //     extend: 'print',
+        //     text: 'Print',
+        //     exportOptions: {
+        //         columns: ':visible:not(.no-export)'
+        //     }
+        // },
         {
             text: "Year",
             className: "btn btn-primary dropdown-toggle",
             action: function (e, dt, node, config) {
-                var column = dt.column(5);
+                var columnIndex = dt.column('historyhealthDate:name').index();
                 var list = [];
-    
-                column.data().unique().each(function (value) {
+                dt.column(columnIndex).data().unique().each(function (value) {
                     if (value) {
                         var item = moment(value, 'YYYY-MM-DD').format('YYYY');
-                        if (!list.includes(item)) {
-                            list.push(item);
-                        }
+                        if (!list.includes(item)) list.push(item);
                     }
                 });
-    
                 list.sort();
-    
                 createDropdown(node, list, 'year', 'YYYY');
             }
         },
@@ -1157,23 +1183,25 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             text: "Month",
             className: "btn btn-primary dropdown-toggle",
             action: function (e, dt, node, config) {
-                var column = dt.column(5);
+                var columnIndex = dt.column('historyhealthDate:name').index();
                 var list = [];
-    
-                column.data().unique().each(function (value) {
+                dt.column(columnIndex).data().unique().each(function (value) {
                     if (value) {
                         var item = moment(value, 'YYYY-MM-DD').format('MMMM');
-                        if (!list.includes(item)) {
-                            list.push(item);
-                        }
+                        if (!list.includes(item)) list.push(item);
                     }
                 });
-    
                 list.sort();
-    
                 createDropdown(node, list, 'month', 'MMMM');
             }
-        }
+        },
+        // {
+        //     extend: 'colvis',
+        //     text: 'Column Visibility',
+        //     exportOptions: {
+        //         columns: ':visible:not(.no-export)'
+        //     }
+        // },
     ]
 }));
 
@@ -1210,15 +1238,15 @@ function createDropdown(node, list, type, format) {
 
 function applyFilters() {
     var dt = hHistoriesTable;
-
     console.log("Applying Filters:", selectedYear, selectedMonth);
+    var dateColumnIndex = dt.column('historyhealthDate:name').index();
+    dt.column(dateColumnIndex).search('');
 
-    dt.column(5).search('');
-
-    dt.column(5).search((selectedYear && selectedMonth) ? 
+    dt.column(dateColumnIndex).search((selectedYear && selectedMonth) ? 
         function(value) { return moment(value, 'DD MMMM YYYY').format('YYYY MMMM') === selectedYear + ' ' + selectedMonth; } 
         : selectedYear || selectedMonth, true, false).draw();
 }
+
 
 // Detail History Health Hospital
 $('#hHistoriesTable').on('click', '.btn-view', function() {
@@ -1327,6 +1355,152 @@ function getHPatientHistoryHealth(patientNIK) {
     }));
 }
 
+$('#hPatientTable').on('click', '.btn-view', function() {
+    viewHistoryHealthDetailsModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    if (backdrops.length >= 2) {
+        backdrops[1].style.zIndex = "1055";
+    }
+    var data = hPatientTable.row($(this).parents('tr')).data();
+    console.log(data);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
+});
+
+// CRUD hospital queue
+var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'hospitals/getHospitalQueueDatas', 
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: null,
+            render: function (data, type, row) {
+                return row.familyName ? row.familyName : row.employeeName;
+            }
+        },
+        {
+            data: null,
+            render: function (data, type, row) {
+                return row.familyName ? 'Family' : 'Employee';
+            }
+        },
+        {data: 'companyName'},
+        {data: 'createdAt'},
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-add btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addTreatmentModal" title="Process for Treatment">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-add btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addReferralModal" title="Assign As Referral">
+                        <i class="fa-regular fa-share-from-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteQueueModal" title="Remove from Queue">
+                        <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ],
+    columnDefs: [
+        {width: '180px', target: 1}
+    ]
+}));
+
+$('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', function() {
+    reloadTableData(hQueueTable);
+});
+
+// Add Data Referral From Queue
+$('#hQueueTable').on('click', '.btn-add', function() {
+    var data = adminsTable.row($(this).parents('tr')).data();
+    $('#editAdminForm [name="adminId"]').val(data.adminId);
+    $('#editAdminForm [name="adminName"]').val(data.adminName);
+    $('#editAdminForm [name="adminRole"]').val(data.adminRole);
+    $('#editAdminForm [name="adminStatus"]').val(data.adminStatus);
+});
+
+$('#addReferralForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'dashboard/admins/addAdmin',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addAdminModal').modal('hide');
+                reloadTableData(adminsTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addAdminForm', res.errors);
+            }
+        }
+    });
+});
+
+$('#addAdminModal').on('shown.bs.modal', function () {
+    $(this).find('select#adminRole').select2({
+        placeholder: 'Choose Role',
+        dropdownParent: $('#addAdminModal .modal-body')
+    });
+    $(this).find('select#adminStatus').select2({
+        placeholder: 'Choose Status',
+        dropdownParent: $('#addAdminModal .modal-body')
+    });
+});
+
+// Delete Data Queue
+$('#hQueueTable').on('click', '.btn-delete', function() {
+    var data = hQueueTable.row($(this).parents('tr')).data();
+    $('#deleteQueueForm #patientName').html(data.familyName ? data.familyName : data.employeeName);
+    $('#deleteQueueForm #patientNIK').val(data.patientNIK);
+    $('#deleteQueueForm #hospitalId').val(data.hospitalId);
+})
+
+$('#deleteQueueForm').on('submit', function(e) {
+    e.preventDefault();
+    var patientNIK = $('#deleteQueueForm #patientNIK').val();
+    var hospitalId = $('#deleteQueueForm #hospitalId').val();
+    $.ajax({
+        url: baseUrl + 'hospitals/queue/deleteQueue',
+        method: 'POST',
+        data: {patientNIK: patientNIK, hospitalId: hospitalId},
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#deleteQueueModal').modal('hide');
+                reloadTableData(hQueueTable);
+                displayAlert('delete success');
+            }
+        }
+    });
+});
+
+// hospital disease
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
     columns: [
@@ -1344,18 +1518,6 @@ var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSe
         {width: '180px', target: 0}
     ]
 }));
-
-$('#hPatientTable').on('click', '.btn-view', function() {
-    viewHistoryHealthDetailsModal.show();
-    const backdrops = document.querySelectorAll('.modal-backdrop.show');
-    if (backdrops.length >= 2) {
-        backdrops[1].style.zIndex = "1055";
-    }
-    var data = hPatientTable.row($(this).parents('tr')).data();
-    console.log(data);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
-});
 
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {

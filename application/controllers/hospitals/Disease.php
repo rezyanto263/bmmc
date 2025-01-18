@@ -39,7 +39,7 @@ class Disease extends CI_Controller {
     }
 
     public function getDiseaseDatas() {
-        $diseaseDatas = $this->M_historyhealth->getDiseaseDatas();
+        $diseaseDatas = $this->M_hospitals->getDiseaseDatas();
         $datas = array(
             'data' => $diseaseDatas
         );

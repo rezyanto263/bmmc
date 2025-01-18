@@ -37,4 +37,26 @@ class Queue extends CI_Controller {
         $this->load->vars($datas);
         $this->load->view('master', $partials);
     }
+
+    public function getHospitalQueueDatas() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+        $queueDatas = $this->M_hospitals->getHospitalQueueDatas($hospitalDatas['hospitalId']);
+        if ($queueDatas) {
+            $datas = array(
+                'data' => $queueDatas,
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['data' => []]);
+        }
+    }
+
+    public function deleteQueue() {
+        $patientNIK = $this->input->post('patientNIK');
+        $hospitalId = $this->input->post('hospitalId');
+        
+        $this->M_hospitals->deleteQueue($patientNIK, $hospitalId);
+        echo json_encode(array('status' => 'success'));
+    }
 }

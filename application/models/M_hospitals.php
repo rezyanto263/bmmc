@@ -54,6 +54,28 @@ class M_hospitals extends CI_Model {
     public function getActiveHospitalsDatas() {
         return $this->db->get_where('hospital', array('hospitalStatus' => 'active'))->result_array();
     }
+
+    public function getHospitalQueueDatas($hospitalId) {
+        $this->db->select('q.*, e.employeeName, f.familyName, c.companyName');
+        $this->db->from('queue q');
+        $this->db->join('family f', 'f.familyNIK = q.patientNIK', 'left');
+        $this->db->join('employee e', '(e.employeeNIK = q.patientNIK OR e.employeeNIK = f.employeeNIK)', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
+        $this->db->where_in('q.hospitalId', $hospitalId);
+        return $this->db->get()->result_array();
+    }
+    
+    public function getDiseaseDatas()
+    {
+        return $this->db->get('disease')->result_array();
+    }
+
+    public function deleteQueue($patientNIK, $hospitalId) {
+        $this->db->where('patientNIK', $patientNIK);
+        $this->db->where('hospitalId', $hospitalId);
+        return $this->db->delete('queue');
+    }
 }
 
 /* End of file M_hospitals.php */

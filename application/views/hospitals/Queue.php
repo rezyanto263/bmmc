@@ -1,33 +1,31 @@
 <div class="content-body py-3">
     <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-    <table id="doctorsTable" class="table" style="width:100%">
+    <table id="hQueueTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
-                <th>Doctor Name</th>
-                <th>Address</th>
-                <th>Date of Birth</th>
-                <th>Specialization</th>
-                <th>Doctor Status</th>
-                <th>Actions</th>
+                <th>Patient Name</th>
+                <th>Role</th>
+                <th>Company Name</th>
+                <th>Date Time</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th>#</th>
-                <th>Doctor Name</th>
-                <th>Address</th>
-                <th>Date of Birth</th>
-                <th>Specialization</th>
-                <th>Doctor Status</th>
-                <th>Actions</th>
+                <th>Patient Name</th>
+                <th>Role</th>
+                <th>Company Name</th>
+                <th>Date Time</th>
+                <th>Action</th>
             </tr>
         </tfoot>
     </table>
 </div>
 
 
-<!-- Modal Add -->
+<!-- Modal Add Treatment-->
 <div class="modal fade" id="addDoctorModal">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
@@ -102,17 +100,16 @@
 </div>
 
 
-<!-- Modal Edit -->
-<div class="modal fade" id="editDoctorModal">
+<!-- Modal Add Referral -->
+<div class="modal fade" id="addReferralModal">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <form id="editDoctorForm">
+            <form id="addReferralForm">
                 <div class="modal-header border-0">
-                    <h1 class="modal-title fs-4">EDIT DOCTOR</h1>
+                    <h1 class="modal-title fs-4">ASSIGN AS REFERRAL</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    <input type="text" id="doctorId" name="doctorId" hidden>
                     <div class="row gy-4">
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
@@ -158,7 +155,7 @@
                                     <i class="las la-user-clock fs-4"></i>
                                 </span>
                                 <select class="form-control" id="doctorStatus" name="doctorStatus">
-                                    <option hidden></option>
+                                    <option hidden ></option>
                                     <option value="active">Active</option>
                                     <option value="inactive">Inactive</option>
                                     <option value="suspended">Suspended</option>
@@ -170,7 +167,7 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="editDoctorButton">SAVE</button>
+                    <button type="submit" class="btn-primary" id="addDoctorButton">ADD</button>
                 </div>
             </form>
         </div>
@@ -178,23 +175,24 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteDoctorModal" aria-hidden="true">
+<div class="modal fade" id="deleteQueueModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <form id="deleteDoctorForm">
+            <form id="deleteQueueForm">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">
-                        DELETE DOCTOR
+                        DELETE QUEUE
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    Are you sure want to delete <span class="fw-bold" id="doctorName"></span> account?
-                    <input type="text" id="doctorId" name="doctorId" hidden>
+                    Are you sure want to delete <span class="fw-bold" id="patientName"></span> queue?
+                    <input type="text" id="patientNIK" name="patientNIK" hidden>
+                    <input type="text" id="hospitalId" name="hospitalId" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-danger" id="deleteDoctorButton">DELETE</button>
+                    <button type="submit" class="btn-danger" id="deleteQueueButton">DELETE</button>
                 </div>
             </form>
         </div>
