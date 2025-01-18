@@ -9,10 +9,10 @@ class M_family extends CI_Model {
         $this->db->select('family.*');
         // From the family table
         $this->db->from('family');
-        // Join with the policyholder table on policyholderNIK
-        $this->db->join('policyholder', 'policyholder.policyholderNIK = family.policyholderNIK');
+        // Join with the employee table on employeeNIK
+        $this->db->join('employee', 'employee.employeeNIK = family.employeeNIK');
         // Join with the compolder table to filter by companyId
-        $this->db->join('compolder', 'compolder.policyholderNIK = policyholder.policyholderNIK');
+        $this->db->join('compolder', 'compolder.employeeNIK = employee.employeeNIK');
         // Where the companyId matches the given company ID
         $this->db->where('compolder.companyId', $companyId);
         // Execute the query and return the results
@@ -27,10 +27,10 @@ class M_family extends CI_Model {
     }
     
 
-    public function getFamiliesByPolicyholderNIK($policyholderNIK) {
+    public function getFamiliesByemployeeNIK($employeeNIK) {
         $this->db->select('family.*');
         $this->db->from('family');
-        $this->db->where('policyholderNIK', $policyholderNIK); // Filter berdasarkan policyholderNIK
+        $this->db->where('employeeNIK', $employeeNIK); // Filter berdasarkan employeeNIK
         return $this->db->get()->result_array();
     }
     

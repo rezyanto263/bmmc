@@ -62,14 +62,14 @@ class Family extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function savePolicyholderNIK() {
-        $policyholderNIK = $this->input->post('policyholderNIK');
+    public function saveemployeeNIK() {
+        $employeeNIK = $this->input->post('employeeNIK');
     
-        if (!empty($policyholderNIK)) {
-            $this->session->set_userdata('policyholderNIK', $policyholderNIK);
+        if (!empty($employeeNIK)) {
+            $this->session->set_userdata('employeeNIK', $employeeNIK);
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Policyholder NIK tidak valid.']);
+            echo json_encode(['success' => false, 'message' => 'employee NIK tidak valid.']);
         }
     }
     
@@ -83,17 +83,17 @@ class Family extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getFamiliesByPolicyholderNIK($policyholderNIK = null) {
-        if (empty($policyholderNIK)) {
+    public function getFamiliesByemployeeNIK($employeeNIK = null) {
+        if (empty($employeeNIK)) {
             // Ambil NIK dari session jika parameter kosong
-            $policyholderNIK = $this->session->userdata('policyholderNIK');
+            $employeeNIK = $this->session->userdata('employeeNIK');
         }
     
-        if (empty($policyholderNIK)) {
+        if (empty($employeeNIK)) {
             // Jika tetap kosong, kembalikan semua data keluarga atau error
             $familyDatas = $this->M_family->getAllFamilyDatas();
         } else {
-            $familyDatas = $this->M_family->getFamiliesByPolicyholderNIK($policyholderNIK);
+            $familyDatas = $this->M_family->getFamiliesByemployeeNIK($employeeNIK);
         }
     
         // Siapkan data untuk dikembalikan dalam format JSON
@@ -158,7 +158,7 @@ class Family extends CI_Controller {
         } else {
             $familyData = array(
                 'familyNIK' => htmlspecialchars($this->input->post('familyNIK')),
-                'policyholderNIK' => $this->input->post('policyholderNIK'),
+                'employeeNIK' => $this->input->post('employeeNIK'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyPassword' => password_hash(htmlspecialchars($this->input->post('familyPassword')), PASSWORD_DEFAULT),
@@ -223,7 +223,7 @@ class Family extends CI_Controller {
             $newPassword = htmlspecialchars($this->input->post('newPassword'));
             $familyData = array(
                 'familyNIK' => $this->input->post('familyNIK'),
-                'policyholderNIK' => $this->input->post('policyholderNIK'),
+                'employeeNIK' => $this->input->post('employeeNIK'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyAddress' => $this->input->post('familyAddress'),

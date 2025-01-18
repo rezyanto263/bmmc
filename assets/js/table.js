@@ -1232,13 +1232,13 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
                 return meta.row + 1;
             }
         },
-        {data: 'policyholderNIK'},
-        {data: 'policyholderName'},
-        {data: 'policyholderEmail'},
-        {data: 'policyholderAddress'},
-        {data: 'policyholderPhone'},
-        {data: 'policyholderBirth'},
-        {data: 'policyholderGender'},
+        {data: 'employeeNIK'},
+        {data: 'employeeName'},
+        {data: 'employeeEmail'},
+        {data: 'employeeAddress'},
+        {data: 'employeePhone'},
+        {data: 'employeeBirth'},
+        {data: 'employeeGender'},
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -1275,10 +1275,10 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
 function viewEmployeeInNewTab(button) {
     // Dapatkan data baris dari tombol yang diklik
     var rowData = employeesTable.row($(button).closest('tr')).data();
-    var policyholderNIK = rowData.policyholderNIK;
+    var employeeNIK = rowData.employeeNIK;
 
     // Simpan policyholderNIK ke dalam session melalui AJAX
-    $.post(baseUrl + 'company/Family/savePolicyholderNIK', { policyholderNIK: policyholderNIK }, function(response) {
+    $.post(baseUrl + 'company/Family/saveemployeeNIK', { employeeNIK: employeeNIK }, function(response) {
         if (response.success) {
             // Buka halaman baru untuk melihat data keluarga
             window.open(baseUrl + 'company/Family', '_blank');
@@ -1301,14 +1301,13 @@ $('#addEmployeeForm').on('submit', function(e) {
     e.preventDefault();
     var formData = new FormData(this);
     $.ajax({
-        url: baseUrl + 'company/Employee/addEmployee', // base URL diubah
+        url: baseUrl + 'company/Employee/addEmployee',
         method: 'POST',
         data: formData,
         contentType: false,
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
-            console.log(res);
             if (res.status === 'success') {
                 $('#addEmployeeModal').modal('hide');
                 reloadTableData(employeesTable);
@@ -1325,12 +1324,38 @@ $('#addEmployeeForm').on('submit', function(e) {
 });
 
 $('#addEmployeeModal').on('shown.bs.modal', function() {
-    $(this).find('select#policyholderGender').select2({
+    $(this).find('select#employeeGender').select2({
         placeholder: 'Choose Gender',
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
-    $(this).find('select#policyholderStatus').select2({
-        placeholder: 'Choose Status',
+    $(this).find('select#insuranceId').select2({
+        ajax: {
+            url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                return {
+                    results: response.data 
+                        .filter(function(data) {
+                            const insuranceTier = data.insuranceTier.toLowerCase().includes(searchTerm);
+                            const insuranceAmount = data.insuranceAmount.toLowerCase().includes(searchTerm);
+                            return insuranceTier || insuranceAmount;
+                        })
+                        .map(function (data) {
+                        return {
+                            id: data.insuranceId,
+                            text: data.insuranceTier + ' | ' + data.insuranceAmount
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Insurance',
+        allowClear: true,
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
 });
@@ -1338,17 +1363,44 @@ $('#addEmployeeModal').on('shown.bs.modal', function() {
 // Edit Data Employee
 $('#employeesTable').on('click', '.btn-edit', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
-    if (data.policyholderPhoto) {
-        $('#editCompanyForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.policyholderPhoto);
+    if (data.employeePhoto) {
+        $('#editEmployeeForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.employeePhoto);
     }
-    $('#editEmployeeForm [name="policyholderNIK"]').val(data.policyholderNIK);
-    $('#editEmployeeForm [name="policyholderName"]').val(data.policyholderName);
-    $('#editEmployeeForm [name="policyholderEmail"]').val(data.policyholderEmail);
-    $('#editEmployeeForm [name="policyholderPassword"]').val(data.policyholderEmail);
-    $('#editEmployeeForm [name="policyholderAddress"]').val(data.policyholderAddress);
-    $('#editEmployeeForm [name="policyholderBirth"]').val(data.policyholderBirth);
-    $('#editEmployeeForm [name="policyholderGender"]').val(data.policyholderGender);
-    $('#editEmployeeForm [name="policyholderStatus"]').val(data.policyholderStatus);
+    $('#editEmployeeForm [name="employeeNIK"]').val(data.employeeNIK);
+    $('#editEmployeeForm [name="employeeName"]').val(data.employeeName);
+    $('#editEmployeeForm [name="employeeEmail"]').val(data.employeeEmail);
+    $('#editEmployeeForm [name="employeePhone"]').val(data.employeePhone);
+    $('#editEmployeeForm [name="employeePassword"]').val(data.employeePassword);
+    $('#editEmployeeForm [name="employeeAddress"]').val(data.employeeAddress);
+    $('#editEmployeeForm [name="employeeBirth"]').val(data.employeeBirth);
+    $('#editEmployeeForm [name="employeeGender"]').val(data.employeeGender);
+    $('#editEmployeeForm [name="employeeStatus"]').val(data.employeeStatus);
+    var insuranceId = data.insuranceId;
+    if (insuranceId) {
+        var selectedInsurance = '<option value="'+insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
+    }
+    $('#editEmployeeForm select#insuranceId').html(selectedInsurance);
+    $('#editEmployeeForm select#insuranceId').select2({
+        placeholder: 'Choose Insurance',
+        allowClear: true,
+        dropdownParent: $('#editEmployeeModal .modal-body'),
+    });
+
+    $.ajax({
+        url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+        method: 'GET',
+        success: function(response) {
+            var res = JSON.parse(response);
+
+            let optionList = [selectedInsurance];
+            $.each(res.data, function(index, data) {
+                optionList += '<option value="'+data.insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
+            });
+
+            $('#editEmployeeForm select#insuranceId').html(optionList);
+            $('#editEmployeeForm select#insuranceId').val(insuranceId).trigger('change');
+        }
+    });
 });
 
 $('#editEmployeeForm').on('submit', function(e) {
@@ -1379,8 +1431,8 @@ $('#editEmployeeForm').on('submit', function(e) {
 // Delete Employee
 $('#employeesTable').on('click', '.btn-delete', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
-    $('#deleteEmployeeForm #employeeName').html(data.policyholderName);
-    $('#deleteEmployeeForm #policyholderNIK').val(data.policyholderNIK);
+    $('#deleteEmployeeForm #employeeName').html(data.employeeName);
+    $('#deleteEmployeeForm #employeeNIK').val(data.employeeNIK);
 });
 
 $('#deleteEmployeeForm').on('submit', function(e) {
@@ -1399,6 +1451,87 @@ $('#deleteEmployeeForm').on('submit', function(e) {
         }
     });
 });
+
+var insurancesTable = $('#insurancesTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: 'insuranceTier',
+            className: 'text-start'
+        },
+        {
+            data: 'insuranceAmount',
+            className: 'text-end'
+        },
+        {
+            data: 'insuranceDescription',
+            className: 'text-start'
+        },
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editInsuranceModal">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteInsuranceModal">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ]
+}));
+
+$('#addInsuranceModal').on('shown.bs.modal', function() {
+});
+
+$('#addInsuranceButton, #editInsuranceButton, #deleteInsuranceButton').on('click', function() {
+    reloadTableData(insurancesTable);
+});
+
+// Add Data Company
+$('#addInsuranceForm').on('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: baseUrl + 'company/insurance/addInsurance',
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addInsuranceModal').modal('hide');
+                reloadTableData(companiesTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addInsuranceForm', res.errors);
+            }
+        }
+    });
+});
+
 
 var allfamiliesTable = $('#allfamiliesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
@@ -1489,7 +1622,7 @@ $('#addFamilyForm2').on('submit', function(e) {
 $('#allfamiliesTable').on('click', '.btn-edit', function() {
     var data = allfamiliesTable.row($(this).parents('tr')).data();
     $('#editFamilyForm2 [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm2 [name="policyholderNIK"]').val(data.policyholderNIK);
+    $('#editFamilyForm2 [name="employeeNIK"]').val(data.employeeNIK);
     $('#editFamilyForm2 [name="familyName"]').val(data.familyName);
     $('#editFamilyForm2 [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm2 [name="familyAddress"]').val(data.familyAddress);
@@ -1548,7 +1681,7 @@ $('#deleteFamilyForm2').on('submit', function(e) {
 
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: {
-        url: baseUrl + 'company/Family/getFamiliesByPolicyholderNIK',
+        url: baseUrl + 'company/Family/getFamiliesByemployeeNIK',
         dataSrc: 'data', 
         error: function (xhr, error, thrown) {
             console.error("AJAX Error:", error);
@@ -1635,7 +1768,7 @@ $('#addFamilyForm').on('submit', function(e) {
 $('#familiesTable').on('click', '.btn-edit', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
     $('#editFamilyForm [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm [name="policyholderNIK"]').val(data.policyholderNIK);
+    $('#editFamilyForm [name="employeeNIK"]').val(data.employeeNIK);
     $('#editFamilyForm [name="familyName"]').val(data.familyName);
     $('#editFamilyForm [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm [name="familyAddress"]').val(data.familyAddress);
