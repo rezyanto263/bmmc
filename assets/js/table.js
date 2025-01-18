@@ -1033,6 +1033,8 @@ $('#deleteDoctorForm').on('submit', function(e) {
 });
 
 // CRUD History Health Hospital
+var selectedYear = "";
+var selectedMonth = "";
 var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
     columns: [
@@ -1057,12 +1059,6 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         {data: 'companyName'},
         {data: 'doctorName'},
         {
-            data: 'historyhealthTotalBill',
-            render: function (data) {
-                return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
-        },
-        {
             data: 'historyhealthDate',
             render: function (data, type, row) {
                 if (type === 'display' || type === 'filter') {
@@ -1084,6 +1080,12 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                         return 'free';
                     }
                 }
+        },
+        {
+            data: 'historyhealthTotalBill',
+            render: function (data) {
+                return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
         },
         {
             data: null,
@@ -1124,16 +1126,99 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
     columnDefs: [
         {width: '180px', target: 4}
     ],
+    footerCallback: function (row, data, start, end, display) {
+        var api = this.api();
+        var pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        $(api.column(7).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+    },
     buttons: [
         {
-            text: '<i class="fa-solid fa-arrows-rotate fs-5 pt-1 px-0 px-md-1"></i>',
-            className: '',
+            text: "Year",
+            className: "btn btn-primary dropdown-toggle",
             action: function (e, dt, node, config) {
-                dt.ajax.reload(null, false);
+                var column = dt.column(5);
+                var list = [];
+    
+                column.data().unique().each(function (value) {
+                    if (value) {
+                        var item = moment(value, 'YYYY-MM-DD').format('YYYY');
+                        if (!list.includes(item)) {
+                            list.push(item);
+                        }
+                    }
+                });
+    
+                list.sort();
+    
+                createDropdown(node, list, 'year', 'YYYY');
             }
         },
+        {
+            text: "Month",
+            className: "btn btn-primary dropdown-toggle",
+            action: function (e, dt, node, config) {
+                var column = dt.column(5);
+                var list = [];
+    
+                column.data().unique().each(function (value) {
+                    if (value) {
+                        var item = moment(value, 'YYYY-MM-DD').format('MMMM');
+                        if (!list.includes(item)) {
+                            list.push(item);
+                        }
+                    }
+                });
+    
+                list.sort();
+    
+                createDropdown(node, list, 'month', 'MMMM');
+            }
+        }
     ]
 }));
+
+function createDropdown(node, list, type, format) {
+    var id = `${type}Dropdown`;
+    var html = `
+        <div id="${id}" class="dropdown-menu show" style="position: absolute; z-index: 1050;">
+            <a class="dropdown-item" data-value="">All ${type.charAt(0).toUpperCase() + type.slice(1)}</a>
+            ${list.map(item => `<a class="dropdown-item" data-value="${item}">${item}</a>`).join('')}
+        </div>
+    `;
+
+    $(node).after(html);
+    $(`#${id}`).css({
+        top: $(node).offset().top + $(node).outerHeight(),
+        left: $(node).offset().left
+    });
+
+    $(`#${id} .dropdown-item`).on('click', function () {
+        var value = $(this).data('value');
+        (type === 'year') ? selectedYear = value : selectedMonth = value;
+        console.log(`Selected ${type.charAt(0).toUpperCase() + type.slice(1)}: `, value);
+        applyFilters();
+        $(`#${id}`).remove();
+    });
+
+    $(document).on(`click.close${type.charAt(0).toUpperCase() + type.slice(1)}Dropdown`, function (event) {
+        if (!$(event.target).closest(`#${id}, .btn-primary`).length) {
+            $(`#${id}`).remove();
+            $(document).off(`click.close${type.charAt(0).toUpperCase() + type.slice(1)}Dropdown`);
+        }
+    });
+}
+
+function applyFilters() {
+    var dt = hHistoriesTable;
+
+    console.log("Applying Filters:", selectedYear, selectedMonth);
+
+    dt.column(5).search('');
+
+    dt.column(5).search((selectedYear && selectedMonth) ? 
+        function(value) { return moment(value, 'DD MMMM YYYY').format('YYYY MMMM') === selectedYear + ' ' + selectedMonth; } 
+        : selectedYear || selectedMonth, true, false).draw();
+}
 
 // Detail History Health Hospital
 $('#hHistoriesTable').on('click', '.btn-view', function() {

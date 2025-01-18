@@ -8,23 +8,23 @@
                 <th>Role</th>
                 <th>Company Name</th>
                 <th>Doctor Name</th>
-                <th>Total Bill</th>
                 <th>Date</th>
                 <th>Invoice Status</th>
+                <th>Total Bill</th>
                 <th>Detail</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <th>#</th>
-                <th>Patient Name</th>
-                <th>Role</th>
-                <th>Company Name</th>
-                <th>Doctor Name</th>
-                <th>Total Bill</th>
-                <th>Date</th>
-                <th>Invoice Status</th>
-                <th>Detail</th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th class="text-end">Total:</th>
+               <th></th>
+               <th></th>
             </tr>
         </tfoot>
     </table>
