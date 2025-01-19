@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_doctors extends CI_Model {
 
-    public function getHospitalDoctorsDatas($param, $data) {
+    public function getHospitalDoctorDatas($param, $data) {
         return $this->db->get_where('doctor', array($param => $data))->result_array();
     }
 

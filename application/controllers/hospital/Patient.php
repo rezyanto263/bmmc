@@ -30,7 +30,7 @@ class Patient extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/hospital/floatingMenu',
             'contentHeader' => 'partials/hospital/contentHeader',
-            'contentBody' => 'hospitals/Patient',
+            'contentBody' => 'hospital/Patient',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -38,29 +38,6 @@ class Patient extends CI_Controller {
         $this->load->vars($datas);
         $this->load->view('master', $partials);
     }
-
-    // public function getPatientDataByNIK() {
-    //     $patientNIK = $this->input->post('patientNIK');
-    //     $patient = $this->M_patient->getPatientDataByNIK($patientNIK);
-    //     var_dump($patient);
-    //     exit;
-    //     if ($hospitalDatas) {
-    //         $hisealthtalsDatas = $this->M_hisealthtals->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
-    //         $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
-        
-    //         if ($historyhealthIds) {
-    //             $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
-    //             $datas = array(
-    //                 'data' => $historiesDatas,
-    //             );
-    //             echo json_encode($datas);
-    //         } else {
-    //             echo json_encode(['data' => []]);
-    //         }
-    //     } else {
-    //         echo json_encode(['data' => []]);
-    //     }
-    // }
 
     public function scanQR() {
         $qrInput = $this->input->post('qrData');

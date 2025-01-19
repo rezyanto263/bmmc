@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Hospital extends CI_Controller {
+class Disease extends CI_Controller {
 
     public function __construct()
     {
@@ -11,15 +11,16 @@ class Hospital extends CI_Controller {
             redirect('dashboard');
         }
 
+        $this->load->model('M_historyhealth');
         $this->load->model('M_hospitals');
-    }
-    
+        $this->load->model('M_admins');
+    }    
 
     public function index()
     {
         $datas = array(
-            'title' => 'BMMC Hospital | Profile',
-            'subtitle' => 'Hospital',
+            'title' => 'BMMC Hospital | Disease',
+            'subtitle' => 'Disease',
             'contentType' => 'dashboard'
         );
 
@@ -28,7 +29,7 @@ class Hospital extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/hospital/floatingMenu',
             'contentHeader' => 'partials/hospital/contentHeader',
-            'contentBody' => 'hospitals/Hospital',
+            'contentBody' => 'hospital/Disease',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -36,5 +37,13 @@ class Hospital extends CI_Controller {
         $this->load->vars($datas);
         $this->load->view('master', $partials);
     }
+
+    public function getDiseaseDatas() {
+        $diseaseDatas = $this->M_hospitals->getDiseaseDatas();
+        $datas = array(
+            'data' => $diseaseDatas
+        );
+
+        echo json_encode($datas);
+    }
 }
-?>

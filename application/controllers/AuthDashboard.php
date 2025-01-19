@@ -49,7 +49,7 @@ class AuthDashboard extends CI_Controller {
             } elseif ($this->session->userdata('adminRole') === 'company') {
                 redirect('company/dashboard');
             } elseif ($this->session->userdata('adminRole') === 'hospital') {
-                redirect('hospitals/hospital');
+                redirect('hospital/hospital');
             }
         }
 
@@ -144,7 +144,7 @@ class AuthDashboard extends CI_Controller {
                 } elseif ($this->session->adminRole == 'company') {
                     redirect('company/dashboard');
                 } elseif ($this->session->adminRole == 'hospital') {
-                    redirect('hospitals/hospital');
+                    redirect('hospital/hospital');
                 }
 
                 // if ($adminDatas['adminRole'] === 'admin') {

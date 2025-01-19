@@ -118,7 +118,7 @@ $('#scannerModal').on('show.bs.modal', function() {
 $('#qrHospitalForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'hospitals/getPatientByNIK',
+        url: baseUrl + 'hospital/getPatientByNIK',
         method: 'POST',
         data: $(this).serialize(),
         success: function (response) {

@@ -91,4 +91,6 @@ https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css
 <script>
     // Base URL
     var baseUrl = <?= json_encode(base_url()); ?>;
+
+    var csrfName = <?= json_encode($this->security->get_csrf_token_name()); ?>;
 </script>

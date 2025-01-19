@@ -858,8 +858,8 @@ $('#cPatientTable').on('click', '.btn-view', function() {
 });
 
 // CRUD Data Doctors
-var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHospitalDoctorsDatas', 
+var doctorTable = $('#doctorTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'hospital/getHospitalDoctorDatas', 
     columns: [
         {
             data: null,
@@ -918,7 +918,7 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
 }));
 
 $('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', function() {
-    reloadTableData(doctorsTable);
+    reloadTableData(doctorTable);
 });
 
 $('#addDoctorModal').on('hidden.bs.modal', function(e) {
@@ -931,7 +931,7 @@ $('#addDoctorForm').on('submit', function(e) {
     e.preventDefault();
     var formData = new FormData(this);
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/addDoctor',
+        url: baseUrl + 'hospital/doctor/addDoctor',
         method: 'POST',
         data: formData,
         contentType: false,
@@ -941,7 +941,7 @@ $('#addDoctorForm').on('submit', function(e) {
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
-                reloadTableData(doctorsTable);
+                reloadTableData(doctorTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
@@ -962,8 +962,8 @@ $('#addDoctorModal').on('shown.bs.modal', function () {
 });
 
 // Edit Data Doctor
-$('#doctorsTable').on('click', '.btn-edit', function() {
-    var data = doctorsTable.row($(this).parents('tr')).data();
+$('#doctorTable').on('click', '.btn-edit', function() {
+    var data = doctorTable.row($(this).parents('tr')).data();
     $('#editDoctorForm [name="doctorId"]').val(data.doctorId);
     $('#editDoctorForm [name="doctorName"]').val(data.doctorName);
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
@@ -982,15 +982,16 @@ $('#editDoctorModal').on('shown.bs.modal', function () {
 $('#editDoctorForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/editDoctor',
+        url: baseUrl + 'hospital/doctor/editDoctor',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editDoctorModal').modal('hide');
                 displayAlert('edit success');
-                reloadTableData(doctorsTable);
+                reloadTableData(doctorTable);
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
@@ -1003,8 +1004,8 @@ $('#editDoctorForm').on('submit', function(e) {
 });
 
 // Delete Data Doctor
-$('#doctorsTable').on('click', '.btn-delete', function() {
-    var data = doctorsTable.row($(this).parents('tr')).data();
+$('#doctorTable').on('click', '.btn-delete', function() {
+    var data = doctorTable.row($(this).parents('tr')).data();
     $('#deleteDoctorForm #doctorName').html(data.doctorName);
     $('#deleteDoctorForm #doctorId').val(data.doctorId);
 })
@@ -1013,27 +1014,26 @@ $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
     var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/deleteDoctor',
+        url: baseUrl + 'hospital/doctor/deleteDoctor',
         method: 'POST',
         data: {doctorId: doctorId},
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteDoctorModal').modal('hide');
-                reloadTableData(doctorsTable);
+                reloadTableData(doctorTable);
                 displayAlert('delete success');
             }
         }
     });
 });
 
-console.log(...DataTableSettings.buttons);
-
 // CRUD History Health Hospital
 var selectedYear = "";
 var selectedMonth = "";
 var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+    ajax: baseUrl + 'hospital/getHospitalHistoriesDatas', 
     columns: [
         {
             data: null,
@@ -1268,11 +1268,11 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
 var hPatientTable;
 function getHPatientHistoryHealth(patientNIK) {
     if ($.fn.DataTable.isDataTable('#hPatientTable')) {
-        $('#hPatientTable').DataTable().ajax.url(baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        $('#hPatientTable').DataTable().ajax.url(baseUrl + 'hospital/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
         return;
     }
     hPatientTable = $('#hPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'hospitals/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        ajax: baseUrl + 'hospital/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
         columns: [
             {
                 data: null,
@@ -1348,7 +1348,7 @@ $('#hPatientTable').on('click', '.btn-view', function() {
 
 // CRUD hospital queue
 var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHospitalQueueDatas', 
+    ajax: baseUrl + 'hospital/getHospitalQueueDatas', 
     columns: [
         {
             data: null,
@@ -1425,7 +1425,7 @@ $('#hQueueTable').on('click', '.btn-add', function() {
 $('#addReferralForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'hospitals/history/addReferral',
+        url: baseUrl + 'hospital/history/addReferral',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
@@ -1469,7 +1469,7 @@ $('#deleteQueueForm').on('submit', function(e) {
     var patientNIK = $('#deleteQueueForm #patientNIK').val();
     var hospitalId = $('#deleteQueueForm #hospitalId').val();
     $.ajax({
-        url: baseUrl + 'hospitals/queue/deleteQueue',
+        url: baseUrl + '/queue/deleteQueue',
         method: 'POST',
         data: {patientNIK: patientNIK, hospitalId: hospitalId},
         success: function(response) {
@@ -1485,7 +1485,7 @@ $('#deleteQueueForm').on('submit', function(e) {
 
 // hospital disease
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
+    ajax: baseUrl + 'hospital/getHDiseaseDatas', 
     columns: [
         {
             data: null,

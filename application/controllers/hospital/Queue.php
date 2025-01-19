@@ -29,7 +29,7 @@ class Queue extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/hospital/floatingMenu',
             'contentHeader' => 'partials/hospital/contentHeader',
-            'contentBody' => 'hospitals/Queue',
+            'contentBody' => 'hospital/Queue',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );

@@ -5,7 +5,7 @@
         <i class="las la-plus-circle fs-4"></i>
         ADD DOCTOR
     </button>
-    <table id="doctorsTable" class="table" style="width:100%">
+    <table id="doctorTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -30,7 +30,6 @@
         </tfoot>
     </table>
 </div>
-
 
 <!-- Modal Add -->
 <div class="modal fade" id="addDoctorModal">
@@ -173,6 +172,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
@@ -198,6 +198,7 @@
                     Are you sure want to delete <span class="fw-bold" id="doctorName"></span> account?
                     <input type="text" id="doctorId" name="doctorId" hidden>
                 </div>
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>
                     <button type="submit" class="btn-danger" id="deleteDoctorButton">DELETE</button>
