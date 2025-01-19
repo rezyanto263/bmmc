@@ -422,9 +422,6 @@ $('#viewMapHospitalModal').on('shown.bs.modal', function () {
     }
 });
 
-
-
-
 $('#addHospitalModal').on('shown.bs.modal', function() {
     $(this).find('select#adminId').select2({
         ajax: {
@@ -927,7 +924,7 @@ $('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', functi
 });
 
 $('#addDoctorModal').on('hidden.bs.modal', function(e) {
-    console.log('addDoctorModal closed and reset'); // Debugging
+    console.log('addDoctorModal closed and reset');
     $(e.target).find('form').trigger('reset');
 });
 
@@ -982,7 +979,6 @@ $('#editDoctorModal').on('shown.bs.modal', function () {
         dropdownParent: $('#editDoctorModal .modal-body')
     });
 });
-
 
 $('#editDoctorForm').on('submit', function(e) {
     e.preventDefault();
@@ -1057,7 +1053,17 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {data: 'historyhealthRole'},
         {data: 'companyName'},
-        {data: 'doctorName'},
+        {
+            data: 'doctorName',
+            name: 'doctorName',
+            render: function (data, type, row) {
+                if (row.historyhealthTotalBill == 0 && row.historyhealthDiscount == 0) {
+                    return 'Referred';
+                } else {
+                    return data;
+                }
+            }
+        },
         {
             data: 'historyhealthDate',
             name: 'historyhealthDate',
@@ -1135,34 +1141,41 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         $(api.column(columnIndex).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     },
     buttons: [
-        // {
-        //     extend: 'copyHtml5',
-        //     text: 'Copy',
-        //     exportOptions: {
-        //         columns: ':visible:not(.no-export)'
-        //     }
-        // },
-        // {
-        //     extend: 'excelHtml5',
-        //     text: 'Excel',
-        //     exportOptions: {
-        //         columns: ':visible:not(.no-export)'
-        //     }
-        // },
-        // {
-        //     extend: 'pdfHtml5',
-        //     text: 'PDF',
-        //     exportOptions: {
-        //         columns: ':visible:not(.no-export)'
-        //     }
-        // },
-        // {
-        //     extend: 'print',
-        //     text: 'Print',
-        //     exportOptions: {
-        //         columns: ':visible:not(.no-export)'
-        //     }
-        // },
+        {
+            extend: 'copyHtml5',
+            text: 'Copy',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'excelHtml5',
+            text: 'Excel',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'pdfHtml5',
+            text: 'PDF',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'print',
+            text: 'Print',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
+        {
+            extend: 'colvis',
+            text: 'Column Visibility',
+            exportOptions: {
+                columns: ':visible:not(.no-export)'
+            }
+        },
         {
             text: "Year",
             className: "btn btn-primary dropdown-toggle",
@@ -1195,13 +1208,13 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                 createDropdown(node, list, 'month', 'MMMM');
             }
         },
-        // {
-        //     extend: 'colvis',
-        //     text: 'Column Visibility',
-        //     exportOptions: {
-        //         columns: ':visible:not(.no-export)'
-        //     }
-        // },
+        {
+            text: '<i class="fa-solid fa-arrows-rotate fs-5 pt-1 px-0 px-md-1"></i>',
+            className: '',
+            action: function (e, dt, node, config) {
+                dt.ajax.reload(null, false);
+            }
+        },
     ]
 }));
 
@@ -1269,7 +1282,7 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     }
 
     $('#detailContent #detailDoctorName').text(data.doctorName);
-    $('#detailContent #diseaseName').text(data.diseaseName ? data.diseaseName : 'Rujukan');
+    $('#detailContent #diseaseName').text(data.diseaseName ? data.diseaseName : 'Referred');
     $('#detailContent #historyhealthRole').text(data.historyhealthRole);
     $('#detailContent #employeeName').text(data.employeeName);
     $('#detailContent #companyName').text(data.companyName);
@@ -1432,31 +1445,35 @@ $('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', fun
 
 // Add Data Referral From Queue
 $('#hQueueTable').on('click', '.btn-add', function() {
-    var data = adminsTable.row($(this).parents('tr')).data();
-    $('#editAdminForm [name="adminId"]').val(data.adminId);
-    $('#editAdminForm [name="adminName"]').val(data.adminName);
-    $('#editAdminForm [name="adminRole"]').val(data.adminRole);
-    $('#editAdminForm [name="adminStatus"]').val(data.adminStatus);
+    var data = hQueueTable.row($(this).parents('tr')).data();
+    if ($(this).attr('data-bs-target') === '#addReferralModal') {
+        $('#addReferralForm [name="historyhealthDescription"]').val('');
+        $('#addReferralForm [name="historyhealthReferredTo"]').val('');
+        $('#patientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#patientRole').text(data.familyName ? 'Family' : 'Employee');
+        $('#employeeName').text(data.employeeName);
+        $('#companyName').text(data.companyName);
+    }
 });
 
 $('#addReferralForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'dashboard/admins/addAdmin',
+        url: baseUrl + 'hospitals/history/addReferral',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                $('#addAdminModal').modal('hide');
-                reloadTableData(adminsTable);
+                $('#addReferralModal').modal('hide');
+                reloadTableData(hQueueTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg);
             } else if (res.status === 'invalid') {
-                displayFormValidation('#addAdminForm', res.errors);
+                displayFormValidation('#addReferralForm', res.errors);
             }
         }
     });

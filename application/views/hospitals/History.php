@@ -82,7 +82,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Status">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
                                 <span class="form-control" id="historyhealthRole"></span>
