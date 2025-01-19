@@ -94,8 +94,6 @@ $('#addAdminButton, #editAdminButton, #deleteAdminButton').on('click', function(
     reloadTableData(adminsTable);
 });
 
-
-
 // Admins CRUD
 var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'dashboard/getAllAdminsDatas', 
@@ -940,6 +938,7 @@ $('#addDoctorForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
                 reloadTableData(doctorsTable);
@@ -1027,6 +1026,8 @@ $('#deleteDoctorForm').on('submit', function(e) {
         }
     });
 });
+
+console.log(...DataTableSettings.buttons);
 
 // CRUD History Health Hospital
 var selectedYear = "";
@@ -1140,42 +1141,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         var pageTotal = api.column(columnIndex, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
         $(api.column(columnIndex).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     },
-    buttons: [
-        {
-            extend: 'copyHtml5',
-            text: 'Copy',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            }
-        },
-        {
-            extend: 'excelHtml5',
-            text: 'Excel',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            }
-        },
-        {
-            extend: 'pdfHtml5',
-            text: 'PDF',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            }
-        },
-        {
-            extend: 'print',
-            text: 'Print',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            }
-        },
-        {
-            extend: 'colvis',
-            text: 'Column Visibility',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            }
-        },
+    buttons: [...DataTableSettings.buttons.slice(0, 4),
         {
             text: "Year",
             className: "btn btn-primary dropdown-toggle",

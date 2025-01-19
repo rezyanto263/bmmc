@@ -105,7 +105,7 @@ class Doctors extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $doctorDatas = array(
                 'hospitalId' => $hospitalDatas['hospitalId'],
@@ -117,7 +117,7 @@ class Doctors extends CI_Controller {
             );
             $this->M_doctors->insertDoctor($doctorDatas);
 
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 

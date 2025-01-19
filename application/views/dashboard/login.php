@@ -55,6 +55,7 @@
                                 Forgot password?
                             </a>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                         <button type="submit" class="btn-primary">
                             LOGIN
                         </button>
