@@ -185,7 +185,7 @@ class Doctor extends CI_Controller {
             );
             $this->M_doctors->updateDoctor($this->input->post('doctorId'), $doctorDatas);
 
-            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+            echo json_encode(array('status' => 'success', 'data' => $doctorDatas, 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
@@ -195,7 +195,6 @@ class Doctor extends CI_Controller {
         $this->M_doctors->deleteDoctor($doctorId);
         echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
-
 
 }
 

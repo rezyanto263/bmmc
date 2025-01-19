@@ -1012,18 +1012,19 @@ $('#doctorTable').on('click', '.btn-delete', function() {
 
 $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
-    var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
         url: baseUrl + 'hospital/doctor/deleteDoctor',
         method: 'POST',
-        data: {doctorId: doctorId},
+        data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteDoctorModal').modal('hide');
-                reloadTableData(doctorTable);
                 displayAlert('delete success');
+                reloadTableData(doctorTable);
+            } else if (res.status === 'failed') {
+                displayAlert(res.failedMsg);
             }
         }
     });
