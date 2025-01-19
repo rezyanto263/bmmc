@@ -11,7 +11,6 @@ class Patient extends CI_Controller {
             redirect('dashboard');
         }
 
-        $this->load->model('M_patient');
         $this->load->model('M_companies');
         $this->load->model('M_hospitals');
         $this->load->model('M_historyhealth');

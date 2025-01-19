@@ -903,7 +903,7 @@ $('#deleteCompanyForm').on('submit', function(e) {
 
 // CRUD Data Doctors
 var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHospitalDoctorsDatas', 
+    ajax: baseUrl + 'hospital/getHospitalDoctorsDatas', 
     columns: [
         {
             data: null,
@@ -975,7 +975,7 @@ $('#addDoctorForm').on('submit', function(e) {
     e.preventDefault();
     var formData = new FormData(this);
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/addDoctor',
+        url: baseUrl + 'hospital/doctors/addDoctor',
         method: 'POST',
         data: formData,
         contentType: false,
@@ -1026,7 +1026,7 @@ $('#editDoctorModal').on('shown.bs.modal', function () {
 $('#editDoctorForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/editDoctor',
+        url: baseUrl + 'hospital/doctors/editDoctor',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
@@ -1057,7 +1057,7 @@ $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
     var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
-        url: baseUrl + 'hospitals/doctors/deleteDoctor',
+        url: baseUrl + 'hospital/doctors/deleteDoctor',
         method: 'POST',
         data: {doctorId: doctorId},
         success: function(response) {
@@ -1075,7 +1075,7 @@ $('#deleteDoctorForm').on('submit', function(e) {
 var selectedYear = "";
 var selectedMonth = "";
 var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHospitalHistoriesDatas', 
+    ajax: baseUrl + 'hospital/getHospitalHistoriesDatas', 
     columns: [
         {
             data: null,
@@ -1297,7 +1297,7 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
 });
 
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
+    ajax: baseUrl + 'hospital/getHDiseaseDatas', 
     columns: [
         {
             data: null,
