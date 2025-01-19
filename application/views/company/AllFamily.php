@@ -14,8 +14,6 @@
                 <th>Address</th>
                 <th>Birth Date</th>
                 <th>Gender</th>
-                <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -28,8 +26,6 @@
                 <th>Address</th>
                 <th>Birth Date</th>
                 <th>Gender</th>
-                <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </tfoot>

@@ -71,3 +71,60 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Edit Insurance -->
+<div class="modal fade" id="editInsuranceModal" tabindex="-1" aria-labelledby="editInsuranceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editInsuranceModalLabel">Edit Insurance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editInsuranceForm">
+                    <div class="mb-3">
+                        <label for="insuranceId" class="form-label">Insurance ID</label>
+                        <input type="text" class="form-control" id="insuranceId" name="insuranceId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="insuranceTier" class="form-label">Insurance Tier</label>
+                        <input type="text" class="form-control" id="insuranceTier" name="insuranceTier">
+                    </div>
+                    <div class="mb-3">
+                        <label for="insuranceAmount" class="form-label">Insurance Amount</label>
+                        <input type="text" class="form-control" id="insuranceAmount" name="insuranceAmount">
+                    </div>
+                    <div class="mb-3">
+                        <label for="insuranceDescription" class="form-label">Insurance Description</label>
+                        <textarea class="form-control" id="insuranceDescription" name="insuranceDescription"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Insurance -->
+<div class="modal fade" id="deleteInsuranceModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <form id="deleteInsuranceForm">
+                <div class="modal-header border-0">
+                    <h1 class="modal-title fs-4">
+                        DELETE Insurance
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body border-0">
+                    Are you sure want to delete <span class="fw-bold" id="insuranceTier"></span> Insurance?
+                    <input type="number" id="insuranceId" name="insuranceId" hidden>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn-primary" id="deleteInsuranceButton">DELETE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

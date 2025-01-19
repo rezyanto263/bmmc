@@ -11,10 +11,10 @@ class M_family extends CI_Model {
         $this->db->from('family');
         // Join with the employee table on employeeNIK
         $this->db->join('employee', 'employee.employeeNIK = family.employeeNIK');
-        // Join with the compolder table to filter by companyId
-        $this->db->join('compolder', 'compolder.employeeNIK = employee.employeeNIK');
+        // Join with the insurance table to filter by companyId
+        $this->db->join('insurance', 'insurance.insuranceId = employee.insuranceId');
         // Where the companyId matches the given company ID
-        $this->db->where('compolder.companyId', $companyId);
+        $this->db->where('insurance.companyId', $companyId);
         // Execute the query and return the results
         return $this->db->get()->result_array();
     }
@@ -47,6 +47,20 @@ class M_family extends CI_Model {
         $this->db->where('familyNIK', $familyNIK);
         return $this->db->delete('family');
     }
+
+    public function getEmployeeNameByNIK($employeeNIK)
+    {
+        $this->db->select('employeeName'); // Asumsikan ada kolom 'employeeName'
+        $this->db->where('employeeNIK', $employeeNIK);
+        $query = $this->db->get('employee'); // Asumsikan tabelnya bernama 'employee'
+        
+        if ($query->num_rows() > 0) {
+            return $query->row()->employeeName;
+        }
+        
+        return null; // Jika tidak ada nama ditemukan
+    }
+
 
 }
 

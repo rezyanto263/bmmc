@@ -25,8 +25,8 @@ class Dashboard extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/dashboard/sidebar',
-            'floatingMenu' => 'partials/dashboard/floatingMenu',
-            'contentHeader' => 'partials/dashboard/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'dashboard/dashboard',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'

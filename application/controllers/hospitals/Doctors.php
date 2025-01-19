@@ -27,8 +27,8 @@ class Doctors extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/hospital/sidebar',
-            'floatingMenu' => 'partials/hospital/floatingMenu',
-            'contentHeader' => 'partials/hospital/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'hospitals/Doctors',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'

@@ -36,8 +36,8 @@ class Employee extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/company/floatingMenu',
-            'contentHeader' => 'partials/company/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'company/Employee',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'

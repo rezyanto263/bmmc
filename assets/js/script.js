@@ -6,11 +6,17 @@ function userColorPreference() {
         if (colorPreference === 'dark') {
             $('body:not(.dark)').addClass('dark');
             $('#btn-mode i:not(.las.la-sun)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close').addClass('btn-close-white');
+            $('.modal .btn-close:not(.btn-close-white)').each(function() {
+                $(this).addClass('btn-close-white');
+            });
+            toggleFlatpickrTheme(true);
         } else if (colorPreference === 'light') {
             $('body').removeClass('dark');
             $('#btn-mode i:not(.las.la-moon)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close').removeClass('btn-close-white');
+            $('.modal .btn-close').each(function() {
+                $(this).removeClass('btn-close-white');
+            });
+            toggleFlatpickrTheme(false);
         }
     } else {
         var userColorSchema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -75,169 +81,6 @@ function floatingMenuHandler() {
 }
 
 
-// QR Scanner
-var scanner;
-var cameraStream;
-
-$('#scannerModal').on('show.bs.modal', function() {
-    $('#scannerModal .btn-close').hide();
-    $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
-    try {
-        cameraStream = navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-            cameraStream = stream;
-        });
-        scanner = new Instascan.Scanner({ video: $('#qrScanner').get(0) });
-        scanner.addListener('scan', function (content) {
-            $('[name="qrData"]').val(content);
-            if (atob($('#adminRole').data('admin-role')) === 'admin') {
-                $('#qrForm').submit();
-            } else if (atob($('#adminRole').data('admin-role')) === 'hospital') {
-                $('#qrHospitalForm').submit();
-            } else if (atob($('#adminRole').data('admin-role')) === 'company') {
-                $('#qrCompanyForm').submit();
-            }
-            console.log(content);
-        });
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-                $('#scannerModal .btn-close').show();
-            } else {
-                alert('No cameras found.');
-            }
-        }).catch(function (e) {
-            // console.error(e);
-            $('#scannerModal .btn-close').show();
-            alert(e);
-        });
-    } catch (error) {
-        console.error('Instascan initialization error:', error);
-    }
-});
-
-$('#qrHospitalForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'hospitals/getPatientByNIK',
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function (response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                $('#scanResultModal').modal('show');
-                $('#scannerModal').modal('hide');
-                const data = res.data;
-                $('#scanResultModal').on('shown.bs.modal', function() {
-                    var photo = data.employeePhoto || data.familyPhoto;
-                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
-                    $('#scanResultModal [name="nik"]').val(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                    $('#scanResultModal [name="name"]').val(data.employeeName ? data.employeeName : data.familyName);
-                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Employee');
-                    $('#scanResultModal [name="birth"]').val(data.employeeBirth ? data.employeeBirth : data.familyBirth);
-                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.employeeGender ? data.employeeGender : data.familyGender));
-                    $('#scanResultModal [name="companyName"]').val(data.companyName);
-                    $('#scanResultModal [name="email"]').val(data.employeeEmail ? data.employeeEmail : data.familyEmail);
-                    $('#scanResultModal [name="phone"]').val(data.employeePhone ? data.employeePhone : data.familyPhone);
-                    $('#scanResultModal [name="address"]').val(data.employeeAddress ? data.employeeAddress : data.familyAddress);
-                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.employeeStatus ? data.employeeStatus : data.familyStatus));
-                    displayAlert('scan qr success');
-                    getHPatientHistoryHealth(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                });
-            } else if (res.status === 'failed') {
-                displayAlert(res.failedMsg);
-            }
-        }
-    });
-});
-
-$('#qrCompanyForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'company/getPatientByNIK',
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function (response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
-                // resultModal.show();
-                $('#scanResultModal').modal('show');
-                $('#scannerModal').modal('hide');
-                const data = res.data;
-                $('#scanResultModal').on('shown.bs.modal', function() {
-                    var photo = data.employeePhoto || data.familyPhoto;
-                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
-                    $('#scanResultModal [name="nik"]').val(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                    $('#scanResultModal [name="name"]').val(data.employeeName ? data.employeeName : data.familyName);
-                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Employee');
-                    $('#scanResultModal [name="birth"]').val(data.employeeBirth ? data.employeeBirth : data.familyBirth);
-                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.employeeGender ? data.employeeGender : data.familyGender));
-                    $('#scanResultModal [name="companyName"]').val(data.companyName);
-                    $('#scanResultModal [name="email"]').val(data.employeeEmail ? data.employeeEmail : data.familyEmail);
-                    $('#scanResultModal [name="phone"]').val(data.employeePhone ? data.employeePhone : data.familyPhone);
-                    $('#scanResultModal [name="address"]').val(data.employeeAddress ? data.employeeAddress : data.familyAddress);
-                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.employeeStatus ? data.employeeStatus : data.familyStatus));
-                    displayAlert('scan qr success');
-                    getCPatientHistoryHealth(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                });
-            } else if (res.status === 'failed') {
-                displayAlert(res.failedMsg);
-            }
-        }
-    });
-});
-
-$('#qrForm').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'dashboard/getPatientByNIK',
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function (response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
-                // resultModal.show();
-                $('#scanResultModal').modal('show');
-                $('#scannerModal').modal('hide');
-                const data = res.data;
-                $('#scanResultModal').on('shown.bs.modal', function() {
-                    var photo = data.employeePhoto || data.familyPhoto;
-                    $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
-                    $('#scanResultModal [name="nik"]').val(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                    $('#scanResultModal [name="name"]').val(data.employeeName ? data.employeeName : data.familyName);
-                    $('#scanResultModal [name="role"]').val(data.familyRole ? data.familyRole : 'Employee');
-                    $('#scanResultModal [name="birth"]').val(data.employeeBirth ? data.employeeBirth : data.familyBirth);
-                    $('#scanResultModal [name="gender"]').val(capitalizeWords(data.employeeGender ? data.employeeGender : data.familyGender));
-                    $('#scanResultModal [name="companyName"]').val(data.companyName);
-                    $('#scanResultModal [name="email"]').val(data.employeeEmail ? data.employeeEmail : data.familyEmail);
-                    $('#scanResultModal [name="phone"]').val(data.employeePhone ? data.employeePhone : data.familyPhone);
-                    $('#scanResultModal [name="address"]').val(data.employeeAddress ? data.employeeAddress : data.familyAddress);
-                    $('#scanResultModal [name="status"]').val(capitalizeWords(data.employeeStatus ? data.employeeStatus : data.familyStatus));
-                    displayAlert('scan qr success');
-                    getPatientHistoryHealth(data.employeeNIK ? data.employeeNIK : data.familyNIK);
-                });
-            } else if (res.status === 'failed') {
-                displayAlert(res.failedMsg);
-            }
-        }
-    });
-});
-$('#scannerModal').on('hidden.bs.modal', function () {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(function(track) {
-            track.stop();
-        });
-        cameraStream = null;
-    }
-    scanner ? scanner.stop() : null;
-    if (scanner) {
-        scanner.stop()
-    }
-    scanner = null;
-});	
-
-
 // Show Password
 $('.input-group #btnShowPassword').on('click', function(event) {
     event.preventDefault();
@@ -278,10 +121,13 @@ function capitalizeWords(string) {
 }
 
 // Rupiah Format
-function formatToRupiah(amount) {
+function formatToRupiah(amount, Rp = true, showDecimals = true) {
     return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
+        style: Rp ? 'currency' : 'decimal',
+        currency: Rp ? 'IDR' : undefined,
+        useGrouping: true,
+        minimumFractionDigits: showDecimals ? 2 : 0,
+        maximumFractionDigits: showDecimals ? 2 : 0
     }).format(amount);
 }
 
@@ -297,3 +143,115 @@ $('.imgFile').on('change', function(e) {
         $(e.target).closest('.col-12').find('.imgContainer img').attr('src', URL.createObjectURL(file));
     }
 });
+
+// Flatpickr
+$('input[type="date"]').each(function() {
+    $(this).flatpickr({
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'j F Y',
+        minDate: $(this).attr('min') || null,
+        maxDate: $(this).attr('max') || null,
+        disableMobile: true,
+    });
+});
+
+function toggleFlatpickrTheme(isDarkMode) {
+    if (isDarkMode) {
+        $('#flatpickr-theme').prop('disabled', false)
+    } else {
+        $('#flatpickr-theme').prop('disabled', true)
+    }
+}
+
+// Cleave (Input Rupiah Format)
+function formatCurrencyInput() {
+    $('.currency-input').each(function() {
+        const cleaveInstance = new Cleave(this, {
+            numeral: true,
+            numeralDecimalMark: ',',
+            delimiter: '.',
+            prefix: 'Rp ',
+            noImmediatePrefix: true,
+            rawValueTrimPrefix: true,
+        });
+    
+        $(this).data('cleave', cleaveInstance);
+    
+        $(this).on('blur', function() {
+            const rawValue = cleaveInstance.getRawValue();
+            if (rawValue === '') {
+                cleaveInstance.setRawValue('');
+                $(this).val('');
+            }
+        });
+    });
+}
+formatCurrencyInput();
+
+// Cleave (Input Indonesia Phone Number)
+function formatPhoneInput() {
+    $('.phone-input').each(function() {
+        const cleaveInstance = new Cleave(this, {
+            phone: true,
+            phoneRegionCode: 'ID',
+            prefix: '08',
+            delimiter: ' ',
+            noImmediatePrefix: true,
+        });
+    
+        $(this).data('cleave', cleaveInstance);
+    
+        $(this).on('blur', function() {
+            const rawValue = cleaveInstance.getRawValue();
+            if (rawValue === '08') {
+                cleaveInstance.setRawValue('');
+                $(this).val('');
+            }
+        });
+    });
+}
+formatPhoneInput();
+
+function removeCleaveFormat() {
+    $('.currency-input, .phone-input').each(function() {
+        const cleaveInstance = $(this).data('cleave');
+        if (cleaveInstance) {
+            const rawValue = cleaveInstance.getRawValue();
+            $(this).val(rawValue);
+        }
+    });    
+}
+
+// Status Color
+function statusColor(data) {
+    switch (data) {
+        case 'active':
+        case 'current':
+        case 'in use':
+        case 'published':
+        case 'paid':
+            return 'bg-success';
+
+        case 'free':
+        case 'unverified':
+        case 'referred':
+        case 'draft':
+            return 'bg-secondary-subtle';
+
+        case 'on hold':
+            return 'bg-warning';
+
+        case 'discontinued':
+        case 'archived':
+        case 'finished':
+            return 'bg-secondary';
+
+        case 'unpaid':
+        case 'stopped':
+            return 'bg-danger';
+
+        default:
+            return 'border-2 border-dashed border-secondary'
+    }
+}

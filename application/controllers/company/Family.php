@@ -20,17 +20,21 @@ class Family extends CI_Controller {
 
     public function index()
     {
+        $employeeNIK = $this->session->userdata('employeeNIK');
+        
+        // Mendapatkan nama karyawan berdasarkan employeeNIK
+        $employeeName = $this->M_family->getEmployeeNameByNIK($employeeNIK);
         $datas = array(
             'title' => 'BIM Dashboard | Family',
-            'subtitle' => 'Family',
+            'subtitle' =>  $employeeName . ' Family',
             'contentType' => 'dashboard'
         );
 
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/company/floatingMenu',
-            'contentHeader' => 'partials/company/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'company/Family',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
@@ -51,8 +55,8 @@ class Family extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/company/sidebar',
-            'floatingMenu' => 'partials/company/floatingMenu',
-            'contentHeader' => 'partials/company/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'company/AllFamily',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
@@ -164,9 +168,7 @@ class Family extends CI_Controller {
                 'familyPassword' => password_hash(htmlspecialchars($this->input->post('familyPassword')), PASSWORD_DEFAULT),
                 'familyAddress' => $this->input->post('familyAddress'),
                 'familyBirth' => $this->input->post('familyBirth'),
-                'familyGender' => $this->input->post('familyGender'),
-                'familyRole' => $this->input->post('familyRole'),
-                'familyStatus' => $this->input->post('familyStatus')
+                'familyGender' => $this->input->post('familyGender')
             );
     
             $this->M_family->insertFamily($familyData);
@@ -228,9 +230,7 @@ class Family extends CI_Controller {
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyAddress' => $this->input->post('familyAddress'),
                 'familyBirth' => $this->input->post('familyBirth'),
-                'familyGender' => $this->input->post('familyGender'),
-                'familyRole' => $this->input->post('familyRole'),
-                'familyStatus' => $this->input->post('familyStatus')
+                'familyGender' => $this->input->post('familyGender')
             );
             if (!empty($newPassword)) {
                 $familyData['familyPassword'] = $newPassword;

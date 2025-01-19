@@ -68,11 +68,11 @@
             <!-- gambar -->
             <div class="me-4">
               <?php if (isset($employeeDatas['employeePhoto']) && $employeeDatas['employeePhoto'] != ''): ?>
-                <img src="<?= base_url('uploads/logos/' . $employeeDatas['employeePhoto']) ?>"
+                <img src="<?= base_url('uploads/photos/' . $employeeDatas['employeePhoto']) ?>"
                   alt="Employee Photo" class="rounded-circle border border-white shadow-sm bg-hijau"
                   alt="Profile Picture" style="width: 100px; height: 100px; object-fit: cover" />
               <?php else: ?>
-                <img src="<?= base_url('uploads/logos/' . $employeeDatas['familyPhoto']) ?>" alt="Default Photo"
+                <img src="<?= base_url('uploads/photos/' . $employeeDatas['familyPhoto']) ?>" alt="Default Photo"
                   class="rounded-circle border border-white shadow-sm bg-hijau" alt="Profile Picture"
                   style="width: 100px; height: 100px; object-fit: cover" />
               <?php endif; ?>
