@@ -13,7 +13,7 @@
         <?php $this->load->view($floatingMenu); ?>
 
         <main>
-            <div class="container-md py-3">
+            <div class="container-fluid py-3 px-lg-3 px-xxl-4">
                 <?php $this->load->view($contentHeader); ?>
 
                 <?php $this->load->view($contentBody); ?>

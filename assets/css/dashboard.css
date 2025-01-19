@@ -51,10 +51,12 @@ body.dashboard {
         position: absolute;
         background: transparent !important;
         backdrop-filter: blur(20px) saturate(150%) brightness(90%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(90%);
     }
 
     .dashboard.dark aside {
         backdrop-filter: blur(20px) saturate(150%) brightness(50%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(50%);
     }
 
     .dashboard aside.maximize {
@@ -146,6 +148,29 @@ option:hover:focus {
     color: var(--grey) !important;
 }
 
+.modal-content #map {
+    border-radius: 0.375rem;
+    border: 1px solid var(--grey);
+}
+
+.leaflet-routing-container {
+    padding:0 !important;
+}
+
+.leaflet-routing-container-hide .leaflet-routing-collapse-btn {
+    left: 1px !important;
+}
+
+.modal-content #map .leaflet-routing-alt {
+    color: black;
+}
+
+.card.box-total {
+    color: var(--dark);
+    border-color: var(--grey);
+    height: 100%;
+}
+
 /* Select2 Styles */
 .select2-container--default .select2-selection--single {
     height: calc(1.5em + 0.75rem + 2px);
@@ -199,7 +224,16 @@ option:hover:focus {
 
 .select2-container--default .select2-dropdown {
     border: 1px solid var(--grey);
+    border-top: 0;
     background-color: var(--bgcolor);
+}
+
+.select2-selection__rendered {
+    pointer-events: none !important;
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--single {
+    background-color: transparent;
 }
 
 
@@ -266,6 +300,10 @@ option:hover:focus {
     line-height: 18px;
 }
 
+.sidebar-menu {
+    overflow-y: auto;
+}
+
 :where(.sidebar-menu, .sidebar-extramenu) ul li {
     list-style: none;
 }
@@ -328,6 +366,15 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
     backdrop-filter: blur(10px) saturate(100%);
 }
 
+/* Button Style */
+.btn-view, .btn-edit, .btn-delete {
+    width: 50px;
+    height: 40px;
+    display: inline;
+    justify-content: center;
+    align-items: center;
+    margin-block: 2.5px;
+}
 
 
 /* Content Header Styles */

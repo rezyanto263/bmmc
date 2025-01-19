@@ -5,7 +5,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class M_auth extends CI_Model {
 
     public function getAllAdmin() {
-        return $this->db->get('admin')->result_array();
+        $this->db->select('a.*,
+            IF(a.adminRole = "company", c.companyStatus, 
+                IF(a.adminRole = "hospital", h.hospitalStatus, NULL)) AS status
+        ');
+        $this->db->from('admin a');
+        $this->db->join('company c', 'c.adminId = a.adminId', 'left');
+        $this->db->join('hospital h', 'h.adminId = a.adminId', 'left');
+        return $this->db->get()->result_array();
     }
 
     public function getCompanyDetails($adminId) {
@@ -17,7 +24,15 @@ class M_auth extends CI_Model {
         return $query->row_array();  // Return company data as an associative array
     }
     public function checkAdmin($param, $adminData) {
-        return $this->db->get_where('admin', array($param => $adminData))->row_array();
+        $this->db->select('a.*,
+            IF(a.adminRole = "company", c.companyStatus, 
+                IF(a.adminRole = "hospital", h.hospitalStatus, NULL)) AS status
+        ');
+        $this->db->from('admin a');
+        $this->db->join('company c', 'c.adminId = a.adminId', 'left');
+        $this->db->join('hospital h', 'h.adminId = a.adminId', 'left');
+        $this->db->where('a.' . $param, $adminData);
+        return $this->db->get()->row_array();
     }
 
     public function checkEmployee($param, $employeeData) {

@@ -1,5 +1,5 @@
 <!-- Sidebar Start -->
-<aside class="minimize shadow-sm">
+<aside class="<?= isset($_COOKIE['sidebarSize']) ? $_COOKIE['sidebarSize'] : 'maximize'; ?> shadow-sm">
     <div class="container-fluid p-0 d-flex flex-column justify-content-between">
         <div class="sidebar-header p-3 gap-3">
             <img src="<?= base_url('assets/images/logo.png') ?>" alt="" draggable="false">
@@ -23,6 +23,12 @@
                     </a>
                 </li>
                 <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Bills'?'active':''; ?>" href="<?= base_url('dashboard/billings') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Billings">
+                        <i class="las la-credit-card fs-4"></i>
+                        <span>Billings</span>
+                    </a>
+                </li>
+                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Companies'?'active':''; ?>" href="<?= base_url('dashboard/companies') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Companies">
                         <i class="las la-building fs-4"></i>
                         <span>Companies</span>
@@ -38,6 +44,12 @@
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'News'?'active':''; ?>" href="<?= base_url('dashboard/news') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="News">
                         <i class="las la-newspaper fs-4"></i>
                         <span>News</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insuranced Disease'?'active':''; ?>" href="<?= base_url('dashboard/insuredDisease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insured Disease">
+                        <i class="las la-medkit fs-4"></i>
+                        <span>Insured Disease</span>
                     </a>
                 </li>
                 <li>

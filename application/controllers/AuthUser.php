@@ -37,7 +37,7 @@ class AuthUser extends CI_Controller {
         }
 
         $datas = array(
-            'title' => 'BIM | Sign In',
+            'title' => 'BMMC | Sign In',
             'contentType' => 'authentication'
         );
 

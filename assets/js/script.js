@@ -28,7 +28,6 @@ function userColorPreference() {
 // Button Mode
 $('#btn-mode').on('click', function() {
     $('body').toggleClass('dark');
-    $('#btn-mode i').toggleClass('las la-sun las la-moon');
     var colorPreference = $.cookie('colorPreference') == 'dark'? 'light':'dark';
     $.cookie('colorPreference', colorPreference, {path: '/'});
     userColorPreference();
@@ -49,6 +48,8 @@ function sidebarSize() {
     }
 }
 sidebarSize();
+
+
 $('#btn-menu').on('click', function() {
     $('aside').toggleClass('minimize maximize');
     var sidebarSize = $.cookie('sidebarSize') == 'minimize'? 'maximize':'minimize';

@@ -14,6 +14,7 @@
                     </div>
                     <?= form_error('adminEmail', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                 </div>
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 <button type="submit" class="btn-primary w-100">
                     SUBMIT
                 </button>

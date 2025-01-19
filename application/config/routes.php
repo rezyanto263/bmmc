@@ -73,12 +73,12 @@ $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getA
 $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsDatas';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
 $route['dashboard/getAllCompanyBillingDatas'] = 'dashboard/Billings/getAllCompanyBillingDatas';
+$route['dashboard/getCompanyDetails'] = 'dashboard/Companies/getCompanyDetails';
 $route['dashboard/getPatientByNIK'] = 'dashboard/Companies/scanQR';
 $route['dashboard/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'dashboard/Hospitals/getPatientHistoryHealthDetailsByNIK/$1';
 
 $route['hospital/getHospitalDoctorsDatas'] = 'hospital/Doctors/getHospitalDoctorsDatas';
 $route['hospital/getHospitalHistoriesDatas'] = 'hospital/History/getHospitalHistoriesDatas';
-// $route['hospital/getPatientDataByNIK'] = 'hospital/Patient/getPatientDataByNIK';
 $route['hospital/getPatientByNIK'] = 'hospital/Patient/scanQR';
 $route['hospital/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospital/History/getHPatientHistoryHealthDetailsByNIK/$1';
 $route['hospital/getHospitalQueueDatas'] = 'hospital/Queue/getHospitalQueueDatas';

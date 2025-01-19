@@ -44,7 +44,7 @@
                             </div>
                             <?= form_error('adminPassword', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                         </div>
-                        <div class="d-flex justify-content-between px-0 mb-5 text-secondary fs-6">
+                        <div class="d-flex justify-content-between px-0 text-secondary fs-6">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="rememberMe">
                                 <label class="form-check-label">
@@ -55,6 +55,8 @@
                                 Forgot password?
                             </a>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                        <div class="g-recaptcha my-4 d-flex justify-content-center" data-sitekey="<?= $_ENV['CAPTCHA_SITE_KEY'] ?>"></div>
                         <button type="submit" class="btn-primary">
                             LOGIN
                         </button>

@@ -59,8 +59,6 @@ $('#qrForm').on('submit', function(e) {
         success: function (response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {
-                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
-                // resultModal.show();
                 $('#scanResultModal').modal('show');
                 $('#scannerModal').modal('hide');
                 const data = res.data;
