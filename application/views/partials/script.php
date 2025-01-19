@@ -47,7 +47,6 @@
 
 <?php endif; ?>
 
-
 <!-- My Script -->
 <script defer src="<?= base_url('assets/js/script.js') ?>"></script>
 

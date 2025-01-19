@@ -186,7 +186,7 @@
                             <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Complaint">
                                 <i class="las la-comment-dots fs-4"></i>  
                             </span>
-                            <textarea class="form-control" type="text" placeholder="Complaint" name="historyhealthComplaint" disabled></textarea>
+                            <textarea class="form-control" type="text" name="historyhealthComplaint" disabled></textarea>
                         </div>
                     </div>
                     <div class="col-12">
@@ -194,7 +194,55 @@
                             <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Details">
                                 <i class="las la-stethoscope fs-4"></i>
                             </span>
-                            <textarea class="form-control" type="text" placeholder="Details" name="historyhealthDetails" disabled></textarea>
+                            <textarea class="form-control" type="text" name="historyhealthDetails" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Fee">
+                                <i class="las la-stethoscope fs-4"></i>
+                            </span>
+                            <input class="form-control currency-input" type="text" name="historyhealthDoctorFee" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Medicine Fee">
+                                <i class="las la-capsules fs-4"></i>  
+                            </span>
+                            <input class="form-control currency-input" type="text" name="historyhealthMedicineFee" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Lab Fee">
+                                <i class="las la-flask fs-4"></i>  
+                            </span>
+                            <input class="form-control currency-input" type="text" name="historyhealthLabFee" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Action Fee">
+                                <i class="las la-briefcase-medical fs-4"></i>  
+                            </span>
+                            <input class="form-control currency-input" type="text" name="historyhealthActionFee" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Discount">
+                                <i class="las la-percent fs-4"></i>  
+                            </span>
+                            <input class="form-control text-decoration-line-through currency-input" type="text" name="historyhealthDiscount" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group p-0">
+                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Total Bill">
+                                <i class="las la-money-bill-wave fs-4"></i>  
+                            </span>
+                            <input class="form-control currency-input" type="text" name="historyhealthTotalBill" disabled>
                         </div>
                     </div>
                 </div>

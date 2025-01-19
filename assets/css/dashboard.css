@@ -165,6 +165,12 @@ option:hover:focus {
     color: black;
 }
 
+.card.box-total {
+    color: var(--dark);
+    border-color: var(--grey);
+    height: 100%;
+}
+
 /* Select2 Styles */
 .select2-container--default .select2-selection--single {
     height: calc(1.5em + 0.75rem + 2px);
@@ -360,6 +366,15 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
     backdrop-filter: blur(10px) saturate(100%);
 }
 
+/* Button Style */
+.btn-view, .btn-edit, .btn-delete {
+    width: 50px;
+    height: 40px;
+    display: inline;
+    justify-content: center;
+    align-items: center;
+    margin-block: 2.5px;
+}
 
 
 /* Content Header Styles */

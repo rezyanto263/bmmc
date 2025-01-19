@@ -84,7 +84,7 @@ function reloadTableData(table) {
 function generateStatusData(statuses) {
     return statuses.map(status => ({
         id: status.toLowerCase(),
-        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline-block">${capitalizeWords(status)}</span>`
+        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline">${capitalizeWords(status)}</span>`
     }));
 }
 
@@ -95,7 +95,7 @@ $('.modal').on('hidden.bs.modal', function(e) {
     $(e.target).find('form').trigger('reset');
     $('.error-message').remove();
     $('.is-invalid').removeClass('is-invalid');
-    $('.changeEmailInput, .changePasswordInput, #changeCoordinateInput').hide();
+    $('.changeEmailInput, .changePasswordInput, #changeCoordinateInput, #changeBillingAmountInput').hide();
 });
 
 $('#addAdminButton, #editAdminButton, #deleteAdminButton').on('click', function() {
@@ -239,6 +239,7 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
         },
         {
             data: 'status',
+            className: 'text-nowrap',
             render: function(data, type, row) {
                 if (!data) {
                     data = row.adminRole == 'admin' ? 'not partner' : 'not linked';
@@ -253,14 +254,14 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editAdminModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteAdminModal">
                         <i class="fa-solid fa-trash-can"></i>
@@ -269,7 +270,7 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
         }
     ],
     columnDefs: [
-        {width: '180px', target: 5}
+        {width: '130px', target: 5}
     ]
 }));
 
@@ -359,7 +360,7 @@ $('#newEmailCheck, #newPasswordCheck').change(function() {
 // Delete Data Admin
 $('#adminsTable').on('click', '.btn-delete', function() {
     var data = adminsTable.row($(this).parents('tr')).data();
-    $('#deleteAdminForm [name="adminName"]').html(data.adminName);
+    $('#deleteAdminForm #adminName').html(data.adminName);
     $('#deleteAdminForm [name="adminId"]').val(data.adminId);
 })
 
@@ -407,6 +408,7 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
         {data: 'hospitalPhone'},
         {
             data: 'hospitalStatus',
+            className: 'text-nowrap',
             render: function(data, type, row) {
                 return generateStatusData([data]).find((d) => d.id === data)?.text || '';
             }
@@ -418,21 +420,21 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-view btn-primary rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#viewHospitalModal">
                     <i class="fa-regular fa-eye"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editHospitalModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteHospitalModal">
                         <i class="fa-solid fa-trash-can"></i>
@@ -441,7 +443,7 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
-        {width: '240px', target: 6}
+        {width: '180px', target: 6}
     ]
 }));
 
@@ -700,43 +702,88 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
     columns: [
         {
             data: null,
-            className: 'text-start',
+            className: 'text-start align-middle',
             render: function (data, type, row, meta) {
                 return meta.row + 1;
             }
         },
-        {data: 'companyName'},
-        {data: 'adminEmail'},
-        {data: 'companyAddress'},
-        {data: 'companyPhone'},
+        {
+            data: 'companyLogo',
+            className: 'align-middle',
+            responsivePriority: 100,
+            orderable: false,
+            render: function(data, type, row) {
+                let logo = data ? `${baseUrl}uploads/logos/${data}` : `${baseUrl}assets/images/company-placeholder.jpg`;
+                return `<img src="${logo}" width="45px" height="45px">`;
+            }
+        },
+        {
+            data: 'companyName',
+            className: 'align-middle'
+        },
+        {
+            data: 'adminEmail',
+            className: 'align-middle'
+        },
+        {
+            data: 'companyAddress',
+            className: 'align-middle'
+        },
+        {
+            data: 'companyPhone',
+            className: 'align-middle'
+        },
+        {
+            data: 'billingUsed',
+            className: 'align-middle',
+            responsivePriority: 1,
+            render: function(data, type, row) {
+                var current = row.billingAmount - row.billingUsed;
+                var percentage = current != 0 ? parseInt((current / row.billingAmount) * 100) : 0;
+                var barColor;
+                if (percentage >= 50) {
+                    barColor = 'bg-success';
+                } else if (50 > percentage && percentage >= 20) {
+                    barColor = 'bg-warning';
+                } else {
+                    barColor = 'bg-danger';
+                }
+                return `
+                <div class="progress bg-secondary border" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar overflow-visible ${barColor} progress-bar-striped progress-bar-animated fw-bold" style="width: ${percentage}%">${formatToRupiah(current)} / ${formatToRupiah(row.billingAmount)}</div>
+                </div>
+                `
+            }
+        },
         {
             data: 'companyStatus',
+            className: 'align-middle text-nowrap',
             render: function(data, type, row) {
                 return generateStatusData([data]).find((d) => d.id === data)?.text || '';
             }
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-view btn-primary rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#viewCompanyModal">
                     <i class="fa-regular fa-eye"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editCompanyModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteCompanyModal">
                         <i class="fa-solid fa-trash-can"></i>
@@ -745,7 +792,7 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
-        {width: '240px', target: 6}
+        {width: '180px', target: 8}
     ]
 }));
 
@@ -777,7 +824,7 @@ $('#addCompanyModal').on('show.bs.modal', function() {
                                 ${data.adminName} | 
                                 ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`
                             };
-                        })
+                        }) ?? []
                 };
             },
             cache: true
@@ -785,13 +832,6 @@ $('#addCompanyModal').on('show.bs.modal', function() {
         minimumInputLength: 0,
         placeholder: 'Choose Admin',
         allowClear: true,
-        dropdownParent: $('#addCompanyModal .modal-body'),
-        escapeMarkup: function (markup) { return markup; }
-    });
-
-    $(this).find('select[name="companyStatus"]').select2({
-        placeholder: 'Choose Status',
-        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
         dropdownParent: $('#addCompanyModal .modal-body'),
         escapeMarkup: function (markup) { return markup; }
     });
@@ -820,9 +860,11 @@ $('#addCompanyForm').on('submit', function(e) {
                 $('.is-invalid').removeClass('is-invalid');
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
                 formatPhoneInput();
+                formatCurrencyInput();
             } else if (res.status === 'invalid') {
                 displayFormValidation('#addCompanyForm', res.errors);
                 formatPhoneInput();
+                formatCurrencyInput();
             }
         }
     });
@@ -854,6 +896,34 @@ $('#companiesTable').on('click', '.btn-view', function() {
 
         initializeMap(latitude, longitude, imageFilePath);
     });
+
+    $.ajax({
+        url: baseUrl + 'dashboard/getCompanyDetails?id=' + data.companyId,
+        method: 'GET',
+        success: function(response) {
+            var res = JSON.parse(response).data;
+            for (const key in res) {
+                if (res.hasOwnProperty(key)) {
+                    $(`#viewCompanyModal #${key}`).html(res[key]);
+                }
+            }
+        }
+    });
+
+    let billingRemaining = data.billingAmount - data.billingUsed;
+    var percentage = billingRemaining != 0 ? parseInt((billingRemaining / data.billingAmount) * 100) : 0;
+    var textColor;
+    if (percentage >= 50) {
+        textColor = 'text-success';
+    } else if (50 > percentage && percentage >= 20) {
+        textColor = 'text-warning';
+    } else {
+        textColor = 'text-danger';
+    }
+    $('#viewCompanyModal #totalBillingAmount').html(formatToRupiah(data.billingAmount, false, false));
+    $('#viewCompanyModal #totalBillingUsed').html(formatToRupiah(data.billingUsed, false, false));
+    $('#viewCompanyModal #totalBillingRemaining').html(`<span class="${textColor}">${formatToRupiah(billingRemaining)}</span>`);
+    $('#viewCompanyModal #billingDate').html(moment(data.billingStartedAt).format('D MMM YYYY') + ' - ' + moment(data.billingEndedAt).format('D MMM YYYY'));
 });
 
 // Edit Data Company
@@ -865,13 +935,16 @@ $('#companiesTable').on('click', '.btn-edit', function() {
     $('#editCompanyForm [name="companyId"]').val(d.companyId);
     $('#editCompanyForm [name="companyName"]').val(d.companyName);
     $('#editCompanyForm [name="companyAddress"]').val(d.companyAddress);
-    $('#editCompanyForm [name="companyPhone"]').val(d.companyPhone);
 
+    $('#editCompanyForm [name="companyPhone"]').val(d.companyPhone);
     formatPhoneInput();
+
+    $('#editCompanyForm [name="billingAmount"]').val(d.billingAmount);
+    formatCurrencyInput();
 
     $('#editCompanyForm [name="companyStatus"]').select2({
         placeholder: 'Choose Status',
-        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        data: generateStatusData(['Active', 'On Hold', 'Discontinued']),
         dropdownParent: $('#editCompanyModal .modal-body'),
         escapeMarkup: function (markup) {
             return markup;
@@ -926,6 +999,14 @@ $('#companiesTable').on('click', '.btn-edit', function() {
             console.error('Error fetching admin data:', err);
         }
     });
+});
+
+$('#changeBillingAmountInput').hide();
+$('#newBillingAmountCheck').change(function() {
+    $('#changeBillingAmountInput').toggle();
+    $('#changeBillingAmountInput').find('input').val('');
+    $('.error-message').remove();
+    $('.is-invalid').removeClass('is-invalid');
 });
 
 $('#editCompanyForm').on('submit', function(e) {
@@ -985,6 +1066,8 @@ $('#deleteCompanyForm').on('submit', function(e) {
     });
 });
 
+
+
 // Billings CRUD
 var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'dashboard/getAllCompanyBillingDatas',
@@ -1026,12 +1109,12 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
                 return moment(data).format('ddd, D MMMM YYYY');
             }
         },
-
         {
-            data: null,
+            data: 'billingUsed',
             className: 'align-middle',
             responsivePriority: 1,
             render: function(data, type, row) {
+                console.log(row.billingUsed);
                 var current = row.billingAmount - row.billingUsed;
                 var percentage = current != 0 ? parseInt((current / row.billingAmount) * 100) : 0;
                 var barColor;
@@ -1064,14 +1147,14 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editCompanyModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteCompanyModal">
                         <i class="fa-solid fa-trash-can"></i>
@@ -1081,17 +1164,12 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
     ],
     columnDefs: [
         {width: '45px', target: 1},
-        {
-            targets: 5,
-            orderData: function(data, type, row) {
-                return row.billingUsed;
-            }
-        },
-        {width: '160px', target: 7},
-    ]
+        {width: '130px', target: 7},
+    ],
+    deferRended: true
 }));
 
-// Add Data Modal
+// Add Data Billing
 $('#addBillingForm').on('submit', function(e) {
     e.preventDefault();
     removeCleaveFormat();
@@ -1135,7 +1213,6 @@ $('#addBillingModal').on('shown.bs.modal', function () {
             delay: 250,
             processResults: function (response, params) {
                 const searchTerm = params.term ? params.term.toLowerCase() : '';
-
                 return {
                     results: response.data
                         .filter(function(data) {
@@ -1144,12 +1221,14 @@ $('#addBillingModal').on('shown.bs.modal', function () {
                             return companyName || companyStatus;
                         })
                         .map(function (data) {
-                            return {
-                                id: data.companyId,
-                                text: `${data.companyName} | 
-                                ${generateStatusData([data.companyStatus]).find((d) => d.id == data.companyStatus).text}`
-                            };
-                        })
+                            if (data.companyStatus != ('active' || 'on hold' || 'discontinued')) {
+                                return {
+                                    id: data.companyId,
+                                    text: `${data.companyName} | 
+                                    ${generateStatusData([data.companyStatus]).find((d) => d.id == data.companyStatus).text}`
+                                };
+                            }
+                        }) ?? []
                 };
             },
             cache: true
@@ -1161,3 +1240,7 @@ $('#addBillingModal').on('shown.bs.modal', function () {
         escapeMarkup: function (markup) { return markup; }
     });
 });
+
+
+// Edit Data Billing
+

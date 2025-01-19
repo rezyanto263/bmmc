@@ -122,6 +122,7 @@ span.input-group-text {
     font-weight: var(--fwbold);
     box-shadow: none;
     transition: var(--transition2);
+    cursor: pointer;
 }
 
 .btn-warning:hover {    

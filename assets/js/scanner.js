@@ -122,7 +122,7 @@ function getPatientHistoryHealth(patientNIK) {
                 }
             },
             {
-                data: 'historyhealthBill',
+                data: 'historyhealthTotalBill',
                 render: function(data, type, row) {
                     return formatToRupiah(data);
                 }
@@ -161,8 +161,12 @@ $('#patientTable').on('click', '.btn-view', function() {
     }
     var data = patientTable.row($(this).parents('tr')).data();
 
-    console.log(data);
-
     $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
     $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDoctorFee"]').val(data.historyhealthDoctorFee);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthMedicineFee"]').val(data.historyhealthMedicineFee);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthLabFee"]').val(data.historyhealthLabFee);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthActionFee"]').val(data.historyhealthActionFee);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthDiscount"]').val(data.historyhealthDiscount);
+    $('#viewHistoryHealthDetailsModal [name="historyhealthTotalBill"]').val(data.historyhealthTotalBill);
 });

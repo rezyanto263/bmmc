@@ -199,7 +199,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    Are you sure want to delete <span class="fw-bold" id="adminName"></span> account?
+                    Are you sure want to delete "<span class="fw-bold" id="adminName"></span>" account?
                     <input type="hidden" name="adminId">
                     <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>

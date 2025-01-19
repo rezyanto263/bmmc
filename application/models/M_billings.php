@@ -9,7 +9,7 @@ class M_billings extends CI_Model {
   }
 
   public function getAllCompanyBillingDatas() {
-    $this->db->select('b.*, c.companyName, c.companyPhoto, c.companyLogo, c.companyStatus, COUNT(historyhealthTotalBill) as billingUsed');
+    $this->db->select('b.*, c.companyName, c.companyPhoto, c.companyLogo, c.companyStatus, IFNULL(SUM(hh.historyhealthTotalBill), 0) as billingUsed');
     $this->db->from('billing b');
     $this->db->join('company c', 'c.companyId = b.companyId', 'left');
     $this->db->join('historyhealth hh', 'hh.billingId = b.billingId', 'left');

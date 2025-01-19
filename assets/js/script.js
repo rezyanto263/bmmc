@@ -6,11 +6,17 @@ function userColorPreference() {
         if (colorPreference === 'dark') {
             $('body:not(.dark)').addClass('dark');
             $('#btn-mode i:not(.las.la-sun)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close').addClass('btn-close-white');
+            $('.modal .btn-close:not(.btn-close-white)').each(function() {
+                $(this).addClass('btn-close-white');
+            });
+            toggleFlatpickrTheme(true);
         } else if (colorPreference === 'light') {
             $('body').removeClass('dark');
             $('#btn-mode i:not(.las.la-moon)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close').removeClass('btn-close-white');
+            $('.modal .btn-close').each(function() {
+                $(this).removeClass('btn-close-white');
+            });
+            toggleFlatpickrTheme(false);
         }
     } else {
         var userColorSchema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -22,7 +28,6 @@ function userColorPreference() {
 // Button Mode
 $('#btn-mode').on('click', function() {
     $('body').toggleClass('dark');
-    $('#btn-mode i').toggleClass('las la-sun las la-moon');
     var colorPreference = $.cookie('colorPreference') == 'dark'? 'light':'dark';
     $.cookie('colorPreference', colorPreference, {path: '/'});
     userColorPreference();
@@ -116,10 +121,13 @@ function capitalizeWords(string) {
 }
 
 // Rupiah Format
-function formatToRupiah(amount) {
+function formatToRupiah(amount, Rp = true, showDecimals = true) {
     return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
+        style: Rp ? 'currency' : 'decimal',
+        currency: Rp ? 'IDR' : undefined,
+        useGrouping: true,
+        minimumFractionDigits: showDecimals ? 2 : 0,
+        maximumFractionDigits: showDecimals ? 2 : 0
     }).format(amount);
 }
 
@@ -144,9 +152,17 @@ $('input[type="date"]').each(function() {
         altFormat: 'j F Y',
         minDate: $(this).attr('min') || null,
         maxDate: $(this).attr('max') || null,
-        disableMobile: true
+        disableMobile: true,
     });
 });
+
+function toggleFlatpickrTheme(isDarkMode) {
+    if (isDarkMode) {
+        $('#flatpickr-theme').prop('disabled', false)
+    } else {
+        $('#flatpickr-theme').prop('disabled', true)
+    }
+}
 
 // Cleave (Input Rupiah Format)
 function formatCurrencyInput() {

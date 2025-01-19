@@ -2,9 +2,10 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Ramsey\Uuid\Uuid;
+
 class Companies extends CI_Controller {
 
-    
     public function __construct() {
         parent::__construct();
         if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
@@ -40,6 +41,16 @@ class Companies extends CI_Controller {
         $companiesDatas = $this->M_companies->getAllCompaniesDatas();
         $datas = array(
             'data' => $companiesDatas
+        );
+
+        echo json_encode($datas);
+    }
+
+    public function getCompanyDetails() {
+        $companyId = $this->input->get('id');
+        $companyDatas = $this->M_companies->getCompanyDetails($companyId);
+        $datas = array(
+            'data' => $companyDatas
         );
 
         echo json_encode($datas);
@@ -100,12 +111,22 @@ class Companies extends CI_Controller {
             $checkCompanyCoordinate = $this->M_companies->checkCompany('companyCoordinate', $this->input->post('companyCoordinate'));
             if (!$checkCompanyCoordinate) {
                 $companyDatas = array(
-                    'companyName' => $this->input->post('companyName'),
-                    'adminId' => $this->input->post('adminId'),
+                    'companyName' => htmlspecialchars($this->input->post('companyName')),
+                    'adminId' => htmlspecialchars($this->input->post('adminId')),
                     'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
-                    'companyAddress' => $this->input->post('companyAddress'),
-                    'companyCoordinate' => $this->input->post('companyCoordinate'),
-                    'companyStatus' => $this->input->post('companyStatus')
+                    'companyAddress' => htmlspecialchars($this->input->post('companyAddress')),
+                    'companyCoordinate' => htmlspecialchars($this->input->post('companyCoordinate')),
+                    'companyStatus' => 'unverified'
+                );
+
+                $billingStartedAt = htmlspecialchars(date('Y-m-d', strtotime($this->input->post('billingStartedAt'))));
+                $uuid = Uuid::uuid7();
+                $billingDatas = array(
+                    'billingId' => $uuid->toString(),
+                    'billingAmount' => htmlspecialchars($this->input->post('billingAmount')),
+                    'billingStartedAt' => $billingStartedAt,
+                    'billingEndedAt' => htmlspecialchars(date('Y-m-t', strtotime($billingStartedAt))),
+                    'billingStatus' => 'unverified'
                 );
 
                 if ($_FILES['companyLogo']['name']) {
@@ -130,7 +151,7 @@ class Companies extends CI_Controller {
                     }
                 }
 
-                $this->M_companies->insertCompany($companyDatas);
+                $this->M_companies->insertCompany($companyDatas, $billingDatas);
                 echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
             } else {
                 echo json_encode(array('status' => 'failed', 'failedMsg' => 'coordinate used', 'csrfToken' => $this->security->get_csrf_hash()));
@@ -163,7 +184,7 @@ class Companies extends CI_Controller {
 
     private function _deleteImage($companyId, $field, $path) {
         $companyDatas = $this->M_companies->checkCompany('companyId', $companyId);
-        $companyDatas[$field] && unlink($path . $companyDatas[$field]);
+        !empty($companyDatas[$field]) && unlink($path . $companyDatas[$field]);
     }
 
     public function editCompany() {
@@ -217,14 +238,19 @@ class Companies extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            $companyCoordinate = $this->input->post('companyCoordinate');
+            $companyCoordinate = htmlspecialchars($this->input->post('companyCoordinate'));
 
             $companyDatas = array(
-                'companyName' => $this->input->post('companyName'),
-                'adminId' => $this->input->post('adminId'),
+                'companyName' => htmlspecialchars($this->input->post('companyName')),
+                'adminId' => htmlspecialchars($this->input->post('adminId')),
                 'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
-                'companyAddress' => $this->input->post('companyAddress'),
-                'companyStatus' => $this->input->post('companyStatus')
+                'companyAddress' => htmlspecialchars($this->input->post('companyAddress')),
+                'companyStatus' => htmlspecialchars($this->input->post('companyStatus'))
+            );
+
+            $billingAmount = $this->input->post('billingAmount') ?: NULL;
+            $billingDatas = array(
+                'billingAmount' => htmlspecialchars($billingAmount),
             );
 
             if ($_FILES['companyLogo']['name']) {
@@ -261,7 +287,7 @@ class Companies extends CI_Controller {
                 }
             }
 
-            $this->M_companies->updateCompany($this->input->post('companyId') ,$companyDatas);
+            $this->M_companies->updateCompany($this->input->post('companyId') ,$companyDatas, $billingDatas);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
