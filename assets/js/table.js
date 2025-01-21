@@ -1415,19 +1415,19 @@ $('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', fun
 // Add Data Referral and Data Treatment From Queue
 $('#hQueueTable').on('click', '.btn-add', function() {
     var data = hQueueTable.row($(this).parents('tr')).data();
-    
     if ($(this).attr('data-bs-target') === '#addReferralModal') {
         $('#addReferralForm [name="historyhealthDescription"]').val('');
         $('#addReferralForm [name="historyhealthReferredTo"]').val('');
-        
+        $('#addReferralForm [name="patientNIK"]').val(data.patientNIK);
+        $('#addReferralForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
         $('#referralPatientName').text(data.familyName ? data.familyName : data.employeeName);
-        $('#referralPatientRole').text(data.familyName ? 'Family' : 'Employee');
         $('#referralEmployeeName').text(data.employeeName);
         $('#referralCompanyName').text(data.companyName);
     } else if ($(this).attr('data-bs-target') === '#addTreatmentModal') {
         $('#addTreatmentForm [name="treatmentType"]').val('');
         $('#addTreatmentForm [name="treatmentDescription"]').val('');
-        $('#addTreatmentForm [name="patientNIK"]').val(patientNIK);
+        $('#addTreatmentForm [name="patientNIK"]').val(data.patientNIK);
+        $('#addTreatmentForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
         $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
         $('#treatmentPatientRole').text(data.familyName ? 'Family' : 'Employee');
         $('#treatmentEmployeeName').text(data.employeeName);
@@ -1464,17 +1464,15 @@ $('#hQueueTable').on('click', '.btn-delete', function() {
     var data = hQueueTable.row($(this).parents('tr')).data();
     $('#deleteQueueForm #patientName').html(data.familyName ? data.familyName : data.employeeName);
     $('#deleteQueueForm #patientNIK').val(data.patientNIK);
-    $('#deleteQueueForm #hospitalId').val(data.hospitalId);
 })
 
 $('#deleteQueueForm').on('submit', function(e) {
     e.preventDefault();
     var patientNIK = $('#deleteQueueForm #patientNIK').val();
-    var hospitalId = $('#deleteQueueForm #hospitalId').val();
     $.ajax({
-        url: baseUrl + '/queue/deleteQueue',
+        url: baseUrl + 'hospital/queue/deleteQueue',
         method: 'POST',
-        data: {patientNIK: patientNIK, hospitalId: hospitalId},
+        data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
             if (res.status === 'success') {

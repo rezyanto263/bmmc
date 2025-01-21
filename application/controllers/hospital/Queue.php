@@ -53,10 +53,10 @@ class Queue extends CI_Controller {
     }
 
     public function deleteQueue() {
-        $patientNIK = $this->input->post('patientNIK');
-        $hospitalId = $this->input->post('hospitalId');
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
         
-        $this->M_hospitals->deleteQueue($patientNIK, $hospitalId);
+        $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
         echo json_encode(array('status' => 'success'));
     }
 }

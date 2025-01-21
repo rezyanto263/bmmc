@@ -2,6 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Ramsey\Uuid\Uuid;
 class History extends CI_Controller {
 
     public function __construct()
@@ -81,23 +82,49 @@ class History extends CI_Controller {
                     'required' => 'Referral should provide a %s.',
                 )
             ),
+            array(
+                'field' => 'patientNIK',
+                'label' => 'NIK',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.'
+                )
+            ),
+            array(
+                'field' => 'role',
+                'label' => 'Role',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.'
+                )
+            ),
         );
         $this->form_validation->set_rules($validate);
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors));
-        } else {
-            $referralDatas = array(
-                'hospitalId' => $hospitalDatas['hospitalId'],
-                'doctorName' => $this->input->post('doctorName'),
-                'historyhealthDescription' => htmlspecialchars($this->input->post('historyhealthDescription')),
-                'historyhealthReferredTo' => htmlspecialchars($this->input->post('historyhealthReferredTo')),
-            );
-            $this->M_doctors->insertDoctor($referralDatas);
-
-            echo json_encode(array('status' => 'success'));
+            return;
         }
+
+        $BillingId = $this->M_historyhealth->checkBillByPatientNIK ($this->input->post('patientNIK'), $this->input->post('role'));
+        if (!$BillingId) {
+            echo json_encode(array('status' => 'invalid', 'errors' => 'BillId Patient not found.'));
+            return;
+        }
+        $uuid = Uuid::uuid7();
+        $referralDatas = array(
+            'historyhealthId' => $uuid->toString(),
+            'hospitalId' => $hospitalDatas['hospitalId'],
+            'billingId' => $BillingId['billingId'],
+            'patientNIK' => htmlspecialchars($this->input->post('patientNIK')),
+            'historyhealthRole' => htmlspecialchars($this->input->post('role')),
+            'historyhealthDescription' => htmlspecialchars($this->input->post('historyhealthDescription')),
+            'historyhealthReferredTo' => htmlspecialchars($this->input->post('historyhealthReferredTo')),
+        );
+        $this->M_historyhealth->insertReferral($referralDatas);
+        $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
+        echo json_encode(array('status' => 'success'));
     }
 }
 

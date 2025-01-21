@@ -110,6 +110,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
+                <input type="text" id="patientNIK" name="patientNIK" hidden>
                     <div class="row gy-4">
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
@@ -124,7 +125,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <span class="form-control" id="referralPatientRole"></span>
+                                <input class="form-control" type="text" name="role" readonly>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -186,7 +187,6 @@
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="patientName"></span> queue?
                     <input type="text" id="patientNIK" name="patientNIK" hidden>
-                    <input type="text" id="hospitalId" name="hospitalId" hidden>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>

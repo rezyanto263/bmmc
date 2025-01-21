@@ -37,8 +37,26 @@ class M_historyhealth extends CI_Model {
         return $results;
     }
 
-    public function insertReferral($referrealDatas) {
-        return $this->db->insert('historyhealth', $referrealDatas);
+    public function checkBillByPatientNIK($patientNIK, $role) {
+        if ($role == 'Employee') {
+            $this->db->from('employee e');
+            $this->db->where('e.employeeNIK', $patientNIK);
+        } else {
+            $this->db->from('family f');
+            $this->db->where('f.familyNIK', $patientNIK);
+            $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'left');
+        }
+
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
+        $this->db->join('billing b', 'b.companyId = c.companyId', 'left');
+
+        $this->db->select('b.billingId');
+        return $this->db->get()->row_array();
+    }
+
+    public function insertReferral($referralDatas) {
+        return $this->db->insert('historyhealth', $referralDatas);
     }
 }
 
