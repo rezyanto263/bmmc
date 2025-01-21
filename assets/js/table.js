@@ -1410,7 +1410,7 @@ $('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', fun
     reloadTableData(hQueueTable);
 });
 
-// Add Data Referral From Queue
+// Add Data Referral and Data Treatment From Queue
 $('#hQueueTable').on('click', '.btn-add', function() {
     var data = hQueueTable.row($(this).parents('tr')).data();
     if ($(this).attr('data-bs-target') === '#addReferralModal') {
@@ -1420,8 +1420,16 @@ $('#hQueueTable').on('click', '.btn-add', function() {
         $('#patientRole').text(data.familyName ? 'Family' : 'Employee');
         $('#employeeName').text(data.employeeName);
         $('#companyName').text(data.companyName);
+    } else if ($(this).attr('data-bs-target') === '#addTreatmentModal') {
+        $('#addTreatmentForm [name="treatmentType"]').val('');
+        $('#addTreatmentForm [name="treatmentDescription"]').val('');
+        $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#treatmentPatientRole').text(data.familyName ? 'Family' : 'Employee');
+        $('#treatmentEmployeeName').text(data.employeeName);
+        $('#treatmentCompanyName').text(data.companyName);
     }
 });
+
 
 $('#addReferralForm').on('submit', function(e) {
     e.preventDefault();
@@ -1443,17 +1451,6 @@ $('#addReferralForm').on('submit', function(e) {
                 displayFormValidation('#addReferralForm', res.errors);
             }
         }
-    });
-});
-
-$('#addAdminModal').on('shown.bs.modal', function () {
-    $(this).find('select#adminRole').select2({
-        placeholder: 'Choose Role',
-        dropdownParent: $('#addAdminModal .modal-body')
-    });
-    $(this).find('select#adminStatus').select2({
-        placeholder: 'Choose Status',
-        dropdownParent: $('#addAdminModal .modal-body')
     });
 });
 
