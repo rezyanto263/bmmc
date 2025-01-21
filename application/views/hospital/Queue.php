@@ -116,7 +116,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Name">
                                     <i class="las la-user-injured fs-4"></i>
                                 </span>
-                                <span class="form-control" id="patientName"></span>
+                                <span class="form-control" id="referralPatientName"></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -124,7 +124,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <span class="form-control" id="patientRole"></span>
+                                <span class="form-control" id="referralPatientRole"></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -132,7 +132,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Employee Name">
                                     <i class="las la-user-shield fs-4"></i>
                                 </span>
-                                <span class="form-control" id="employeeName"></span>
+                                <span class="form-control" id="referralEmployeeName"></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -140,7 +140,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Name">
                                     <i class="las la-building fs-4"></i>
                                 </span>
-                                <span class="form-control" id="companyName"></span>
+                                <span class="form-control" id="referralCompanyName"></span>
                             </div>
                         </div>
                         <div class="col-12">

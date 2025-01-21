@@ -59,7 +59,7 @@ class Doctor extends CI_Controller {
         $validate = array(
             array(
                 'field' => 'doctorName',
-                'label' => 'Name',
+                'label' => 'Name apt',
                 'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
                 'errors' => array(
                     'required' => 'Doctor should provide a %s.',
@@ -88,7 +88,7 @@ class Doctor extends CI_Controller {
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.',
+                    'required' => 'Doctor should provide a %s.',
                 )
             ),
             array(
@@ -156,7 +156,7 @@ class Doctor extends CI_Controller {
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.',
+                    'required' => 'Doctor should provide a %s.',
                 )
             ),
             array(

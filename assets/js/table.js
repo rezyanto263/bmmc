@@ -1381,14 +1381,16 @@ var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettin
                     type="button" 
                     class="btn-add btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#addTreatmentModal" title="Process for Treatment">
+                    data-bs-target="#addTreatmentModal"
+                     title="Process for Treatment">
                         <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
                     class="btn-add btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
                     data-bs-toggle="modal" 
-                    data-bs-target="#addReferralModal" title="Assign As Referral">
+                    data-bs-target="#addReferralModal"
+                     title="Assign As Referral">
                         <i class="fa-regular fa-share-from-square"></i>
                 </button>
                 <button 
@@ -1413,16 +1415,19 @@ $('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', fun
 // Add Data Referral and Data Treatment From Queue
 $('#hQueueTable').on('click', '.btn-add', function() {
     var data = hQueueTable.row($(this).parents('tr')).data();
+    
     if ($(this).attr('data-bs-target') === '#addReferralModal') {
         $('#addReferralForm [name="historyhealthDescription"]').val('');
         $('#addReferralForm [name="historyhealthReferredTo"]').val('');
-        $('#patientName').text(data.familyName ? data.familyName : data.employeeName);
-        $('#patientRole').text(data.familyName ? 'Family' : 'Employee');
-        $('#employeeName').text(data.employeeName);
-        $('#companyName').text(data.companyName);
+        
+        $('#referralPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#referralPatientRole').text(data.familyName ? 'Family' : 'Employee');
+        $('#referralEmployeeName').text(data.employeeName);
+        $('#referralCompanyName').text(data.companyName);
     } else if ($(this).attr('data-bs-target') === '#addTreatmentModal') {
         $('#addTreatmentForm [name="treatmentType"]').val('');
         $('#addTreatmentForm [name="treatmentDescription"]').val('');
+        $('#addTreatmentForm [name="patientNIK"]').val(patientNIK);
         $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
         $('#treatmentPatientRole').text(data.familyName ? 'Family' : 'Employee');
         $('#treatmentEmployeeName').text(data.employeeName);
