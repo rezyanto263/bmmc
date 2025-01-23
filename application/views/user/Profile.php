@@ -16,7 +16,7 @@
             Update</i>
         </button>
 
-        <a href="./index.html" class="text-danger logout ms-2"><i
+        <a href="./logout" class="text-danger logout ms-2"><i
             class="fa-solid fa-right-from-bracket text-decoration-underline">
             Logout</i></a>
       </div>
@@ -214,7 +214,12 @@
           </thead>
           <tbody>
             <tr>
-              <td>Rp. 50.000.000,00</td>
+            <td><?php if (!empty($insuranceData) && is_array($insuranceData)): ?>
+                <p>Rp. <?php echo number_format($insuranceData['insuranceAmount'], 2, ',', '.'); ?></p>
+              <?php else: ?>
+                  <p>Insurance data tidak tersedia.</p>
+              <?php endif; ?>
+              </td>
             </tr>
           </tbody>
         </table>

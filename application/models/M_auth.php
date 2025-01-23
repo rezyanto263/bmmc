@@ -39,11 +39,21 @@ class M_auth extends CI_Model {
     }
 
     public function getEmployeeDataById($employeeId) {
-        $this->db->select('employeeNIK, employeeName, employeeEmail, employeeAddress, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
+        $this->db->select('employeeNIK, insuranceId, employeeName, employeeEmail, employeeAddress, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
         $this->db->from('employee');
         $this->db->where('employeeNIK', $employeeId);
         return $this->db->get()->row_array();
     }
+
+    public function getInsuranceByInsuranceId($insuranceId)
+    {
+        // Mengambil data insuranceAmount dari tabel insurance berdasarkan insuranceId
+        $this->db->select('insurance.insuranceId, insurance.insuranceAmount');
+        $this->db->from('insurance');
+        $this->db->where('insurance.insuranceId', $insuranceId);
+        return $this->db->get()->row_array();
+    }
+
 
     public function updateEmployee($employeeId, $employeeData) {
         $this->db->where('employeeNIK', $employeeId);

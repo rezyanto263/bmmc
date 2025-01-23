@@ -23,8 +23,10 @@ class Profile extends CI_Controller {
         if ($userType == 'employee') {
             // Use session data for the logged-in employee
             $employeeId = $this->session->userdata('userNIK');
+            $insuranceId = $this->session->userdata('insuranceId');
             $employeeDatas = $this->M_auth->getEmployeeDataById($employeeId);
             $familyMembers = $this->M_auth->getFamilyMembersByEmployee($employeeId);
+            $insuranceData = $this->M_auth->getInsuranceByInsuranceId($insuranceId);
         } else {
             // Assuming you are also retrieving family data if logged in as family
             $familyId = $this->session->userdata('userNIK');
@@ -37,7 +39,8 @@ class Profile extends CI_Controller {
             'subtitle' => 'Profile',
             'contentType' => 'user',
             'employeeDatas' => $employeeDatas, // Send data to the view
-            'familyMembers' => $familyMembers
+            'familyMembers' => $familyMembers,
+            'insuranceData' => $insuranceData
         );
 
         $partials = array(
