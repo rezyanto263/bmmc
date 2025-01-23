@@ -17,9 +17,9 @@
         <div class="sidebar-menu">
             <ul class="p-0 m-0">
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Hospital'?'active':''; ?>" href="<?= base_url('hospital/Hospital') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Hospital">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Dashboard'?'active':''; ?>" href="<?= base_url('hospital/Dashboard') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Dashboard">
                         <i class="las la-hospital fs-4"></i>
-                        <span>Hospital</span>
+                        <span>Dashboard</span>
                     </a>
                 </li>
                 <li>

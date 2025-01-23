@@ -18,7 +18,7 @@ class Hospital extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BMMC Hospital | Profile',
+            'title' => 'BMMC Hospital | Dashboard',
             'subtitle' => 'Hospital',
             'contentType' => 'dashboard'
         );
@@ -28,7 +28,7 @@ class Hospital extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospital/Hospital',
+            'contentBody' => 'hospital/Dashboard',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
