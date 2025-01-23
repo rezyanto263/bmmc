@@ -39,7 +39,7 @@ class M_auth extends CI_Model {
     }
 
     public function getEmployeeDataById($employeeId) {
-        $this->db->select('employeeNIK, insuranceId, employeeName, employeeEmail, employeeAddress, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
+        $this->db->select('employeeNIK, insuranceId, employeeName, employeeEmail, employeeAddress, employeePhone, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
         $this->db->from('employee');
         $this->db->where('employeeNIK', $employeeId);
         return $this->db->get()->row_array();
@@ -48,62 +48,27 @@ class M_auth extends CI_Model {
     public function getInsuranceByEmployeeId($employeeId)
     {
         // Mengambil insuranceId dari tabel employee berdasarkan employeeId
-        $this->db->select('insuranceId');
-        $this->db->from('employee');
-        $this->db->where('employeeNIK', $employeeId);
-        $employee = $this->db->get()->row_array();
-
-        // Pastikan insuranceId ditemukan
-        if (isset($employee['insuranceId'])) {
-            $insuranceId = $employee['insuranceId'];
-
-            // Mengambil data insuranceAmount dari tabel insurance berdasarkan insuranceId
-            $this->db->select('insuranceAmount');
-            $this->db->from('insurance');
-            $this->db->where('insuranceId', $insuranceId);
-            return $this->db->get()->row_array();
-        } else {
-            return null; // Jika insuranceId tidak ditemukan
-        }
+        $this->db->select('i.*,
+                IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed,
+        ');
+        $this->db->from('employee e');
+        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
+        $this->db->where('e.employeeNIK', $employeeId);
+        return $this->db->get()->row_array();
     }
 
     public function getInsuranceByFamilyId($familyId)
     {
-        // Ambil employeeId yang terkait dengan familyId dari tabel family
-        $this->db->select('employeeNIK');
-        $this->db->from('family');
-        $this->db->where('familyNIK', $familyId);
-        $family = $this->db->get()->row_array();
-
-        // Pastikan employeeId ditemukan
-        if (isset($family['employeeNIK'])) {
-            $employeeId = $family['employeeNIK'];
-
-            // Ambil insuranceId dari tabel employee berdasarkan employeeId
-            $this->db->select('insuranceId');
-            $this->db->from('employee');
-            $this->db->where('employeeNIK', $employeeId);
-            $employee = $this->db->get()->row_array();
-
-            // Pastikan insuranceId ditemukan
-            if (isset($employee['insuranceId'])) {
-                $insuranceId = $employee['insuranceId'];
-
-                // Ambil insuranceAmount dari tabel insurance berdasarkan insuranceId
-                $this->db->select('insuranceAmount');
-                $this->db->from('insurance');
-                $this->db->where('insuranceId', $insuranceId);
-                return $this->db->get()->row_array();
-            } else {
-                return null; // Jika insuranceId tidak ditemukan
-            }
-        } else {
-            return null; // Jika employeeId tidak ditemukan
-        }
+        $this->db->select('i.*, IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed');
+        $this->db->from('employee e');
+        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
+        $this->db->where('f.familyNIK', $familyId);        
+        return $this->db->get()->row_array();
     }
-
-
-
 
     public function updateEmployee($employeeId, $employeeData) {
         $this->db->where('employeeNIK', $employeeId);

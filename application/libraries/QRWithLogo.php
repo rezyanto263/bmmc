@@ -29,7 +29,7 @@ class QRWithLogo extends QRGdImagePNG{
 		// there's no need to save the result of dump() into $this->image here
 		parent::dump($file);
 
-		$im = imagecreatefrompng($logo);
+		$im = @imagecreatefrompng($logo);
 
 		// get logo image size
 		$w = imagesx($im);

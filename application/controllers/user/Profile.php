@@ -2,6 +2,15 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use chillerlan\QRCode\Data\QRMatrix;
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Output\QRGdImagePNG;
+use chillerlan\QRCode\{QRCode, QROptions};
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\Output\QRCodeOutputException;
+
+require_once APPPATH . 'libraries/QRWithLogo.php';
+
 class Profile extends CI_Controller {    
 
     public function __construct()
@@ -40,7 +49,8 @@ class Profile extends CI_Controller {
             'contentType' => 'user',
             'employeeDatas' => $employeeDatas, // Send data to the view
             'familyMembers' => $familyMembers,
-            'insuranceData' => $insuranceData
+            'insuranceData' => $insuranceData,
+            'qr' => $this->generateQR(base64_encode($employeeDatas['employeeNIK'] . '-employee'))
         );
 
         $partials = array(
@@ -276,6 +286,53 @@ class Profile extends CI_Controller {
                 echo json_encode(['success' => false, 'message' => 'Password Lama Salah.']);
             }
         }
+    }
+
+    public function generateQR(String $data)
+    {   
+        $options = new QROptions;
+        $options->version             = 5;
+        $options->outputType          = QROutputInterface::GDIMAGE_PNG;
+        $options->scale               = 15;
+        $options->outputBase64        = false;
+        $options->eccLevel            = EccLevel::H;
+        $options->addLogoSpace        = true;
+        $options->logoSpaceWidth      = 8;
+        $options->logoSpaceHeight     = 8;
+        $options->imageTransparent    = true;
+        $options->addQuietzone        = false;
+        $options->drawLightModules    = false;
+        $options->cornerRadius        = 10;
+        // $options->drawCircularModules = true;
+        // $options->circleRadius        = 0.4;
+        $options->keepAsSquare        = [
+            QRMatrix::M_FINDER_DARK,
+            QRMatrix::M_FINDER_DOT,
+            QRMatrix::M_ALIGNMENT_DARK,
+        ];
+        $options->moduleValues        = [
+            // QRMatrix::M_FINDER_DARK    => [253, 164, 62],
+            QRMatrix::M_FINDER_DARK    => [69,69,69],
+            QRMatrix::M_FINDER_DOT     => [69,69,69],
+            // QRMatrix::M_FINDER_DOT     => [253, 164, 62],
+            // QRMatrix::M_ALIGNMENT_DARK => [253, 164, 62],
+            QRMatrix::M_ALIGNMENT_DARK => [69,69,69],
+            // QRMatrix::M_ALIGNMENT      => [253, 164, 62],
+            QRMatrix::M_DATA_DARK      => [69,69,69],
+            QRMatrix::M_DARKMODULE     => [69,69,69],
+            QRMatrix::M_FORMAT_DARK    => [69,69,69],
+            QRMatrix::M_TIMING_DARK    => [69,69,69],
+        ];
+
+        $qrcode = new QRCode($options);
+        $qrcode->render($data);
+
+        $qrOutputInterface = new QRWithLogo($options, $qrcode->getQRMatrix());
+
+        // dump the output, with an additional logo
+        // the logo could also be supplied via the options, see the svgWithLogo example
+        $data =  $qrOutputInterface->dump(null, FCPATH . 'assets/images/logo.png');
+        return $data;
     }
 }
 

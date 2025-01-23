@@ -42,16 +42,16 @@
         class="position-absolute bottom-0 end-0 d-none d-lg-block" style="width: 100px" alt="" />
 
       <img src="<?= base_url("assets/images/Vector") ?>.png" class="position-absolute bottom-0 d-none d-lg-block"
-        style="width: 100px; right: 200px" alt="" />
+        style="width: 100px; right: 200px" alt="" /> 
 
       <!-- gambar qr -->
       <div class="d-flex justify-content-center">
-        <img src="<?= base_url("assets/images/qr.png") ?>" class="img-qr" alt="" />
+        <img src="<?= 'data:image/png;base64,' . base64_encode($qr) ?>" class="img-qr" alt="" />
       </div>
 
-      <h2 class="text-center fs-5">Barcode Keluarga Anda!</h2>
+      
     </section>
-
+    <h2 class="text-center fs-5">  <strong> Faskes Tingkat :  </strong> <?= $insuranceData['insuranceTier']; ?></h2>
     <!-- bagian data keluarga -->
     <section class="mt-5">
       <!-- haader -->
@@ -222,7 +222,7 @@
           <tbody>
             <tr>
             <td><?php if (!empty($insuranceData) && is_array($insuranceData)): ?>
-                <p>Rp. <?php echo number_format($insuranceData['insuranceAmount'], 2, ',', '.'); ?></p>
+                <p>Rp. <?= number_format($insuranceData['insuranceAmount'], 2, ',', '.'); ?></p>
               <?php else: ?>
                   <p>Insurance data tidak tersedia.</p>
               <?php endif; ?>
@@ -242,7 +242,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>Rp. 50.000.000,00</td>
+              <td>Rp. <?= number_format($insuranceData['totalBillingUsed'], 2, ',', '.'); ?></td>
             </tr>
           </tbody>
         </table>
