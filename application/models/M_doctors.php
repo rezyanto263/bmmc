@@ -8,6 +8,10 @@ class M_doctors extends CI_Model {
         return $this->db->get_where('doctor', array($param => $data))->result_array();
     }
 
+    public function getActiveHospitalDoctorDatas($param, $data) {
+        return $this->db->get_where('doctor', [$param => $data, 'doctorStatus' => 'active'])->result_array();
+    }
+    
     public function insertDoctor($doctorDatas) {
         return $this->db->insert('doctor', $doctorDatas);
     }

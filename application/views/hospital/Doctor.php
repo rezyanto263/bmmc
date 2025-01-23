@@ -88,8 +88,6 @@
                                 <select class="form-control" id="doctorStatus" name="doctorStatus">
                                     <option hidden ></option>
                                     <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
                                     <option value="disabled">Disabled</option>
                                 </select>
                             </div>
@@ -165,8 +163,6 @@
                                 <select class="form-control" id="doctorStatus" name="doctorStatus">
                                     <option hidden></option>
                                     <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
                                     <option value="disabled">Disabled</option>
                                 </select>
                             </div>

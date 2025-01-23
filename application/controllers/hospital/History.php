@@ -103,13 +103,13 @@ class History extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
             return;
         }
 
         $BillingId = $this->M_historyhealth->checkBillByPatientNIK ($this->input->post('patientNIK'), $this->input->post('role'));
         if (!$BillingId) {
-            echo json_encode(array('status' => 'invalid', 'errors' => 'BillId Patient not found.'));
+            echo json_encode(array('status' => 'invalid', 'errors' => 'BillId Patient not found.', 'csrfToken' => $this->security->get_csrf_hash()));
             return;
         }
         $uuid = Uuid::uuid7();
@@ -124,7 +124,7 @@ class History extends CI_Controller {
         );
         $this->M_historyhealth->insertReferral($referralDatas);
         $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
 }
 

@@ -40,6 +40,7 @@
 <?php if ($contentType == 'dashboard'): ?>
     
     <script defer src="<?= base_url('assets/js/table.js') ?>"></script>
+    <script defer src="<?= base_url('assets/js/scanner.js') ?>"></script>
     
 <?php endif; ?>
 

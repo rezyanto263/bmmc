@@ -57,6 +57,6 @@ class Queue extends CI_Controller {
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
         
         $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
 }

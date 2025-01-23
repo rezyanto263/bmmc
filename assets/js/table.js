@@ -1242,7 +1242,7 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     const formattedAFee = 'Rp ' + parseFloat(data.historyhealthActionFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const formattedDiscount = 'Rp ' + parseFloat(data.historyhealthDiscount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    if (data.historyhealthRole == "employee") {
+    if (data.historyhealthRole === "employee") {
         $('#detailContent #patientName').text(data.employeeName);
     } else {
         $('#detailContent #patientName').text(data.familyName);
@@ -1415,27 +1415,109 @@ $('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', fun
 // Add Data Referral and Data Treatment From Queue
 $('#hQueueTable').on('click', '.btn-add', function() {
     var data = hQueueTable.row($(this).parents('tr')).data();
+    const formattedInsuranceAmount = 'Rp ' + parseFloat(data.insuranceAmount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
     if ($(this).attr('data-bs-target') === '#addReferralModal') {
-        $('#addReferralForm [name="historyhealthDescription"]').val('');
-        $('#addReferralForm [name="historyhealthReferredTo"]').val('');
         $('#addReferralForm [name="patientNIK"]').val(data.patientNIK);
-        $('#addReferralForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
-        $('#referralPatientName').text(data.familyName ? data.familyName : data.employeeName);
         $('#referralEmployeeName').text(data.employeeName);
         $('#referralCompanyName').text(data.companyName);
+        $('#referralPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#addReferralForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
+        $('#addReferralForm [name="historyhealthDescription"]').val('');
+        $('#addReferralForm [name="historyhealthReferredTo"]').val('');
+
     } else if ($(this).attr('data-bs-target') === '#addTreatmentModal') {
-        $('#addTreatmentForm [name="treatmentType"]').val('');
-        $('#addTreatmentForm [name="treatmentDescription"]').val('');
         $('#addTreatmentForm [name="patientNIK"]').val(data.patientNIK);
-        $('#addTreatmentForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
-        $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
-        $('#treatmentPatientRole').text(data.familyName ? 'Family' : 'Employee');
         $('#treatmentEmployeeName').text(data.employeeName);
         $('#treatmentCompanyName').text(data.companyName);
+        $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#addTreatmentForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
+        $('#addTreatmentForm #insuranceAmount ').text(formattedInsuranceAmount);
+        $('#addTreatmentForm [name="treatmentDescription"]').val('');
     }
 });
 
+$('#addTreatmentModal').on('shown.bs.modal', function() {
+    $(this).find('select#doctorId').select2({
+        ajax: {
+            url: baseUrl + 'hospital/getActiveHospitalDoctorDatas',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response) {
+                return {
+                    results: $.map(response.data, function (data) {
+                        return {
+                            id: data.doctorId,
+                            text: data.doctorName + ' | ' + data.doctorSpecialization
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Doctor',
+        allowClear: true,
+        dropdownParent: $('#addTreatmentModal .modal-body')
+    });
+    
+    $(this).find('select#diseaseId').select2({
+        ajax: {
+            url: baseUrl + 'hospital/getCompanyInsuredDisease',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response) {
+                return {
+                    results: $.map(response.data, function (data) {
+                        return {
+                            id: data.diseaseId,
+                            text: data.diseaseName
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Disease',
+        allowClear: true,
+        dropdownParent: $('#addTreatmentModal .modal-body')
+    });
+});
 
+// add Treatment
+document.addEventListener('input', function (e) {
+    const formElement = e.target.closest('#addTreatmentForm'); 
+    if (!formElement) return; 
+    if (e.target.classList.contains('validate-non-negative')) {
+        let value = e.target.value;
+        
+        if (value.startsWith('0') && value !== '0' && !value.startsWith('0.')) {
+            value = value.replace(/^0+/, ''); 
+        }
+
+        const numericValue = parseFloat(value) || 0;
+        if (numericValue < 0) {
+            e.target.value = 0; 
+        } else {
+            e.target.value = value; 
+        }
+    }
+
+    const doctorFee = parseFloat(document.getElementById('historyhealthDoctorFee').value) || 0;
+    const medicineFee = parseFloat(document.getElementById('historyhealthMedicineFee').value) || 0;
+    const labFee = parseFloat(document.getElementById('historyhealthLabFee').value) || 0;
+    const actionFee = parseFloat(document.getElementById('historyhealthActionFee').value) || 0;
+    const discount = parseFloat(document.getElementById('historyhealthDiscount').value) || 0;
+    
+    const totalBill = (doctorFee + medicineFee + labFee + actionFee) - discount;
+    document.getElementById('Rp' + 'historyhealthTotalBill').value = totalBill.toFixed(2);
+});
+
+
+// add Referral
 $('#addReferralForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
@@ -1486,7 +1568,7 @@ $('#deleteQueueForm').on('submit', function(e) {
 
 // hospital disease
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospital/getHDiseaseDatas', 
+    ajax: baseUrl + 'hospital/getDiseaseDatas', 
     columns: [
         {
             data: null,

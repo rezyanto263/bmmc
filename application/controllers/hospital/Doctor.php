@@ -53,6 +53,21 @@ class Doctor extends CI_Controller {
         }
     }
 
+    public function getActiveHospitalDoctorDatas() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+    
+        if ($hospitalDatas) {
+            $doctorDatas = $this->M_doctors->getActiveHospitalDoctorDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $datas = array(
+                'data' => $doctorDatas
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['data' => []]);
+        }
+    }
+
     public function addDoctor() {
         $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);

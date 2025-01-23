@@ -30,37 +30,6 @@
     </table>
 </div>
 
-
-<!-- Modal Add -->
-<div class="modal fade" id="checkPatient">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <form id="checkPatientForm" enctype="multipart/form-data">
-                <div class="modal-header border-0">
-                    <h1 class="modal-title fs-4">Check Patient</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body border-0">
-                    <div class="row gy-4">
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient NIK">
-                                    <i class="las la-stethoscope fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Patient NIK" name="patientNIK" pattern="\d{16}" title="NIK hanya dapat berisi 16 angka">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="submit" class="btn-primary" id="chechPatientButton">CHECK</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Modal Detail -->
 <div class="modal fade" id="detailHistoryModal">
     <div class="modal-dialog modal-dialog-centered modal-lg">

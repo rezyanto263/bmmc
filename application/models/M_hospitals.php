@@ -56,8 +56,9 @@ class M_hospitals extends CI_Model {
     }
 
     public function getHospitalQueueDatas($hospitalId) {
-        $this->db->select('q.*, e.employeeName, f.familyName, c.companyName');
+        $this->db->select('q.*, e.employeeName, f.familyName, c.companyId, c.companyName, i.insuranceAmount');
         $this->db->from('queue q');
+        $this->db->order_by('q.createdAt', 'ASC');
         $this->db->join('family f', 'f.familyNIK = q.patientNIK', 'left');
         $this->db->join('employee e', '(e.employeeNIK = q.patientNIK OR e.employeeNIK = f.employeeNIK)', 'left');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
@@ -69,6 +70,16 @@ class M_hospitals extends CI_Model {
     public function getDiseaseDatas()
     {
         return $this->db->get('disease')->result_array();
+    }
+
+    public function getCompanyInsuredDisease($companyId)
+    {
+        $this->db->select('d.*');
+        $this->db->from('compease c');
+        $this->db->join('disease d', 'd.diseaseId = c.diseaseId', 'left');
+        $this->db->where_in('c.companyId', (array) $companyId);
+        $query = $this->db->get();
+        return $query->result_array();
     }
 
     public function deleteQueue($patientNIK, $hospitalId) {

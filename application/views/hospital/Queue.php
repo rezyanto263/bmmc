@@ -24,10 +24,9 @@
     </table>
 </div>
 
-
 <!-- Modal Add Treatment-->
 <div class="modal fade" id="addTreatmentModal">
-    <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="addTreatmentForm">
                 <div class="modal-header border-0">
@@ -35,57 +34,132 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
+                <input type="text" id="patientNIK" name="patientNIK" hidden>
+                <span id="companyId" hidden></span>
                     <div class="row gy-4">
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Name">
-                                    <i class="las la-user-cog fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Name">
+                                    <i class="las la-user-injured fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Patient Name" name="patientName">
+                                <span class="form-control" id="treatmentPatientName"></span>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Date Of Birth">
-                                    <i class="las la-calendar fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Patient Role">
+                                    <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" title="Date" name="doctorDateOfBirth"/>
+                                <input class="form-control" type="text" name="role" readonly>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Specialization">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Employee Name">
+                                    <i class="las la-user-shield fs-4"></i>
+                                </span>
+                                <span class="form-control" id="treatmentEmployeeName"></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Name">
+                                    <i class="las la-building fs-4"></i>
+                                </span>
+                                <span class="form-control" id="treatmentCompanyName"></span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Available balance for insurance">
+                                    <i class="las la-file-alt fs-4"></i>
+                                </span>
+                                <span class="form-control" id="insuranceAmount"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="History Health Date">
+                                    <i class="las la-calendar-day fs-4"></i>
+                                </span>
+                                <input type="date" class="form-control" id="date" title="Date" name="historyhealthDate">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Name">
                                     <i class="las la-stethoscope fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Doctor Specialization"
-                                    name="doctorSpecialization">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Address">
-                                    <i class="las la-map fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Address" name="doctorAddress">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Status">
-                                    <i class="las la-user-clock fs-4"></i>
-                                </span>
-                                <select class="form-control" id="doctorStatus" name="doctorStatus">
-                                    <option hidden ></option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
-                                    <option value="disabled">Disabled</option>
+                                <select class="form-control" data-live-search="true" title="Choose Doctor" id="doctorId" name="doctorId">
+                                    <option hidden></option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Disease Name">
+                                    <i class="las la-medkit fs-4"></i>
+                                </span>
+                                <select class="form-control" data-live-search="true" title="Choose Disease" id="diseaseId" name="diseaseId">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Fee">
+                                    <i class="las la-briefcase-medical fs-4"></i>
+                                </span>
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Doctor Fee" id="historyhealthDoctorFee">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Medicine Fee">
+                                    <i class="las la-pills fs-4"></i>
+                                </span>
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Medicine Fee" id="historyhealthMedicineFee">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Lab Fee">
+                                    <i class="las la-file-alt fs-4"></i>
+                                </span>
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Lab Fee" id="historyhealthLabFee">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Action Fee">
+                                    <i class="las la-file-alt fs-4"></i>
+                                </span>
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Action Fee" id="historyhealthActionFee">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Discount">
+                                    <i class="las la-file-alt fs-4"></i>
+                                </span>
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Discount" id="historyhealthDiscount">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Total Bill">
+                                    <i class="las la-money-bill-wave fs-4"></i>
+                                </span>
+                                <input class="form-control" type="number" placeholder="Total Bill" id="historyhealthTotalBill" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
+                                data-bs-title="Referral Detail">
+                                <i class="las la-file-alt fs-4"></i>
+                            </span>
+                            <input class="form-control" type="text" placeholder="Referral Detail" name="historyhealthDescription">
                             </div>
                         </div>
                     </div>
@@ -98,7 +172,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal Add Referral -->
 <div class="modal fade" id="addReferralModal">
@@ -151,19 +224,20 @@
                                 <i class="las la-file-alt fs-4"></i>
                             </span>
                             <input class="form-control" type="text" placeholder="Referral Detail" name="historyhealthDescription">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
+                                    data-bs-title="Hospital Referred">
+                                    <i class="las la-share-square fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Hospital Referred" name="historyhealthReferredTo">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="input-group p-0">
-                            <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                data-bs-title="Hospital Referred">
-                                <i class="las la-share-square fs-4"></i>
-                            </span>
-                            <input class="form-control" type="text" placeholder="Hospital Referred" name="historyhealthReferredTo">
-                        </div>
-                    </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
-            </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
                     <button type="submit" class="btn-primary" id="addReferralButton">ADD</button>
@@ -188,6 +262,7 @@
                     Are you sure want to delete <span class="fw-bold" id="patientName"></span> queue?
                     <input type="text" id="patientNIK" name="patientNIK" hidden>
                 </div>
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>
                     <button type="submit" class="btn-danger" id="deleteQueueButton">DELETE</button>
