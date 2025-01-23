@@ -65,6 +65,7 @@ $lang['form_validation_decimal']		= 'The {field} field must contain a decimal nu
 $lang['form_validation_less_than']		= 'The {field} field must contain a number less than {param}.';
 $lang['form_validation_less_than_equal_to']	= 'The {field} field must contain a number less than or equal to {param}.';
 $lang['form_validation_less_than_or_equal_to_date'] = 'The {field} field must be a date on or before {param}.';
+$lang['form_validation_more_than_or_equal_to_date'] = 'The {field} field must be a date on or after {param}.';
 $lang['form_validation_greater_than']		= 'The {field} field must contain a number greater than {param}.';
 $lang['form_validation_greater_than_equal_to']	= 'The {field} field must contain a number greater than or equal to {param}.';
 $lang['form_validation_error_message_not_set']	= 'Unable to access an error message corresponding to your field name {field}.';

@@ -774,89 +774,6 @@ $('#deleteCompanyForm').on('submit', function(e) {
     });
 });
 
-// Scan QR Patient For Company
-var cPatientTable;
-function getCPatientHistoryHealth(patientNIK) {
-    if ($.fn.DataTable.isDataTable('#cPatientTable')) {
-        $('#cPatientTable').DataTable().ajax.url(baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
-        return;
-    }
-    cPatientTable = $('#cPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'company/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
-        columns: [
-            {
-                data: null,
-                className: 'text-start',
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                }
-            },
-            {data: 'hospitalName'},
-            {data: 'doctorName'},
-            {
-                data: 'diseaseNames',
-                render: function(data, type, row) {
-                    return data.split('|').join(', ');
-                }
-            },
-            {
-                data: 'historyhealthDate',
-                render: function(data, type, row) {
-                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
-                }
-            },
-            {
-                data: 'historyhealthBill',
-                render: function(data, type, row) {
-                    return formatToRupiah(data);
-                }
-            },
-            {
-                data: 'historyhealthStatus',
-                render: function(data, type, row) {
-                    var statusColor;
-                    if (data === 'not paid') {
-                        statusColor = 'bg-danger';
-                    } else if (data === 'paid') {
-                        statusColor = 'bg-success';
-                    } else if (data === 'free') {
-                        statusColor = 'bg-info';
-                    }
-                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
-                }
-            },
-            {
-                data: null,
-                className: 'text-end user-select-none no-export',
-                orderable: false,
-                defaultContent: `
-                    <button 
-                        type="button" 
-                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
-                        <i class="fa-regular fa-eye"></i>
-                    </button>
-                `
-            }
-        ],
-        columnDefs: [
-            {width: '80px', target: 7}
-        ]
-    }));
-}
-
-var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
-$('#cPatientTable').on('click', '.btn-view', function() {
-    viewHistoryHealthDetailsModal.show();
-    const backdrops = document.querySelectorAll('.modal-backdrop.show');
-    if (backdrops.length >= 2) {
-        backdrops[1].style.zIndex = "1055";
-    }
-    var data = cPatientTable.row($(this).parents('tr')).data();
-    console.log(data);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
-});
-
 // CRUD Data Doctors
 var doctorTable = $('#doctorTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'hospital/getHospitalDoctorDatas', 
@@ -1265,88 +1182,6 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     $('#detailContent #historyhealthTotalBill').text(formattedBill);
 });
 
-// Scan QR Patient For Hospital
-var hPatientTable;
-function getHPatientHistoryHealth(patientNIK) {
-    if ($.fn.DataTable.isDataTable('#hPatientTable')) {
-        $('#hPatientTable').DataTable().ajax.url(baseUrl + 'hospital/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
-        return;
-    }
-    hPatientTable = $('#hPatientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'hospital/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
-        columns: [
-            {
-                data: null,
-                className: 'text-start',
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                }
-            },
-            {data: 'hospitalName'},
-            {data: 'doctorName'},
-            {
-                data: 'diseaseNames',
-                render: function(data, type, row) {
-                    return data.split('|').join(', ');
-                }
-            },
-            {
-                data: 'historyhealthDate',
-                render: function(data, type, row) {
-                    return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
-                }
-            },
-            {
-                data: 'historyhealthBill',
-                render: function(data, type, row) {
-                    return formatToRupiah(data);
-                }
-            },
-            {
-                data: 'historyhealthStatus',
-                render: function(data, type, row) {
-                    var statusColor;
-                    if (data === 'not paid') {
-                        statusColor = 'bg-danger';
-                    } else if (data === 'paid') {
-                        statusColor = 'bg-success';
-                    } else if (data === 'free') {
-                        statusColor = 'bg-info';
-                    }
-                    return `<div class="rounded-circle ${statusColor} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
-                }
-            },
-            {
-                data: null,
-                className: 'text-end user-select-none no-export',
-                orderable: false,
-                defaultContent: `
-                    <button 
-                        type="button" 
-                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
-                        <i class="fa-regular fa-eye"></i>
-                    </button>
-                `
-            }
-        ],
-        columnDefs: [
-            {width: '80px', target: 7}
-        ]
-    }));
-}
-
-$('#hPatientTable').on('click', '.btn-view', function() {
-    viewHistoryHealthDetailsModal.show();
-    const backdrops = document.querySelectorAll('.modal-backdrop.show');
-    if (backdrops.length >= 2) {
-        backdrops[1].style.zIndex = "1055";
-    }
-    var data = hPatientTable.row($(this).parents('tr')).data();
-    console.log(data);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthComplaint"]').val(data.historyhealthComplaint);
-    $('#viewHistoryHealthDetailsModal [name="historyhealthDetails"]').val(data.historyhealthDetails);
-});
-
 // CRUD hospital queue
 var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'hospital/getHospitalQueueDatas', 
@@ -1434,75 +1269,83 @@ $('#hQueueTable').on('click', '.btn-add', function() {
         $('#addTreatmentForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
         $('#addTreatmentForm #insuranceAmount ').text(formattedInsuranceAmount);
         $('#addTreatmentForm [name="treatmentDescription"]').val('');
-    }
-});
+        $('#addTreatmentForm [name="historyhealthDoctorFee"]').val(data.historyhealthDoctorFee || 0);
+        $('#addTreatmentForm [name="historyhealthMedicineFee"]').val(data.historyhealthMedicineFee || 0);
+        $('#addTreatmentForm [name="historyhealthLabFee"]').val(data.historyhealthLabFee || 0);
+        $('#addTreatmentForm [name="historyhealthActionFee"]').val(data.historyhealthActionFee || 0);
+        $('#addTreatmentForm [name="historyhealthDiscount"]').val(data.historyhealthDiscount || 0);
 
-$('#addTreatmentModal').on('shown.bs.modal', function() {
-    $(this).find('select#doctorId').select2({
-        ajax: {
-            url: baseUrl + 'hospital/getActiveHospitalDoctorDatas',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (response) {
-                return {
-                    results: $.map(response.data, function (data) {
-                        return {
-                            id: data.doctorId,
-                            text: data.doctorName + ' | ' + data.doctorSpecialization
-                        };
-                    })
-                };
+        // Menghitung total bill saat membuka form
+        const doctorFee = parseFloat(data.historyhealthDoctorFee) || 0;
+        const medicineFee = parseFloat(data.historyhealthMedicineFee) || 0;
+        const labFee = parseFloat(data.historyhealthLabFee) || 0;
+        const actionFee = parseFloat(data.historyhealthActionFee) || 0;
+        const discount = parseFloat(data.historyhealthDiscount) || 0;
+
+        const totalBill = (doctorFee + medicineFee + labFee + actionFee) - discount;
+        $('#addTreatmentForm [name="historyhealthTotalBill"]').val(totalBill < 0 ? 0 : totalBill.toFixed(2));
+         
+        $('#addTreatmentForm').find('select#doctorId').select2({
+            ajax: {
+                url: baseUrl + 'hospital/getActiveHospitalDoctorDatas',
+                type: 'GET',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (response) {
+                    return {
+                        results: $.map(response.data, function (data) {
+                            return {
+                                id: data.doctorId,
+                                text: data.doctorName + ' | ' + data.doctorSpecialization
+                            };
+                        })
+                    };
+                },
+                cache: true
             },
-            cache: true
-        },
-        minimumInputLength: 0,
-        placeholder: 'Choose Doctor',
-        allowClear: true,
-        dropdownParent: $('#addTreatmentModal .modal-body')
-    });
-    
-    $(this).find('select#diseaseId').select2({
-        ajax: {
-            url: baseUrl + 'hospital/getCompanyInsuredDisease',
-            type: 'GET',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (response) {
-                return {
-                    results: $.map(response.data, function (data) {
-                        return {
-                            id: data.diseaseId,
-                            text: data.diseaseName
-                        };
-                    })
-                };
+            minimumInputLength: 0,
+            placeholder: 'Choose Doctor',
+            allowClear: true,
+            dropdownParent: $('#addTreatmentModal .modal-body')
+        });
+        
+        $('#addTreatmentForm').find('select#diseaseId').select2({
+            ajax: {
+                url: baseUrl + 'hospital/getCompanyInsuredDisease?id='+data.companyId,
+                type: 'GET',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (response) {
+                    return {
+                        results: $.map(response.data, function (data) {
+                            return {
+                                id: data.diseaseId,
+                                text: data.diseaseName
+                            };
+                        })
+                    };
+                },
+                cache: true
             },
-            cache: true
-        },
-        minimumInputLength: 0,
-        placeholder: 'Choose Disease',
-        allowClear: true,
-        dropdownParent: $('#addTreatmentModal .modal-body')
-    });
+            minimumInputLength: 0,
+            placeholder: 'Choose Disease',
+            allowClear: true,
+            dropdownParent: $('#addTreatmentModal .modal-body')
+        });
+    }
 });
 
 // add Treatment
 document.addEventListener('input', function (e) {
-    const formElement = e.target.closest('#addTreatmentForm'); 
+    const formElement = e.target.closest('#addTreatmentForm');
     if (!formElement) return; 
     if (e.target.classList.contains('validate-non-negative')) {
-        let value = e.target.value;
-        
-        if (value.startsWith('0') && value !== '0' && !value.startsWith('0.')) {
-            value = value.replace(/^0+/, ''); 
-        }
-
+        let value = e.target.value;        
         const numericValue = parseFloat(value) || 0;
         if (numericValue < 0) {
             e.target.value = 0; 
         } else {
-            e.target.value = value; 
+            e.target.value = numericValue; 
         }
     }
 
@@ -1511,11 +1354,34 @@ document.addEventListener('input', function (e) {
     const labFee = parseFloat(document.getElementById('historyhealthLabFee').value) || 0;
     const actionFee = parseFloat(document.getElementById('historyhealthActionFee').value) || 0;
     const discount = parseFloat(document.getElementById('historyhealthDiscount').value) || 0;
-    
     const totalBill = (doctorFee + medicineFee + labFee + actionFee) - discount;
-    document.getElementById('Rp' + 'historyhealthTotalBill').value = totalBill.toFixed(2);
+    const validTotal = totalBill < 0 ? 0 : totalBill;
+    document.getElementById('historyhealthTotalBill').value = validTotal.toFixed(2);
 });
 
+
+$('#addTreatmentForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'hospital/history/addTreatment',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                $('#addTreatmentModal').modal('hide');
+                reloadTableData(hQueueTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addTreatmentForm', res.errors);
+            }
+        }
+    });
+});
 
 // add Referral
 $('#addReferralForm').on('submit', function(e) {

@@ -47,9 +47,10 @@ class Disease extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getCompanyInsuredDisease($companyId) {
-        $diseaseDatas = $this->M_hospitals->getCompanyInsuredDisease();
-        $datas = array(
+    public function getCompanyInsuredDisease() {
+        $companyId = $this->input->get("id");
+        $diseaseDatas = $this->M_hospitals->getCompanyInsuredDisease($companyId);
+        $datas = array( 
             'data' => $diseaseDatas
         );
 
