@@ -37,15 +37,17 @@ class M_hospitals extends CI_Model {
     }
 
     public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
-        $this->db->select('hh.*, h.hospitalName, d.doctorName,
+        $this->db->select('hh.*, h.hospitalName, d.doctorName, 
+                            IF(hh.historyhealthReferredTo IS NULL, i.invoiceStatus, "referred") AS historyhealthStatus,
                             GROUP_CONCAT(DISTINCT ds.diseaseName SEPARATOR "|") AS diseaseNames,
                             GROUP_CONCAT(DISTINCT ds.diseaseInformation SEPARATOR "|") AS diseaseInformations');
         $this->db->from('historyhealth hh');
-        $this->db->join('hisealthtal hhh', 'hhh.historyhealthId = hh.historyhealthId', 'left');
-        $this->db->join('hospital h', 'h.hospitalId = hhh.hospitalId', 'left');
+        $this->db->join('billing b', 'b.billingId = hh.billingId', 'left');
+        $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
+        $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
         $this->db->join('doctor d', 'd.doctorId = hh.doctorId', 'left');
-        $this->db->join('hisealtheas hhd', 'hhd.historyhealthId = hh.historyhealthId', 'left');
-        $this->db->join('disease ds', 'ds.diseaseId = hhd.diseaseId', 'left');
+        $this->db->join('hisealtheas hd', 'hd.historyhealthId = hh.historyhealthId', 'left');
+        $this->db->join('disease ds', 'ds.diseaseId = hd.diseaseId', 'left');
         $this->db->where('hh.patientNIK', $patientNIK);
         $this->db->group_by('hh.patientNIK');
         return $this->db->get()->result_array();
@@ -80,6 +82,14 @@ class M_hospitals extends CI_Model {
         $this->db->where_in('c.companyId', (array) $companyId);
         $query = $this->db->get();
         return $query->result_array();
+    }
+
+    public function addQueue($patientNIK, $hospitalId) {
+        $data = array(
+            'patientNIK' => $patientNIK,
+            'hospitalId' => $hospitalId
+        );
+        return $this->db->insert('queue', $data);
     }
 
     public function deleteQueue($patientNIK, $hospitalId) {

@@ -110,7 +110,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Fee">
                                     <i class="las la-briefcase-medical fs-4"></i>
                                 </span>
-                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Doctor Fee" id="historyhealthDoctorFee">
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Doctor Fee" name="historyhealthDoctorFee" id="historyhealthDoctorFee">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -118,7 +118,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Medicine Fee">
                                     <i class="las la-pills fs-4"></i>
                                 </span>
-                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Medicine Fee" id="historyhealthMedicineFee">
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Medicine Fee" name="historyhealthMedicineFee" id="historyhealthMedicineFee">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -126,7 +126,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Lab Fee">
                                     <i class="las la-file-alt fs-4"></i>
                                 </span>
-                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Lab Fee" id="historyhealthLabFee">
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Lab Fee" name="historyhealthLabFee" id="historyhealthLabFee">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -134,7 +134,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Action Fee">
                                     <i class="las la-file-alt fs-4"></i>
                                 </span>
-                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Action Fee" id="historyhealthActionFee">
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Action Fee" name="historyhealthActionFee" id="historyhealthActionFee">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -142,7 +142,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Discount">
                                     <i class="las la-file-alt fs-4"></i>
                                 </span>
-                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Discount" id="historyhealthDiscount">
+                                <input class="form-control validate-non-negative" type="number" step="0.01" min="0" placeholder="Discount" name="historyhealthDiscount" id="historyhealthDiscount">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -150,7 +150,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Total Bill">
                                     <i class="las la-money-bill-wave fs-4"></i>
                                 </span>
-                                <input class="form-control" type="number" placeholder="Total Bill" id="historyhealthTotalBill" readonly>
+                                <input class="form-control" type="number" placeholder="Total Bill" name="historyhealthTotalBill" id="historyhealthTotalBill" readonly>
                             </div>
                         </div>
                         <div class="col-12">

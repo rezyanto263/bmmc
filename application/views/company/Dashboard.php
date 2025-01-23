@@ -1,36 +1,173 @@
 <div class="content-body py-3">
-    <div class="container mt-5">
-        <!-- Hotel Card -->    
-        <div class="text-center">
-            <!-- Logo Hotel -->
-            <img src="<?= base_url('uploads/logos/' . $company['companyLogo']); ?>" alt="Hotel Logo" class="img-fluid mb-3 w-25">
-            <h4><?= $company['companyName'] ?? 'Hotel Name' ?></h4>
+    <div class="row gy-4">
+        <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center order-0 order-lg-0">
+            <div class="row gy-4">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <div class="imgContainer">
+                        <img src="<?= base_url('uploads/logos/' . $company['companyLogo']); ?>" data-originalsrc="<?= base_url('uploads/logos/' . $company['companyLogo']); ?>" alt="Company Logo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Company Logo">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Name">
+                            <i class="las la-building fs-4"></i>
+                        </span>
+                        <input class="form-control" type="text" placeholder="Name" name="companyName" value="<?= $company['companyName'] ?? 'Company Name' ?>" disabled>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
+                            <i class="las la-user-cog fs-4"></i>
+                        </span>
+                        <input class="form-control" type="text" placeholder="Admin Account" name="adminId" value="<?= $admin['adminId'] ?? 'Admin Account' ?>" disabled>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-7 col-xl-6">
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Phone">
+                            <i class="las la-phone fs-4"></i>
+                        </span>
+                        <input class="form-control phone-input" type="text" placeholder="Phone Number" name="companyPhone" value="<?= $company['companyPhone'] ?? 'Phone Number' ?>" disabled>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5 col-xl-6">
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Status">
+                            <i class="las la-tag fs-4"></i>
+                        </span>
+                        <div class="form-control" placeholder="Company Status" id="companyStatus"><?= $company['companyStatus'] ?? 'Company Status' ?></div>
+                    </div>
+                </div>
+                <div class="col-12">   
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Address">
+                            <i class="las la-map fs-4"></i>
+                        </span>
+                        <input class="form-control" type="text" placeholder="Company Address" name="companyAddress" value="<?= $company['companyAddress'] ?? 'Company Address' ?>" disabled>
+                    </div>
+                </div>
+                <div class="col-12">   
+                    <div class="input-group p-0">
+                        <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Coordinate">
+                            <i class="las la-map-marker fs-4"></i>
+                        </span>
+                        <input class="form-control" type="text" placeholder="Location Coordinate" name="companyCoordinate" value="<?= $company['companyCoordinate'] ?? 'Location Coordinate' ?>" disabled>
+                    </div>
+                    <button class="btn btn-primary btn-edit w-100 mt-3" data-bs-toggle="modal" data-bs-target="#editHotelModal"><i class="las la-edit fs-4"></i><span>Edit</span></button> 
+                </div>
+            </div>
         </div>
-        <div class="d-flex">
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <th>Alamat:</th>
-                        <td><?= $company['companyAddress'] ?? 'Jalan Contoh No.123, Kota ABC' ?></td>
-                    </tr>
-                    <tr>
-                        <th>Telepon:</th>
-                        <td><?= $company['companyPhone'] ?? '+62 123 4567 890' ?></td>
-                    </tr>
-                    <tr>
-                        <th>Email:</th>
-                        <td><?= $company['adminEmail'] ?? 'info@hotel.com' ?></td>
-                    </tr>
-                    <tr>
-                        <th>Coordinate:</th>
-                        <td><?= $company['companyCoordinate'] ?? 'WiFi, Kolam Renang, Restoran, Gym' ?></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div id="map"></div>
-        </div>  
-        <button class="btn btn-primary btn-edit w-25" data-bs-toggle="modal" data-bs-target="#editHotelModal">Edit</button>
-
+        <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center order-4 order-lg-1">
+            <div id="map" class="w-100 h-100" style="min-height:450px"></div>
+        </div>
+        <div class="col-12 order-1 order-lg-2">
+            <div class="row g-4">
+                <div class="col-12 col-lg-3">
+                    <div class="card bg-transparent box-total">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title text-center">TOTAL INVOICES</h5>
+                            <h1 class="text-center fw-bold" id="totalInvoices"><?= $invoices['total'] ?? 0 ?></h1>
+                            <div class="card-text text-center">
+                                <hr>
+                                <div class="d-flex justify-content-around">
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Paid">
+                                        <i class="las la-file-invoice-dollar text-success fs-4"></i>
+                                        <span id="totalPaidInvoices"><?= $invoices['paid'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Unpaid">
+                                        <i class="las la-file-invoice-dollar text-danger fs-4"></i>
+                                        <span id="totalUnpaidInvoices"><?= $invoices['unpaid'] ?? 0 ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="card bg-transparent box-total">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title text-center">TOTAL EMPLOYEES</h5>
+                            <h1 class="text-center fw-bold" id="totalEmployees"><?= $employees['total'] ?? 0 ?></h1>
+                            <div class="card-text text-center">
+                                <hr>
+                                <div class="d-flex justify-content-around">
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Unverified">
+                                        <i class="las la-user-tie text-secondary-subtl fs-4"></i>
+                                        <span id="totalUnverifiedEmployees"><?= $employees['unverified'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Active">
+                                        <i class="las la-user-tie text-success fs-4"></i>
+                                        <span id="totalActiveEmployees"><?= $employees['active'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="On Hold">
+                                        <i class="las la-user-tie text-warning fs-4"></i>
+                                        <span id="totalOnHoldEmployees"><?= $employees['onHold'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Discontinued">
+                                        <i class="las la-user-tie text-secondary fs-4"></i>
+                                        <span id="totalDiscontinuedEmployees"><?= $employees['discontinued'] ?? 0 ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="card bg-transparent box-total">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title text-center">TOTAL FAMILY MEMBERS</h5>
+                            <h1 class="text-center fw-bold" id="totalFamilyMembers"><?= $familyMembers['total'] ?? 0 ?></h1>
+                            <div class="card-text text-center">
+                                <hr>
+                                <div class="d-flex justify-content-around">
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Unverified">
+                                        <i class="las la-users text-secondary-subtl fs-4"></i>
+                                        <span id="totalUnverifiedFamilyMembers"><?= $familyMembers['unverified'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Active">
+                                        <i class="las la-users text-success fs-4"></i>
+                                        <span id="totalActiveFamilyMembers"><?= $familyMembers['active'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="On Hold">
+                                        <i class="las la-users text-warning fs-4"></i>
+                                        <span id="totalOnHoldFamilyMembers"><?= $familyMembers['onHold'] ?? 0 ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Archived">
+                                        <i class="las la-users text-secondary fs-4"></i>
+                                        <span id="totalArchivedFamilyMembers"><?= $familyMembers['archived'] ?? 0 ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="card bg-transparent box-total">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title text-center">BILLING REMAINING</h5>
+                            <!-- <h4 class="text-center fw-bold"  id="totalBillingRemaining">Rp <?= number_format($billing['remaining'] ?? 0, 2, ',', '.') ?></h4>
+                            <span class="text-center" style="font-size: 0.8rem;" id="billingDate" data-bs-toggle="tooltip" data-bs-title="Billing Start - Billing End">
+                                <?= date('d M Y', strtotime($billing['start'])) ?> - <?= date('d M Y', strtotime($billing['end'])) ?>
+                            </span>
+                            <div class="card-text text-center">
+                                <hr class="mt-0">
+                                <div class="d-flex justify-content-around">
+                                    <div class="d-inline-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billing Used">
+                                        <i class="las la-credit-card text-danger fs-4"></i>
+                                        <span style="font-size: 0.8rem;" id="totalBillingUsed"><?= number_format($billing['used'] ?? 0, 2, ',', '.') ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billing Amount">
+                                        <i class="las la-credit-card text-info fs-4"></i>
+                                        <span style="font-size: 0.8rem;" id="totalBillingAmount"><?= number_format($billing['amount'] ?? 0, 2, ',', '.') ?></span> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Modal for Editing Hotel -->
         <div class="modal fade" id="editHotelModal" tabindex="-1" aria-labelledby="editHotelModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md">

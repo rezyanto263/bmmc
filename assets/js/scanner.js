@@ -176,3 +176,45 @@ $('#patientTable').on('click', '.btn-view', function() {
     $('#viewHistoryHealthDetailsModal [name="historyhealthDiscount"]').val(data.historyhealthDiscount);
     $('#viewHistoryHealthDetailsModal [name="historyhealthTotalBill"]').val(data.historyhealthTotalBill);
 });
+
+var addQueueModal = new bootstrap.Modal(document.getElementById('addQueueModal'));
+
+// Add Data Queue
+$('#scanResultModal').on('click', '.add-queue', function() {
+    addQueueModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    // if (backdrops.length >= 2) {
+    //     backdrops[0].style.zIndex = "1040";
+    //     backdrops[1].style.zIndex = "1055";
+    // }
+    const patientNIK = $('#scanResultModal #nik').html();
+    $('#addQueueForm #patientNIK').val(patientNIK);
+    $('#addQueueForm #patientName').html($(`#scanResultModal #name`).html());
+});
+
+$('#addQueueForm').on('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: baseUrl + 'hospital/queue/addQueue',
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#addQueueModal').modal('hide');
+                reloadTableData(doctorTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addQueueModal', res.errors);
+            }
+        }
+    });
+});

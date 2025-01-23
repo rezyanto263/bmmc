@@ -58,6 +58,10 @@ class M_historyhealth extends CI_Model {
     public function insertReferral($referralDatas) {
         return $this->db->insert('historyhealth', $referralDatas);
     }
+
+    public function insertTreatment($treatmentDatas) {
+        return $this->db->insert('historyhealth', $treatmentDatas);
+    }
 }
 
 /* End of file M_historyhealth.php */

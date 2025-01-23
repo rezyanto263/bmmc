@@ -524,3 +524,7 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
 .modal#viewHistoryHealthDetailsModal {
     z-index: 1056 !important;
 }
+
+.modal#deleteQueueModal {
+    z-index: 1056 !important;
+}

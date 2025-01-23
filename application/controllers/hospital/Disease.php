@@ -27,8 +27,8 @@ class Disease extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/hospital/sidebar',
-            'floatingMenu' => 'partials/hospital/floatingMenu',
-            'contentHeader' => 'partials/hospital/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'hospital/Disease',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
@@ -47,9 +47,10 @@ class Disease extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getCompanyInsuredDisease($companyId) {
-        $diseaseDatas = $this->M_hospitals->getCompanyInsuredDisease();
-        $datas = array(
+    public function getCompanyInsuredDisease() {
+        $companyId = $this->input->get("id");
+        $diseaseDatas = $this->M_hospitals->getCompanyInsuredDisease($companyId);
+        $datas = array( 
             'data' => $diseaseDatas
         );
 

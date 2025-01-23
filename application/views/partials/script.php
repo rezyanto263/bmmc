@@ -30,6 +30,18 @@
 
     <!--Map-->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script defer src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- Moment -->
+    <script defer src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+
+    <!-- Flatpickr -->
+    <script defer src="<?= base_url('node_modules/flatpickr/dist/flatpickr.min.js') ?>"></script>
+
+    <!-- Cleave -->
+    <script defer src="<?= base_url('node_modules/cleave.js/dist/cleave.min.js') ?>"></script>
+    <script defer src="<?= base_url('node_modules/cleave.js/dist/addons/cleave-phone.id.js') ?>"></script>
 
 <?php endif; ?>
 
