@@ -40,8 +40,8 @@ class M_companies extends CI_Model {
         $this->db->select('e.*, c.companyName');
         $this->db->from('employee e');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('company c', 'c.companyId = cp.companyId', 'left');
-        $this->db->where('p.employeeNIK', $employeeNIK);
+        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
+        $this->db->where('e.employeeNIK', $employeeNIK);
         return $this->db->get()->row_array();
     }
     public function getFamilyByNIK($familyNIK) {
@@ -49,7 +49,7 @@ class M_companies extends CI_Model {
         $this->db->from('family f');
         $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('company c', 'c.companyId = cp.companyId', 'left');
+        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
         $this->db->where('f.familyNIK', $familyNIK);
         return $this->db->get()->row_array();
     }

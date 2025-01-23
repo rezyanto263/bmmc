@@ -84,6 +84,14 @@ class M_hospitals extends CI_Model {
         return $query->result_array();
     }
 
+    public function addQueue($patientNIK, $hospitalId) {
+        $data = array(
+            'patientNIK' => $patientNIK,
+            'hospitalId' => $hospitalId
+        );
+        return $this->db->insert('queue', $data);
+    }
+
     public function deleteQueue($patientNIK, $hospitalId) {
         $this->db->where('patientNIK', $patientNIK);
         $this->db->where('hospitalId', $hospitalId);

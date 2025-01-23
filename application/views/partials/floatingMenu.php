@@ -23,8 +23,8 @@
             <div class="modal-body p-0 d-flex flex-column justify-content-center">
                 <video class="m-0" id="qrScanner"></video>
                 <form id="qrForm" class="text-center px-5">
+                    <div id="adminRole" data-admin-role="<?= base64_encode($this->session->userdata('adminRole')); ?>" hidden></div>
                     <input class="border border-1 rounded my-3 text-center w-100" readonly type="text" placeholder="Scan your QR please!" name="qrData">
-                    <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                 </form>
             </div>
         </div>
@@ -164,6 +164,14 @@
                             </tfoot>
                         </table>
                     </div>
+                    <?php
+                    if ($this->session->userdata('adminRole') === 'hospital'): ?>
+                        <button type="button" class="add-queue btn-primary w-100 my-3 d-flex align-items-center justify-content-center gap-2"
+                            data-bs-toggle="modal" data-bs-target="#addQueueModal">
+                            <i class="las la-plus-circle fs-4"></i>
+                            ADD TO QUEUE
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -250,4 +258,30 @@
         </div>
     </div>
 </div>
-<!-- View Patient Modal End -->
+<!-- View History Health Details Modal End -->
+
+<!-- Add Queue Modal -->
+<div class="modal fade" id="addQueueModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content overflow-hidden">
+            <form id="addQueueForm">
+                <div class="modal-header border-0">
+                    <h1 class="modal-title fs-4">
+                        ADD TO QUEUE
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body border-0">
+                    Are you sure want to add <span class="fw-bold" id="patientName"></span> to queue?
+                    <input type="text" id="patientNIK" name="patientNIK" hidden>
+                </div>
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn-primary" id="addQueueButton">ADD</button>
+                    <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Add Queue Modal End -->

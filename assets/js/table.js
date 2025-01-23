@@ -81,6 +81,13 @@ function reloadTableData(table) {
     table.ajax.reload(null, false);
 }
 
+function generateStatusData(statuses) {
+    return statuses.map(status => ({
+        id: status.toLowerCase(),
+        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline">${capitalizeWords(status)}</span>`
+    }));
+}
+
 $('.modal').on('hidden.bs.modal', function(e) {
     $('#imgPreview').attr('src', $('#imgPreview').data('originalsrc'));
     $(this).find('select').select2('destroy');

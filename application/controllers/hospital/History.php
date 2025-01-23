@@ -29,8 +29,8 @@ class History extends CI_Controller {
         $partials = array(
             'head' => 'partials/head',
             'sidebar' => 'partials/hospital/sidebar',
-            'floatingMenu' => 'partials/hospital/floatingMenu',
-            'contentHeader' => 'partials/hospital/contentHeader',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'hospital/History',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
@@ -54,7 +54,7 @@ class History extends CI_Controller {
         }
     }
 
-    public function getHPatientHistoryHealthDetailsByNIK($patientNIK) {
+    public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
         $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
         $datas = array(
             'data' => $historyhealthDatas

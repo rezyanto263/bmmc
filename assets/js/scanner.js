@@ -1,6 +1,7 @@
 // QR Scanner
 var scanner;
 var cameraStream;
+var role = atob($('#adminRole').data('admin-role'));
 
 $('#scannerModal').on('show.bs.modal', function() {
     $('#scannerModal .btn-close').hide();
@@ -13,6 +14,7 @@ $('#scannerModal').on('show.bs.modal', function() {
         scanner.addListener('scan', function (content) {
             $('[name="qrData"]').val(content);
             $('#qrForm').submit();
+            console.log(content);
         });
         Instascan.Camera.getCameras().then(function (cameras) {
             if (cameras.length > 0) {
@@ -22,6 +24,7 @@ $('#scannerModal').on('show.bs.modal', function() {
                 alert('No cameras found.');
             }
         }).catch(function (e) {
+            // console.error(e);
             $('#scannerModal .btn-close').show();
             alert(e);
         });
@@ -30,16 +33,34 @@ $('#scannerModal').on('show.bs.modal', function() {
     }
 });
 
+$('#scannerModal').on('hidden.bs.modal', function () {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(function(track) {
+            track.stop();
+        });
+        cameraStream = null;
+    }
+    scanner ? scanner.stop() : null;
+    if (scanner) {
+        scanner.stop()
+    }
+    scanner = null;
+});	
+
+var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
+
+// Scan QR Details Table
 $('#qrForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'dashboard/getPatientByNIK',
+        url: baseUrl + (role == 'admin' ? 'dashboard' : role)  + '/getPatientByNIK',
         method: 'POST',
         data: $(this).serialize(),
         success: function (response) {
             var res = JSON.parse(response);
-            res.csrfToken && $(`[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
+                // var resultModal = new bootstrap.Modal(document.getElementById('scanResultModal'));
+                // resultModal.show();
                 $('#scanResultModal').modal('show');
                 $('#scannerModal').modal('hide');
                 const data = res.data;
@@ -62,6 +83,7 @@ $('#qrForm').on('submit', function(e) {
                     ];
 
                     fields.forEach(field => {
+                        console.log(field.value);
                         $(`#scanResultModal #${field.id}`).html(field.value);
                     });
 
@@ -75,30 +97,14 @@ $('#qrForm').on('submit', function(e) {
     });
 });
 
-$('#scannerModal').on('hidden.bs.modal', function () {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(function(track) {
-            track.stop();
-        });
-        cameraStream = null;
-    }
-
-    if (scanner) {
-        scanner.stop()
-    }
-
-    scanner = null;
-});
-
-// Scan QR Details Table
 var patientTable;
 function getPatientHistoryHealth(patientNIK) {
     if ($.fn.DataTable.isDataTable('#patientTable')) {
-        $('#patientTable').DataTable().ajax.url(baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
+        $('#patientTable').DataTable().ajax.url(baseUrl + (role == 'admin' ? 'dashboard' : role)  + '/getPatientHistoryHealthDetailsByNIK/' + patientNIK).load();
         return;
     }
     patientTable = $('#patientTable').DataTable($.extend(true, {}, DataTableSettings, {
-        ajax: baseUrl + 'dashboard/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
+        ajax: baseUrl + (role == 'admin' ? 'dashboard' : role)  + '/getPatientHistoryHealthDetailsByNIK/' + patientNIK,
         columns: [
             {
                 data: null,
@@ -130,7 +136,8 @@ function getPatientHistoryHealth(patientNIK) {
             {
                 data: 'historyhealthStatus',
                 render: function(data, type, row) {
-                    return `<div class="rounded-circle ${statusColor(data)} d-inline-block" style="width: 12px;height: 12px;"></div>  ` + capitalizeWords(data);
+                    console.log(data);
+                    return generateStatusData([data]).find((d) => d.id === data)?.text;
                 }
             },
             {
@@ -152,7 +159,6 @@ function getPatientHistoryHealth(patientNIK) {
     }));
 }
 
-var viewHistoryHealthDetailsModal = new bootstrap.Modal(document.getElementById('viewHistoryHealthDetailsModal'));
 $('#patientTable').on('click', '.btn-view', function() {
     viewHistoryHealthDetailsModal.show();
     const backdrops = document.querySelectorAll('.modal-backdrop.show');
@@ -169,4 +175,46 @@ $('#patientTable').on('click', '.btn-view', function() {
     $('#viewHistoryHealthDetailsModal [name="historyhealthActionFee"]').val(data.historyhealthActionFee);
     $('#viewHistoryHealthDetailsModal [name="historyhealthDiscount"]').val(data.historyhealthDiscount);
     $('#viewHistoryHealthDetailsModal [name="historyhealthTotalBill"]').val(data.historyhealthTotalBill);
+});
+
+var addQueueModal = new bootstrap.Modal(document.getElementById('addQueueModal'));
+
+// Add Data Queue
+$('#scanResultModal').on('click', '.add-queue', function() {
+    addQueueModal.show();
+    const backdrops = document.querySelectorAll('.modal-backdrop.show');
+    // if (backdrops.length >= 2) {
+    //     backdrops[0].style.zIndex = "1040";
+    //     backdrops[1].style.zIndex = "1055";
+    // }
+    const patientNIK = $('#scanResultModal #nik').html();
+    $('#addQueueForm #patientNIK').val(patientNIK);
+    $('#addQueueForm #patientName').html($(`#scanResultModal #name`).html());
+});
+
+$('#addQueueForm').on('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: baseUrl + 'hospital/queue/addQueue',
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#addQueueModal').modal('hide');
+                reloadTableData(doctorTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addQueueModal', res.errors);
+            }
+        }
+    });
 });
