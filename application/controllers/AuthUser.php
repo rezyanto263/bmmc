@@ -203,7 +203,7 @@ class AuthUser extends CI_Controller {
         delete_cookie('keyReference');
 
         $userType = $this->session->userdata('userType');
-        $sessionDatas = array('userNIK', 'insuranceId', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
+        $sessionDatas = array('userNIK', 'insuranceId', 'userPhoto', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
 
         $userType == 'family'? $sessionDatas[]='employeeId' : '';
 
