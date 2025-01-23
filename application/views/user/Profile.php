@@ -10,12 +10,19 @@
         <?= isset($employeeDatas['employeeName']) && $employeeDatas['employeeName'] ? $employeeDatas['employeeName'] : (isset($employeeDatas['familyName']) ? $employeeDatas['familyName'] : '') ?>
       </div>
       <div class="d-flex justify-content-center align-items-center">
+      <?php if (!empty($employeeDatas['employeeName'])): ?>
         <button type="button" class="bg-transparent border-0 me-2" data-bs-toggle="modal"
-          data-bs-target="#staticBackdrop">
+          data-bs-target="#editEmployee">
           <i class="fa-solid fa-pen-to-square text-success logout text-decoration-underline">
             Update</i>
         </button>
-
+        <?php else: ?>
+          <button type="button" class="bg-transparent border-0 me-2" data-bs-toggle="modal"
+            data-bs-target="#editFamily">
+            <i class="fa-solid fa-pen-to-square text-success logout text-decoration-underline">
+              Update</i>
+          </button>
+          <?php endif; ?>
         <a href="./logout" class="text-danger logout ms-2"><i
             class="fa-solid fa-right-from-bracket text-decoration-underline">
             Logout</i></a>
@@ -276,34 +283,83 @@
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="email" class="col-form-label">Email</label>
-              <input type="email" class="form-control" id="email" value="igedeangga@gmail.com" />
-            </div>
-            <div class="mb-3">
-              <label for="password" class="col-form-label">Change Password</label>
-              <input type="password" class="form-control" id="password" placeholder="**********" />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+   <!-- Modal -->
+<div class="modal fade" id="editEmployee" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="editEmployeeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="<?= base_url('user/profile/editEmployee') ?>" method="post">
+            <input type="hidden" class="form-control" id="NIK" name="employeeNIK" value="<?= $employeeDatas['employeeNIK'] ?>" required />
+          <div class="mb-3">
+            <label for="email" class="col-form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="employeeEmail" value="<?= $employeeDatas['employeeEmail'] ?>" required />
+          </div>
+          <div class="mb-3">
+            <label for="current-password" class="col-form-label">Password Lama</label>
+            <input type="password" class="form-control" id="current-password" name="oldPassword" placeholder="Masukkan password lama" required />
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="col-form-label">Password Baru</label>
+            <input type="password" class="form-control" id="new-password" name="newPassword" placeholder="****" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="col-form-label">Konfirmasi Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="****" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editFamily" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="editFamilyLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="<?= base_url('user/profile/editfamily') ?>" method="post">
+            <input type="hidden" class="form-control" id="NIK" name="familyNIK" value="<?= $employeeDatas['familyNIK'] ?>" required />
+          <div class="mb-3">
+            <label for="email" class="col-form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="familyEmail" value="<?= $employeeDatas['familyEmail'] ?>" required />
+          </div>
+          <div class="mb-3">
+            <label for="current-password" class="col-form-label">Password Lama</label>
+            <input type="password" class="form-control" id="current-password" name="oldPassword" placeholder="Masukkan password lama" required />
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="col-form-label">Password Baru</label>
+            <input type="password" class="form-control" id="new-password" name="newPassword" placeholder="****" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="col-form-label">Konfirmasi Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="****" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 </body>

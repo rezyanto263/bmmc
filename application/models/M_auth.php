@@ -45,14 +45,64 @@ class M_auth extends CI_Model {
         return $this->db->get()->row_array();
     }
 
-    public function getInsuranceByInsuranceId($insuranceId)
+    public function getInsuranceByEmployeeId($employeeId)
     {
-        // Mengambil data insuranceAmount dari tabel insurance berdasarkan insuranceId
-        $this->db->select('insurance.insuranceId, insurance.insuranceAmount');
-        $this->db->from('insurance');
-        $this->db->where('insurance.insuranceId', $insuranceId);
-        return $this->db->get()->row_array();
+        // Mengambil insuranceId dari tabel employee berdasarkan employeeId
+        $this->db->select('insuranceId');
+        $this->db->from('employee');
+        $this->db->where('employeeNIK', $employeeId);
+        $employee = $this->db->get()->row_array();
+
+        // Pastikan insuranceId ditemukan
+        if (isset($employee['insuranceId'])) {
+            $insuranceId = $employee['insuranceId'];
+
+            // Mengambil data insuranceAmount dari tabel insurance berdasarkan insuranceId
+            $this->db->select('insuranceAmount');
+            $this->db->from('insurance');
+            $this->db->where('insuranceId', $insuranceId);
+            return $this->db->get()->row_array();
+        } else {
+            return null; // Jika insuranceId tidak ditemukan
+        }
     }
+
+    public function getInsuranceByFamilyId($familyId)
+    {
+        // Ambil employeeId yang terkait dengan familyId dari tabel family
+        $this->db->select('employeeNIK');
+        $this->db->from('family');
+        $this->db->where('familyNIK', $familyId);
+        $family = $this->db->get()->row_array();
+
+        // Pastikan employeeId ditemukan
+        if (isset($family['employeeNIK'])) {
+            $employeeId = $family['employeeNIK'];
+
+            // Ambil insuranceId dari tabel employee berdasarkan employeeId
+            $this->db->select('insuranceId');
+            $this->db->from('employee');
+            $this->db->where('employeeNIK', $employeeId);
+            $employee = $this->db->get()->row_array();
+
+            // Pastikan insuranceId ditemukan
+            if (isset($employee['insuranceId'])) {
+                $insuranceId = $employee['insuranceId'];
+
+                // Ambil insuranceAmount dari tabel insurance berdasarkan insuranceId
+                $this->db->select('insuranceAmount');
+                $this->db->from('insurance');
+                $this->db->where('insuranceId', $insuranceId);
+                return $this->db->get()->row_array();
+            } else {
+                return null; // Jika insuranceId tidak ditemukan
+            }
+        } else {
+            return null; // Jika employeeId tidak ditemukan
+        }
+    }
+
+
 
 
     public function updateEmployee($employeeId, $employeeData) {
@@ -61,15 +111,15 @@ class M_auth extends CI_Model {
     }
 
     public function getFamilyDataById($familyId) {
-        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyGender, familyPassword, familyStatus, familyPhoto');
+        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyPhone, familyGender, familyPassword, familyStatus, familyPhoto');
         $this->db->from('family');
         $this->db->where('familyNIK', $familyId);
         return $this->db->get()->row_array();
     }
 
-    public function updateFamily($familyNIK, $familyData) {
-        $this->db->where('familyNIK', $familyNIK);
-        return $this->db->update('family', $familyData);
+    public function updateFamily($familyId, $employeeData) {
+        $this->db->where('familyNIK', $familyId);
+        return $this->db->update('family', $employeeData);
     }
 
     public function validateEmployeeLogin($NIK, $password) {
@@ -124,6 +174,19 @@ class M_auth extends CI_Model {
         return null;  // If no password is found, return null
     }
     
+    public function getCurrentPasswordByFamilyNIK($familyNIK) {
+        $this->db->select('familyPassword');
+        $this->db->from('family');
+        $this->db->where('familyNIK', $familyNIK);
+        $query = $this->db->get();
+        $result = $query->row();
+        
+        if ($result) {
+            return $result->familyPassword;
+        }
+        
+        return null;  // If no password is found, return null
+    }
 
     public function rememberEmployeeLogin($employeeId, $rememberToken) {
         $this->db->where('employeeNIK', $employeeId);
