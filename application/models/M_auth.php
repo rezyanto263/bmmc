@@ -76,7 +76,7 @@ class M_auth extends CI_Model {
     }
 
     public function getFamilyDataById($familyId) {
-        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyPhone, familyGender, familyPassword, familyStatus, familyPhoto');
+        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyPhone, familyGender, familyPassword, familyStatus');
         $this->db->from('family');
         $this->db->where('familyNIK', $familyId);
         return $this->db->get()->row_array();

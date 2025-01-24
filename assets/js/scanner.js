@@ -70,15 +70,16 @@ $('#qrForm').on('submit', function(e) {
                     $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
 
                     const fields = [
-                        { id: 'nik', value: data.employeeNIK || data.familyNIK },
-                        { id: 'name', value: data.employeeName || data.familyName },
+
+                        { id: 'nik', value: data.familyNIK || data.employeeNIK },
+                        { id: 'name', value: data.familyName || data.employeeName },
                         { id: 'role', value: data.familyRole || 'Employee' },
-                        { id: 'birth', value: data.employeeBirth || data.familyBirth },
-                        { id: 'gender', value: capitalizeWords(data.employeeGender || data.familyGender) },
+                        { id: 'birth', value: data.familyBirth || data.employeeBirth },
+                        { id: 'gender', value: capitalizeWords(data.familyGender || data.employeeGender) },
                         { id: 'companyName', value: data.companyName },
-                        { id: 'email', value: data.employeeEmail || data.familyEmail },
-                        { id: 'phone', value: data.employeePhone || data.familyPhone },
-                        { id: 'address', value: data.employeeAddress || data.familyAddress },
+                        { id: 'email', value: data.familyEmail || data.employeeEmail },
+                        { id: 'phone', value: data.familyPhone || data.employeePhone },
+                        { id: 'address', value: data.familyAddress || data.employeeAddress },
                         { id: 'status', value: generateStatusData([status]).find((d) => d.id === status).text }
                     ];
 

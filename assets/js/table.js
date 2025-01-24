@@ -1050,12 +1050,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                     `;
                 }
             }
-        },
-        { 
-            data: 'patientNIK',
-            visible: false, 
-            searchable: true
-        },
+        }
     ],
     columnDefs: [
         {width: '180px', target: 4}
@@ -1965,7 +1960,7 @@ var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSe
         }
     ],
     columnDefs: [
-        {width: '240px', target: 9}
+        {width: '240px', target: 6}
     ]
 }));
 

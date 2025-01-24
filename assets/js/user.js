@@ -51,7 +51,7 @@ var DataTableSettings = {
     ordering: true,
 }
 
-var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSettings, {
+var userHistoryTable = $('#userHistoryTable').DataTable($.extend(true, {}, DataTableSettings, {
     ajax: baseUrl + 'user/getUserHistories', 
     columns: [
         {
@@ -71,11 +71,21 @@ var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSett
                 }
             }
         },
-        {data: 'historyhealthRole'},
-        {data: 'companyName'},
+        {data: 'hospitalName'},
         {data: 'doctorName'},
         {
-            data: 'historyhealthBill',
+            data: 'diseaseName',
+            name: 'diseaseName',
+            render: function (data, type, row) {
+                if (row.historyhealthTotalBill == 0 && row.historyhealthDiscount == 0) {
+                    return 'Referred';
+                } else {
+                    return data;
+                }
+            }
+        },
+        {
+            data: 'historyhealthTotalBill',
             render: function (data) {
                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
@@ -93,7 +103,6 @@ var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSett
                 return data;
             }
         },
-        {data: 'historyhealthStatus'},
         {
             data: null,
             className: 'text-end user-select-none no-export',
@@ -108,15 +117,10 @@ var riwayatTable = $('#riwayatTable').DataTable($.extend(true, {}, DataTableSett
                     <i class="fa-regular fa-eye"></i>
                 </button>
             `
-        },
-        { 
-            data: 'patientNIK',
-            visible: false, 
-            searchable: true
         }
     ],
     columnDefs: [
-        {width: '180px', target: 4}
+        {width: '180px', target: 1}
     ]
 }));
 

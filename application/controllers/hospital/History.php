@@ -132,6 +132,22 @@ class History extends CI_Controller {
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
         $validate = array(
             array(
+                'field' => 'diseaseId',
+                'label' => 'Disease ID',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'doctorId',
+                'label' => 'Doctor ID',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
                 'field' => 'historyhealthDoctorFee',
                 'label' => 'Doctor Fee',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
@@ -182,6 +198,31 @@ class History extends CI_Controller {
                 )
             ),
             array(
+                'field' => 'historyhealthDate',
+                'label' => 'Date',
+                'rules' => 'required|valid_date',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                    'valid_date' => 'The %s field must be a valid date.',
+                )
+            ),
+            array(
+                'field' => 'patientNIK',
+                'label' => 'Patient NIK',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'role',
+                'label' => 'Role',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
                 'field' => 'historyhealthTotalBill',
                 'label' => 'Total Bill',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
@@ -191,6 +232,11 @@ class History extends CI_Controller {
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 )
             ),
+            array(
+                'field' => 'historyhealthDescription',
+                'label' => 'Description',
+                'rules' => 'trim',
+            )
         );
         $this->form_validation->set_rules($validate);
 
@@ -223,6 +269,7 @@ class History extends CI_Controller {
             'historyhealthDescription' => htmlspecialchars($this->input->post('historyhealthDescription')),
         );
         $this->M_historyhealth->insertTreatment($treatmentDatas);
+        $this->M_historyhealth->insertHisealtheas($treatmentDatas['historyhealthId'], $this->input->post('diseaseId'));
         $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
         echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }

@@ -256,15 +256,16 @@
     </div>
     <div class="content-body py-3">
       <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-      <table class="table" id="riwayatTable" style="width:100%">
+      <table class="table" id="userHistoryTable" style="width:100%">
         <thead>
           <tr>
             <th>#</th>
             <th>Patient Name</th>
+            <th>Hospital</th>
             <th>Doctor Name</th>
+            <th>Disease</th>
             <th>Bill</th>
             <th>Date</th>
-            <th>History Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -272,10 +273,11 @@
           <tr>
             <th>#</th>
             <th>Patient Name</th>
+            <th>Hospital</th>
             <th>Doctor Name</th>
+            <th>Disease</th>
             <th>Bill</th>
             <th>Date</th>
-            <th>History Status</th>
             <th>Actions</th>
           </tr>
         </tfoot>

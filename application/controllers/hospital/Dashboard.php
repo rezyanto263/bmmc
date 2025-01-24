@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Hospital extends CI_Controller {
+class Dashboard extends CI_Controller {
 
     public function __construct()
     {
@@ -12,15 +12,21 @@ class Hospital extends CI_Controller {
         }
 
         $this->load->model('M_hospitals');
+        $this->load->model('M_admins');
     }
     
 
     public function index()
     {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+
         $datas = array(
             'title' => 'BMMC Hospital | Dashboard',
-            'subtitle' => 'Hospital',
-            'contentType' => 'dashboard'
+            'subtitle' => 'Dashboard',
+            'contentType' => 'dashboard',
+            'admin' => $adminDatas,
+            'hospital' => $hospitalDatas
         );
 
         $partials = array(

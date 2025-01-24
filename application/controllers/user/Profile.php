@@ -66,31 +66,17 @@ class Profile extends CI_Controller {
     }
 
     public function getUserHistories() {
-        $userDatas = $this->M_auth->checkEmployee('employeeNIK', $this->session->userdata('userNIK'));
-        if (!$userDatas) {
-            $familyDatas = $this->M_auth->checkFamily('familyNIK', $this->session->userdata('userNIK'));
+        $familyDatas = $this->M_auth->checkFamily('familyNIK', $this->session->userdata('userNIK'));
+        if ($familyDatas) {
+            $historiesDatas = $this->M_historyhealth->getUserHistories ($this->session->userdata('userNIK'), 'family');
+        } else {
+            $historiesDatas = $this->M_historyhealth->getUserHistories ($this->session->userdata('userNIK'), 'employee');
         }
-        if (!$userDatas['familyNIK']) {
-            var_dump($userDatas);
-            exit;
-        }
-        var_dump('test');
-        exit;
-        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
-
-        if ($hospitalDatas) {
-            $hisealthtalsDatas = $this->M_historyhealth->getHospitalHisealthtalsDatas('hospitalId', $hospitalDatas['hospitalId']);
-            $historyhealthIds = array_column($hisealthtalsDatas, 'historyhealthId');
-        
-            if ($historyhealthIds) {
-                $historiesDatas = $this->M_historyhealth->getHospitalHistoriesDatas($historyhealthIds);
-                $datas = array(
-                    'data' => $historiesDatas,
-                );
-                echo json_encode($datas);
-            } else {
-                echo json_encode(['data' => []]);
-            }
+        if ($historiesDatas) {
+            $datas = array(
+                'data' => $historiesDatas,
+            );
+            echo json_encode($datas);
         } else {
             echo json_encode(['data' => []]);
         }
