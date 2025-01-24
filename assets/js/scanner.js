@@ -119,7 +119,7 @@ function getPatientHistoryHealth(patientNIK) {
             {
                 data: 'diseaseNames',
                 render: function(data, type, row) {
-                    return data.split('|').join(', ');
+                    return data ? data.split('|').join(', ') : 'No Disease';
                 }
             },
             {
@@ -135,7 +135,7 @@ function getPatientHistoryHealth(patientNIK) {
                 }
             },
             {
-                data: 'historyhealthStatus',
+                data: 'status',
                 render: function(data, type, row) {
                     console.log(data);
                     return generateStatusData([data]).find((d) => d.id === data)?.text;
