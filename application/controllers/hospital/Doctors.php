@@ -29,7 +29,7 @@ class Doctors extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospital/Doctor',
+            'contentBody' => 'hospital/doctors',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -38,12 +38,12 @@ class Doctors extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getHospitalDoctorDatas() {
+    public function getHospitalDoctorsDatas() {
         $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
         if ($hospitalDatas) {
-            $doctorDatas = $this->M_doctors->getHospitalDoctorDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $doctorDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
             $datas = array(
                 'data' => $doctorDatas
             );

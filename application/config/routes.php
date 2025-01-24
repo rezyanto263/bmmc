@@ -77,8 +77,8 @@ $route['dashboard/getCompanyDetails'] = 'dashboard/Companies/getCompanyDetails';
 $route['dashboard/getPatientByNIK'] = 'dashboard/Companies/scanQR';
 $route['dashboard/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'dashboard/Hospitals/getPatientHistoryHealthDetailsByNIK/$1';
 
-$route['hospital/getHospitalDoctorDatas'] = 'hospital/Doctor/getHospitalDoctorDatas';
-$route['hospital/getActiveHospitalDoctorDatas'] = 'hospital/Doctor/getActiveHospitalDoctorDatas';
+$route['hospital/getHospitalDoctorsDatas'] = 'hospital/Doctors/getHospitalDoctorsDatas';
+$route['hospital/getActiveHospitalDoctorDatas'] = 'hospital/Doctors/getActiveHospitalDoctorDatas';
 $route['hospital/getHospitalHistoriesDatas'] = 'hospital/History/getHospitalHistoriesDatas';
 $route['hospital/getPatientByNIK'] = 'hospital/Queue/scanQR';
 $route['hospital/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospital/History/getPatientHistoryHealthDetailsByNIK/$1';

@@ -5,7 +5,7 @@
         <i class="las la-plus-circle fs-4"></i>
         ADD DOCTOR
     </button>
-    <table id="doctorTable" class="table" style="width:100%">
+    <table id="doctorsTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>

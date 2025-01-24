@@ -1342,7 +1342,7 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
 }));
 
 $('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', function() {
-    reloadTableData(doctorTable);
+    reloadTableData(doctorsTable);
 });
 
 $('#addDoctorModal').on('hidden.bs.modal', function(e) {
@@ -1364,7 +1364,7 @@ $('#addDoctorForm').on('submit', function(e) {
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
-                reloadTableData(doctorTable);
+                reloadTableData(doctorsTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
@@ -1385,8 +1385,8 @@ $('#addDoctorModal').on('shown.bs.modal', function () {
 });
 
 // Edit Data Doctor
-$('#doctorTable').on('click', '.btn-edit', function() {
-    var data = doctorTable.row($(this).parents('tr')).data();
+$('#doctorsTable').on('click', '.btn-edit', function() {
+    var data = doctorsTable.row($(this).parents('tr')).data();
     $('#editDoctorForm [name="doctorId"]').val(data.doctorId);
     $('#editDoctorForm [name="doctorName"]').val(data.doctorName);
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
@@ -1414,7 +1414,7 @@ $('#editDoctorForm').on('submit', function(e) {
             if (res.status === 'success') {
                 $('#editDoctorModal').modal('hide');
                 displayAlert('edit success');
-                reloadTableData(doctorTable);
+                reloadTableData(doctorsTable);
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
@@ -1427,8 +1427,8 @@ $('#editDoctorForm').on('submit', function(e) {
 });
 
 // Delete Data Doctor
-$('#doctorTable').on('click', '.btn-delete', function() {
-    var data = doctorTable.row($(this).parents('tr')).data();
+$('#doctorsTable').on('click', '.btn-delete', function() {
+    var data = doctorsTable.row($(this).parents('tr')).data();
     $('#deleteDoctorForm #doctorName').html(data.doctorName);
     $('#deleteDoctorForm #doctorId').val(data.doctorId);
 })
@@ -1445,7 +1445,7 @@ $('#deleteDoctorForm').on('submit', function(e) {
             if (res.status === 'success') {
                 $('#deleteDoctorModal').modal('hide');
                 displayAlert('delete success');
-                reloadTableData(doctorTable);
+                reloadTableData(doctorsTable);
             } else if (res.status === 'failed') {
                 displayAlert(res.failedMsg);
             }
@@ -1710,12 +1710,12 @@ var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettin
         {data: 'createdAt'},
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-add btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-add btn-primary rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#addTreatmentModal"
                      title="Process for Treatment">
@@ -1723,7 +1723,7 @@ var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettin
                 </button>
                 <button 
                     type="button" 
-                    class="btn-add btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-add btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#addReferralModal"
                      title="Assign As Referral">
@@ -1731,7 +1731,7 @@ var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettin
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteQueueModal" title="Remove from Queue">
                         <i class="fa-solid fa-trash-can"></i>
@@ -1938,7 +1938,7 @@ $('#deleteQueueForm').on('submit', function(e) {
 
 // hospital disease
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
+    ajax: baseUrl + 'hospital/getDiseaseDatas', 
     columns: [
         {
             data: null,

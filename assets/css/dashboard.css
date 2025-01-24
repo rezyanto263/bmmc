@@ -374,7 +374,7 @@ div.floating-btn.flex-column:hover :where(#btn-menu, #btn-mode, #btn-scan) {
 }
 
 /* Button Style */
-.btn-view, .btn-edit, .btn-delete {
+.btn-view, .btn-edit, .btn-delete, .btn-add {
     width: 50px;
     height: 40px;
     display: inline;

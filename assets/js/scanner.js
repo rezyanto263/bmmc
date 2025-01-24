@@ -107,33 +107,43 @@ function getPatientHistoryHealth(patientNIK) {
         columns: [
             {
                 data: null,
-                className: 'text-start',
+                className: 'text-start align-middle',
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 }
             },
-            {data: 'hospitalName'},
-            {data: 'doctorName'},
+            {
+                data: 'hospitalName',
+                className: 'align-middle'
+            },
+            {
+                data: 'doctorName',
+                className: 'align-middle'
+            },
             {
                 data: 'diseaseNames',
+                className: 'align-middle',
                 render: function(data, type, row) {
                     return data ? data.split('|').join(', ') : 'No Disease';
                 }
             },
             {
                 data: 'historyhealthDate',
+                className: 'align-middle',
                 render: function(data, type, row) {
                     return moment(data).format('ddd, D MMMM YYYY HH:mm') + ' WITA';
                 }
             },
             {
                 data: 'historyhealthTotalBill',
+                className: 'align-middle',
                 render: function(data, type, row) {
                     return formatToRupiah(data);
                 }
             },
             {
                 data: 'status',
+                className: 'align-middle',
                 render: function(data, type, row) {
                     console.log(data);
                     return generateStatusData([data]).find((d) => d.id === data)?.text;
@@ -141,12 +151,12 @@ function getPatientHistoryHealth(patientNIK) {
             },
             {
                 data: null,
-                className: 'text-end user-select-none no-export',
+                className: 'text-end user-select-none no-export text-nowrap align-middle',
                 orderable: false,
                 defaultContent: `
                     <button 
                         type="button" 
-                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1">
+                        class="btn-view btn-primary rounded-2">
                         <i class="fa-regular fa-eye"></i>
                     </button>
                 `
