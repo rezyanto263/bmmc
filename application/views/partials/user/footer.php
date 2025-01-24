@@ -17,15 +17,15 @@
                         <a href="#" class="nav-link p-0 text-white">Produk</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">Mitra</a>
+                        <a href="<?=base_url('user/MapMitra');?>" class="nav-link p-0 text-white">Mitra</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white"
+                        <a href="<?=base_url('user/ListBerita');?>" class="nav-link p-0 text-white"
                         >Berita Kini</a
                         >
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white"
+                        <a href="<?=base_url('user/Tentangkami');?>" class="nav-link p-0 text-white"
                         >Tentang Kami</a
                         >
                     </li>
@@ -35,13 +35,19 @@
                     <h5 class="fw-bold">Contact</h5>
                     <ul class="nav flex-column">
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">Email</a>
+                        <a href="mailto:info@bmmcbali.com" class="nav-link p-0 text-white">
+                            Email
+                        </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">Telepon</a>
+                        <a href="tel:+6181237774030" class="nav-link p-0 text-white">
+                            Telepon
+                        </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">WhatsApp</a>
+                        <a href="https://wa.me/6281353555100" class="nav-link p-0 text-white" target="_blank">
+                            WhatsApp
+                        </a>
                     </li>
                     </ul>
                 </div>
@@ -49,18 +55,18 @@
                     <h5 class="fw-bold">Support</h5>
                     <ul class="nav flex-column">
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white"
+                        <a href="<?=base_url('user/Tentangkami');?>" class="nav-link p-0 text-white"
                         >Help Center</a
                         >
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">FAQs</a>
+                        <a href="#faqSection" class="nav-link p-0 text-white">FAQs</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white">Feedback</a>
+                        <a href="<?=base_url('user/Tentangkami');?>" class="nav-link p-0 text-white">Feedback</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-white"
+                        <a href="<?=base_url('user/Tentangkami');?>" class="nav-link p-0 text-white"
                         >Support Team</a
                         >
                     </li>

@@ -47,7 +47,8 @@
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link mx-1 fw-bold" href="#">Tentang Kami</a>
+          <a class="nav-link mx-1 fw-bold" href="<?=base_url('user/Tentangkami');?>"
+          >Tentang Kami</a>
         </li>
       </ul>
       <div class="d-lg-none mt-2">
