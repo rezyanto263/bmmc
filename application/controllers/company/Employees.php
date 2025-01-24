@@ -2,18 +2,18 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Employee extends CI_Controller {
+class Employees extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
-            redirect('dashboard');
+        if ($this->session->userdata('adminRole') != 'company') {
+            redirect('dashboard/login');
         }
 
-        $this->load->model('M_employee');
+        $this->load->model('M_employees');
         $adminId = $this->session->userdata('adminId');
-        $companyData = $this->M_employee->getCompanyByAdminId($adminId);
+        $companyData = $this->M_employees->getCompanyByAdminId($adminId);
     }
 
     public function index()
@@ -28,8 +28,8 @@ class Employee extends CI_Controller {
         );
 
         $datas = array(
-            'title' => 'BIM Dashboard | Companies',
-            'subtitle' => 'Employee',
+            'title' => 'BMMC Company | Employees',
+            'subtitle' => 'Employees',
             'contentType' => 'dashboard'
         );
 
@@ -38,7 +38,7 @@ class Employee extends CI_Controller {
             'sidebar' => 'partials/company/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'company/Employee',
+            'contentBody' => 'company/employees',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
@@ -49,7 +49,7 @@ class Employee extends CI_Controller {
 
     public function getAllEmployeesDatas() {
         $companyId = $this->session->userdata('companyId');
-        $employeesDatas = $this->M_employee->getAllEmployeesDatas($companyId);
+        $employeesDatas = $this->M_employees->getAllEmployeesDatas($companyId);
         $datas = array(
             'data' => $employeesDatas
         );
@@ -57,9 +57,18 @@ class Employee extends CI_Controller {
         echo json_encode($datas);
     }
 
+    public function getEmployeeDetails() {
+        $employeeId = $this->input->get('nik');
+        $employeeDatas = $this->M_employees->getEmployeeDetails($employeeId);
+        $datas = array(
+            'data' => $employeeDatas
+        );
+    
+        echo json_encode($datas);
+    }
+
     public function addEmployee() {
         $validate = array(
-            // Aturan validasi untuk setiap field
             array(
                 'field' => 'employeeName',
                 'label' => 'Nama',
@@ -82,60 +91,82 @@ class Employee extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'employeePassword',
-                'label' => 'Password',
-                'rules' => 'required|trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
+                'field' => 'insuranceId',
+                'label' => 'Email',
+                'rules' => 'required',
                 'errors' => array(
-                    'required' => 'Anda harus memberikan %s.',
-                    'min_length' => '%s harus memiliki panjang minimal 8 karakter.',
-                    'max_length' => '%s maksimal 20 karakter.',
-                    'regex_match' => '%s harus mengandung setidaknya satu huruf besar dan satu angka.'
-                )
-            ),
-            array(
-                'field' => 'confirmPassword',
-                'label' => 'Konfirmasi Password',
-                'rules' => 'required|matches[employeePassword]',
-                'errors' => array(
-                    'required' => 'Anda harus memberikan %s.',
-                    'matches' => '%s tidak cocok dengan Password.'
+                    'required' => 'Karyawan harus memiliki %s.',
                 )
             )
         );
         $this->form_validation->set_rules($validate);
     
-        // Validasi form
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $companyId = $this->session->userdata('companyId');
+            $employeeNIK = htmlspecialchars($this->input->post('employeeNIK'));
+            $employeePassword = strtoupper(uniqid());
+
+            $checkEmployee = $this->M_employees->checkEmployee('employeeNIK', $employeeNIK);
+            if ($checkEmployee) {
+                echo json_encode(array('status' => 'failed', 'failedMsg' => 'nik used', 'csrfToken' => $this->security->get_csrf_hash()));
+                return;
+            }
+
             $employeeData = array(
-                'employeeNIK' => htmlspecialchars($this->input->post('employeeNIK')),
-                'insuranceId' => $this->input->post('insuranceId'),
-                'employeeName' => $this->input->post('employeeName'),
-                'employeeEmail' => $this->input->post('employeeEmail'),
-                'employeePassword' => password_hash(htmlspecialchars($this->input->post('employeePassword')), PASSWORD_DEFAULT),
-                'employeeAddress' => $this->input->post('employeeAddress'),
-                'employeePhone' => $this->input->post('employeePhone'),
-                'employeeBirth' => $this->input->post('employeeBirth'),
-                'employeeGender' => $this->input->post('employeeGender')
+                'employeeNIK' => $employeeNIK,
+                'insuranceId' => htmlspecialchars($this->input->post('insuranceId')),
+                'employeeName' => htmlspecialchars($this->input->post('employeeName'), ENT_COMPAT),
+                'employeeEmail' => htmlspecialchars($this->input->post('employeeEmail')),
+                'employeePassword' => password_hash($employeePassword, PASSWORD_DEFAULT),
+                'employeeAddress' => htmlspecialchars($this->input->post('employeeAddress'), ENT_COMPAT),
+                'employeePhone' => htmlspecialchars($this->input->post('employeePhone')),
+                'employeeBirth' => htmlspecialchars($this->input->post('employeeBirth')),
+                'employeeGender' => htmlspecialchars($this->input->post('employeeGender')),
+                'employeeStatus' => 'unverified'
             );
-    
-            // Handle file upload if a photo is provided
+
             if ($_FILES['employeePhoto']['name']) {
                 $photoFileName = strtoupper(trim(str_replace('.', ' ',$employeeData['employeeName']))).'-'.time();
-                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/photos/'));
+                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/profiles/'));
                 if ($employeePhoto['status']) {
                     $employeeData['employeePhoto'] = $employeePhoto['data']['file_name'];
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $employeePhoto['error']));
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 
+                        'upload failed', 
+                        'errorMsg' => $employeePhoto['error'], 
+                        'csrfToken' => $this->security->get_csrf_hash()
+                    ));
                     return;
                 }
             }
-                // No photo uploaded, just insert data
-                $this->M_employee->insertEmployee($employeeData);
-                echo json_encode(array('status' => 'success'));
+
+            $this->load->library('sendemail');
+
+            $datas = array(
+                'accountName' => $employeeData['employeeName'],
+                'accountEmail' => $employeeData['employeeEmail'],
+                'accountPassword' => $employeePassword,
+                'bmmcEmail' => 'testbmmc@gmail.com'
+            );
+
+            $subject = 'Login & Reset your password account';
+            $body = $this->load->view('company/newAccountEmail', $datas, TRUE);
+
+            if ($this->sendemail->send($employeeData['employeeEmail'], $subject, $body)) {
+                $this->M_employees->insertEmployee($employeeData);
+                echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+            } else {
+                echo json_encode(array(
+                    'status' => 'failed',
+                    'failedMsg' => 'send email failed',
+                    'csrfToken' => $this->security->get_csrf_hash()
+                ));
+            }
         }
     }
 
@@ -163,12 +194,11 @@ class Employee extends CI_Controller {
     }
 
     private function _deleteImage($employeeNIK, $field, $path) {
-        $companyDatas = $this->M_companies->checkCompany('employeeNIK', $employeeNIK );
-        $companyDatas[$field] && unlink($path . $companyDatas[$field]);
+        $employeeDatas = $this->M_employees->checkEmployee('employeeNIK', $employeeNIK );
+        $employeeDatas[$field] && unlink($path . $employeeDatas[$field]);
     }
 
     public function editEmployee() {
-        // Validation rules
         $validate = array(
             array(
                 'field' => 'employeeName',
@@ -176,6 +206,23 @@ class Employee extends CI_Controller {
                 'rules' => 'required|trim',
                 'errors' => array(
                     'required' => 'Employee should provide a %s.'
+                )
+            ),
+            array(
+                'field' => 'employeeStatus',
+                'label' => 'Status',
+                'rules' => 'trim|in_list[active,on hold,discontinued]',
+                'errors' => array(
+                    'in_list' => 'Invalid selection. Please choose a valid option from the list.'
+                )
+            ),
+            array(
+                'field' => 'employeeNIK',
+                'label' => 'NIK',
+                'rules' => 'required|trim|numeric|max_length[16]|min_length[16]',
+                'errors' => array(
+                    'required' => 'Employee should provide a %s.',
+                    'numeric' => 'Employee %s should be a number.'
                 )
             ),
             array(
@@ -208,58 +255,62 @@ class Employee extends CI_Controller {
                 )
             )
         );
-    
         $this->form_validation->set_rules($validate);
-    
-        // Validate the form input
+
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            // Retrieve form data
-            $employeeNIK = $this->input->post('employeeNIK');
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
+            $newPassword = htmlspecialchars($this->input->post('newPassword') ?: '') ?: NULL;
+            $employeeNIK = htmlspecialchars($this->input->post('employeeNIK'));
+            $newEmployeeNIK = htmlspecialchars($this->input->post('newEmployeeNIK') ?: '') ?: NULL;
+            $employeeStatus = htmlspecialchars($this->input->post('employeeStatus') ?: '') ?: NULL;
+
+            $checkEmployee = false;
+            !empty($newEmployeeNIK) && $checkEmployee = $this->M_employees->checkEmployee('employeeNIK', $newEmployeeNIK);
+            if ($checkEmployee) {
+                echo json_encode(array('status' => 'failed', 'failedMsg' => 'nik used', 'csrfToken' => $this->security->get_csrf_hash()));
+                return;
+            }
+
             $employeeData = array(
-                'employeeNIK' => $this->input->post('employeeNIK'),
                 'insuranceId' => $this->input->post('insuranceId'),
                 'employeeName' => $this->input->post('employeeName'),
                 'employeeEmail' => $this->input->post('employeeEmail'),
                 'employeeAddress' => $this->input->post('employeeAddress'),
                 'employeePhone' => $this->input->post('employeePhone'),
                 'employeeBirth' => $this->input->post('employeeBirth'),
-                'employeeGender' => $this->input->post('employeeGender'),
+                'employeeGender' => $this->input->post('employeeGender')
             );
+            !empty($newEmployeeNIK) ? $employeeData['employeeNIK'] = $newEmployeeNIK : '';
+            !empty($employeeStatus) ? $employeeData['employeeStatus'] = $employeeStatus : '';
             !empty($newPassword) ? $employeeData['employeePassword'] = password_hash($newPassword, PASSWORD_DEFAULT) : '';
-    
-            // Handle photo update if a new photo is uploaded
-            if ($_FILES['employeePhoto']['name']) {
+
+            if (!empty($_FILES['employeePhoto']['name'])) {
                 $photoFileName = strtoupper(trim(str_replace('.', ' ', $employeeData['employeeName']))) . '-' . time();
-                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/photos/'));
+                $employeePhoto = $this->_uploadImage('employeePhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/profiles/'));
                 if ($employeePhoto['status']) {
-                    // Delete old photo
-                    $existingEmployee = $this->M_employee->getEmployeeByNIK($employeeNIK);
+                    $existingEmployee = $this->M_employees->checkEmployee('employeeNIK', $employeeNIK);
                     if (!empty($existingEmployee['employeePhoto'])) {
-                        $this->_deleteImage($existingEmployee['employeePhoto'], FCPATH . 'uploads/photos/');
+                        $this->_deleteImage($existingEmployee['employeePhoto'], FCPATH . 'uploads/profiles/');
                     }
-    
                     $employeeData['employeePhoto'] = $employeePhoto['data']['file_name'];
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $employeePhoto['error']));
+                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $employeePhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
                     return;
                 }
             }
     
-            $this->M_employee->updateEmployee($employeeNIK, $employeeData);
-            echo json_encode(array('status' => 'success'));
+            $this->M_employees->updateEmployee($employeeNIK, $employeeData);
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
-     
 
     public function deleteEmployee() {
         $employeeNIK = $this->input->post('employeeNIK');
-        $this->M_employee->deleteEmployee($employeeNIK);
+        $this->M_employees->deleteEmployee($employeeNIK);
 
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
 }
 

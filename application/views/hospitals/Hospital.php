@@ -4,8 +4,8 @@
         <div class="text-center">
             <!-- Logo Rumah Sakit -->
             <img src="https://th.bing.com/th/id/OIP.4Z-WeCh-EKNnE9eK8Q8j7wHaHd?rs=1&pid=ImgDetMain" 
-                 alt="Hospital Logo" 
-                 class="img-fluid mb-3 w-25">
+                alt="Hospital Logo" 
+                class="img-fluid mb-3 w-25">
             <h4>RSUD Kota Medan</h4>
         </div>
         <div class="d-flex justify-content-center">
@@ -49,9 +49,9 @@
                     <!-- Logo -->
                     <div class="text-center mb-3">
                         <img src="https://th.bing.com/th/id/OIP.4Z-WeCh-EKNnE9eK8Q8j7wHaHd?rs=1&pid=ImgDetMain" 
-                             alt="Hospital Logo" 
-                             class="img-thumbnail" 
-                             style="max-width: 150px;">
+                            alt="Hospital Logo" 
+                            class="img-thumbnail" 
+                            style="max-width: 150px;">
                         <div class="mt-2">
                             <label class="btn btn-warning" for="uploadHospitalLogo">Upload Logo</label>
                             <input type="file" accept="image/*" id="uploadHospitalLogo" hidden>

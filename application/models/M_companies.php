@@ -8,6 +8,7 @@ class M_companies extends CI_Model {
         $this->db->select('c.*,
             a.adminEmail, 
             a.adminName,
+            b.billingId,
             b.billingStatus, 
             b.billingAmount, 
             b.billingStartedAt,
@@ -15,7 +16,7 @@ class M_companies extends CI_Model {
             IFNULL(SUM(hh.historyhealthTotalBill), 0) as billingUsed');
         $this->db->from('company c');
         $this->db->join('admin a', 'a.adminId = c.adminId', 'left');
-        $this->db->join('billing b', 'b.companyId = c.companyId AND b.billingStatus IN (\'in use\', "stopped")', 'left');
+        $this->db->join('billing b', 'b.companyId = c.companyId AND b.billingStatus != "finished"', 'left');
         $this->db->join('historyhealth hh', 'hh.billingId = b.billingId', 'left');
         $this->db->group_by('c.companyId');
         return $this->db->get()->result_array();
@@ -24,8 +25,8 @@ class M_companies extends CI_Model {
     public function getCompanyByAdminId($adminId)
     {
         $this->db->where('adminId', $adminId);
-        $query = $this->db->get('company'); // Ganti dengan nama tabel yang sesuai
-        return $query->row_array(); // Mengambil satu baris data
+        $query = $this->db->get('company');
+        return $query->row_array();
     }
 
     public function checkCompany($param, $companyData) {
@@ -92,9 +93,9 @@ class M_companies extends CI_Model {
         $this->db->where('companyId', $companyId);
         $this->db->update('company', $companyDatas);
 
-        if ($billingDatas['billingAmount']) {
-            $this->db->where('companyId', $companyId);
-            $this->db->update('billing', $billingDatas);
+        if ($billingDatas['billingAmount'] != NULL) {
+            $this->db->where('billingId', $billingDatas['billingId']);
+            $this->db->update('billing', array('billingAmount' => $billingDatas['billingAmount']));
         }
 
         $this->db->trans_complete();

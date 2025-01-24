@@ -29,13 +29,12 @@
     <!-- Datatables -->
     <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.4/af-2.7.0/b-3.1.1/b-colvis-3.1.1/b-html5-3.1.1/b-print-3.1.1/cr-2.0.4/date-1.5.3/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.0/sp-2.3.2/sl-2.0.5/sr-1.4.1/datatables.min.css" rel="stylesheet">
 
-    <!-- Dashboard Styles -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>">
-
     <!--Map-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/companyMain.css') ?>">
+
+    <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>">
 
 <?php } else if ($contentType == 'user') { ?>
 
@@ -70,7 +69,7 @@
 
 <?php } ?>
 
-<script>
+<script defer>
     // Base URL
     var baseUrl = <?= json_encode(base_url()); ?>;
 

@@ -16,7 +16,7 @@
             Update</i>
         </button>
 
-        <a href="./index.html" class="text-danger logout ms-2"><i
+        <a href="<?= base_url('logout') ?>" class="text-danger logout ms-2"><i
             class="fa-solid fa-right-from-bracket text-decoration-underline">
             Logout</i></a>
       </div>

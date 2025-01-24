@@ -7,7 +7,7 @@ class Hospitals extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
+        if ($this->session->userdata('adminRole') != 'company') {
             redirect('dashboard');
         }
 
@@ -276,7 +276,8 @@ class Hospitals extends CI_Controller {
         if (!$qrInput) {
             echo json_encode(array(
                 'status' => 'failed',
-                'failedMsg' => 'qr data missing'
+                'failedMsg' => 'qr data missing',
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
             return;
         }
@@ -285,7 +286,8 @@ class Hospitals extends CI_Controller {
         if ($decodedData === false) {
             echo json_encode(array(
                 'status' => 'failed',
-                'failedMsg' => 'invalid qr'
+                'failedMsg' => 'invalid qr',
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
             return;
         }
@@ -295,7 +297,8 @@ class Hospitals extends CI_Controller {
         if (!(count($qrData) == 2)) {
             echo json_encode(array(
                 'status' => 'failed',
-                'failedMsg' => 'incorrect format qr data'
+                'failedMsg' => 'incorrect format qr data',
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
             return;
         }
@@ -305,7 +308,8 @@ class Hospitals extends CI_Controller {
         if (!$NIK || !$role) {
             echo json_encode(array(
                 'status' => 'failed',
-                'failedMsg' => 'incomplete qr data'
+                'failedMsg' => 'incomplete qr data',
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
             return;
         }
@@ -318,11 +322,13 @@ class Hospitals extends CI_Controller {
             echo json_encode(array(
                 'status' => 'success',
                 'data' => $patientData,
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
         } else {
             echo json_encode(array(
                 'status' => 'failed',
-                'failedMsg' => 'scan not found'
+                'failedMsg' => 'scan not found',
+                'csrfToken' => $this->security->get_csrf_hash()
             ));
         }
     }

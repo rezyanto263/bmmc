@@ -167,6 +167,16 @@ function displayAlert(flashdata, message = null) {
             title: "Billing started date or ended date already used!",
             icon: 'error'
         });
+    } else if (flashdata == 'nik used') {
+        Toast.fire({
+            title: "The employee NIK already used!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'send email failed') {
+        Toast.fire({
+            title: "Oops! Something went wrong, and we couldn’t send your email. Give it another try in a bit.",
+            icon: 'error'
+        });
     }
 }
 

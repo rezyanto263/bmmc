@@ -199,7 +199,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center order-4 order-lg-1">
-                        <div id="map" class="w-100 h-100" style="min-height:450px"></div>
+                        <div id="map" class="w-100 h-100" style="min-height:300px"></div>
                     </div>
                     <div class="col-12 order-1 order-lg-2">
                         <div class="row g-4">
@@ -354,7 +354,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
-                                <select class="form-control" title="Choose Admin" id="adminId" name="adminId">
+                                <select class="form-control" title="Choose Admin" name="adminId">
                                     <option hidden></option>
                                 </select>
                             </div>
@@ -364,10 +364,13 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Status">
                                     <i class="las la-tag fs-4"></i>
                                 </span>
-                                <select class="form-control" id="companyStatus" name="companyStatus">
+                                <select class="form-control" name="companyStatus">
                                     <option hidden></option>
                                 </select>
                             </div>
+                            <small class="warning-message text-warning px-0 lh-1" style="display: none">
+                                You can't change unverified status.
+                            </small>
                         </div>
                         <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
@@ -395,6 +398,7 @@
                                 <label class="form-check-label">Change coordinate?</label>
                             </div>
                         </div>
+                        <input type="hidden" name="billingId">
                         <div class="col-12" id="changeBillingAmountInput">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Billing Amount">

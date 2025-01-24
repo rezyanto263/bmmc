@@ -4,9 +4,11 @@ class TreatmentHistory extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
+        if ($this->session->userdata('adminRole') != 'company') {
             redirect('dashboard');
         }
+
+        $this->load->model('M_historyhealth');
     }
     public function index()
     {
@@ -26,6 +28,16 @@ class TreatmentHistory extends CI_Controller {
         );
         $this->load->vars($datas);
         $this->load->view('master', $partials);
+    }
+
+    public function getHistoryHealthByCompanyId() {
+        $companyId = $this->session->userdata('companyId');
+        $historyhealthDatas = $this->M_historyhealth->getHistoryHealthByCompanyId($companyId);
+        $datas = array(
+            'data' => $historyhealthDatas
+        );
+
+        echo json_encode($datas);
     }
 }
 /* End of file Company.php */

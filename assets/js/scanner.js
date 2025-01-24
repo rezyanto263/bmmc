@@ -58,6 +58,7 @@ $('#qrForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function (response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#scanResultModal').modal('show');
                 $('#scannerModal').modal('hide');
@@ -71,7 +72,7 @@ $('#qrForm').on('submit', function(e) {
                         { id: 'nik', value: data.employeeNIK || data.familyNIK },
                         { id: 'name', value: data.employeeName || data.familyName },
                         { id: 'role', value: data.familyRole || 'Employee' },
-                        { id: 'birth', value: data.employeeBirth || data.familyBirth },
+                        { id: 'birth', value: moment(data.employeeBirth || data.familyBirth).format('dddd, D MMMM YYYY') },
                         { id: 'gender', value: capitalizeWords(data.employeeGender || data.familyGender) },
                         { id: 'companyName', value: data.companyName },
                         { id: 'email', value: data.employeeEmail || data.familyEmail },
@@ -159,9 +160,10 @@ function getPatientHistoryHealth(patientNIK) {
 
 $('#patientTable').on('click', '.btn-view', function() {
     viewHistoryHealthDetailsModal.show();
-    const backdrops = document.querySelectorAll('.modal-backdrop.show');
-    if (backdrops.length >= 2) {
-        backdrops[1].style.zIndex = "1055";
+    const $backdrops = $('.modal-backdrop.show');
+    if ($backdrops.length >= 2) {
+        $backdrops.eq(1).css('z-index', '1055');
+        $('#viewHistoryHealthDetailsModal').css('z-index', '1056');
     }
     var data = patientTable.row($(this).parents('tr')).data();
 

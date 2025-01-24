@@ -8,8 +8,8 @@ class Companies extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin') && $this->session->userdata('adminRole') != ('company')) {
-            redirect('dashboard');
+        if ($this->session->userdata('adminRole') != 'admin') {
+            redirect('dashboard/login');
         }
 
         $this->load->model('M_companies');
@@ -233,25 +233,29 @@ class Companies extends CI_Controller {
             ),
         );
         $this->form_validation->set_rules($validate);
-
+    
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $companyCoordinate = htmlspecialchars($this->input->post('companyCoordinate'));
+            $companyStatus = htmlspecialchars($this->input->post('companyStatus') ?? '');
 
             $companyDatas = array(
-                'companyName' => htmlspecialchars($this->input->post('companyName')),
+                'companyName' => htmlspecialchars($this->input->post('companyName'), ENT_COMPAT),
                 'adminId' => htmlspecialchars($this->input->post('adminId')),
                 'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
                 'companyAddress' => htmlspecialchars($this->input->post('companyAddress')),
-                'companyStatus' => htmlspecialchars($this->input->post('companyStatus'))
+            );
+            $companyStatus && $companyDatas['companyStatus'] = $companyStatus;
+
+            $billingId = htmlspecialchars($this->input->post('billingId'));
+            $billingAmount = htmlspecialchars($this->input->post('billingAmount'));
+            $billingDatas = array(
+                'billingId' => $billingId,
+                'billingAmount' => $billingAmount
             );
 
-            $billingAmount = $this->input->post('billingAmount') ?: NULL;
-            $billingDatas = array(
-                'billingAmount' => htmlspecialchars($billingAmount),
-            );
 
             if ($_FILES['companyLogo']['name']) {
                 $fileName = strtoupper(trim(str_replace('.', ' ',$companyDatas['companyName']))).'-'.time();
@@ -287,7 +291,7 @@ class Companies extends CI_Controller {
                 }
             }
 
-            $this->M_companies->updateCompany($this->input->post('companyId') ,$companyDatas, $billingDatas);
+            $this->M_companies->updateCompany($this->input->post('companyId'), $companyDatas, $billingDatas);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }

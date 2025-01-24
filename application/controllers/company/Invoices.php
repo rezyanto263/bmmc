@@ -2,39 +2,40 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Hospital extends CI_Controller {
+class Invoices extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('hospital')) {
+        if ($this->session->userdata('adminRole') != 'company') {
             redirect('dashboard');
         }
-
-        $this->load->model('M_hospitals');
     }
-    
 
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Hospital | Profile',
-            'subtitle' => 'Hospital',
+            'title' => 'BMMC Company | Invoices',
+            'subtitle' => 'Invoices',
             'contentType' => 'dashboard'
         );
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/hospital/sidebar',
+            'sidebar' => 'partials/company/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospitals/Hospital',
-            'footer' => 'partials/hospital/footer',
+            'contentBody' => 'company/invoices',
+            'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
 
         $this->load->vars($datas);
         $this->load->view('master', $partials);
     }
+
 }
+
+/* End of file Company.php */
+
 ?>

@@ -20,19 +20,6 @@ var DataTableSettings = {
             }
         },
         {
-            extend: 'pdfHtml5',
-            text: 'PDF',
-            orientation: 'portrait',
-            pageSize: 'A4',
-            exportOptions: {
-                columns: ':visible:not(.no-export)'
-            },
-            customize: function (doc) {
-                doc.content[1].table.widths = 
-                    Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-            }
-        },
-        {
             extend: "colvis",
             collectionLayout: "dropdown",
             text: "Visibility",
@@ -59,11 +46,15 @@ var DataTableSettings = {
         bottomEnd: 'paging',
     },
     colReorder: true,
-    responsive: true,
     paging: true,
     searching: true,
     ordering: true,
     autoWidth: true,
+    scrollX: true,
+    fixedColumns: {
+        rightColumns: 1,
+        leftColumns: 0
+    }
 }
 
 function displayFormValidation(formSelector, errors) {
@@ -94,8 +85,9 @@ $('.modal').on('hidden.bs.modal', function(e) {
     $(this).find('select.form-control').select2('destroy');
     $(e.target).find('form').trigger('reset');
     $('.error-message').remove();
+    $('.warning-message').hide();
     $('.is-invalid').removeClass('is-invalid');
-    $('.changeEmailInput, .changePasswordInput, #changeCoordinateInput, #changeBillingAmountInput').hide();
+    $('.changeEmailInput, .changePasswordInput, #changeCoordinateInput, #changeBillingAmountInput, #newEmployeeNIKInput').hide();
 });
 
 $('#addAdminButton, #editAdminButton, #deleteAdminButton').on('click', function() {
@@ -249,7 +241,7 @@ var adminsTable = $('#adminsTable').DataTable($.extend(true, {}, DataTableSettin
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
@@ -392,30 +384,49 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
     columns: [
         {
             data: null,
-            className: 'text-start',
+            className: 'text-start align-middle',
             render: function (data, type, row, meta) {
                 return meta.row + 1;
             }
         },
-        {data: 'hospitalName'},
+        {
+            data: 'hospitalLogo',
+            className: 'align-middle',
+            orderable: false,
+            render: function(data, type, row) {
+                let logo = data ? `${baseUrl}uploads/logos/${data}` : `${baseUrl}assets/images/hospital-placeholder.jpg`;
+                return `<img class="rounded border border-secondary-subtl" src="${logo}" width="45px" height="45px">`;
+            }
+        },
+        {
+            data: 'hospitalName',
+            className: 'text-nowrap align-middle'
+        },
         {
             data: 'adminEmail',
+            className: 'align-middle',
             render: function(data, type, row) {
                 return data ? data : 'No Admin';
             }
         },
-        {data: 'hospitalAddress'},
-        {data: 'hospitalPhone'},
+        {
+            data: 'hospitalAddress',
+            className: 'align-middle'
+        },
+        {
+            data: 'hospitalPhone',
+            className: 'align-middle'
+        },
         {
             data: 'hospitalStatus',
-            className: 'text-nowrap',
+            className: 'text-nowrap align-middle',
             render: function(data, type, row) {
                 return generateStatusData([data]).find((d) => d.id === data)?.text || '';
             }
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
@@ -443,6 +454,7 @@ var hospitalsTable = $('#hospitalsTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
+        {width: '45px', target: 1},
         {width: '180px', target: 6}
     ]
 }));
@@ -464,13 +476,6 @@ $('#viewMapHospitalModal').on('shown.bs.modal', function () {
 });
 
 $('#addHospitalModal').on('shown.bs.modal', function() {
-    $(this).find('select[name="hospitalStatus"]').select2({
-        placeholder: 'Choose Status',
-        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
-        dropdownParent: $('#addHospitalModal .modal-body'),
-        escapeMarkup: function (markup) { return markup; }
-    });
-
     $(this).find('select[name="adminId"]').select2({
         ajax: {
             url: baseUrl + 'dashboard/getAllUnconnectedHospitalAdminsDatas',
@@ -551,7 +556,8 @@ $('#hospitalsTable').on('click', '.btn-view', function() {
     $('#viewHospitalModal [name="hospitalAddress"]').val(data.hospitalAddress);
     $('#viewHospitalModal [name="hospitalCoordinate"]').val(data.hospitalCoordinate);
     $('#viewHospitalModal [name="hospitalPhone"]').val(data.hospitalPhone);
-    $('#viewHospitalModal [name="adminId"]').val(`${data.adminName} | ${data.adminEmail}`);
+    adminData = data.adminName ? `${data.adminName} | ${data.adminEmail}` : 'No Admin';
+    $('#viewHospitalModal [name="adminId"]').val(adminData);
 
     formatPhoneInput();
 
@@ -582,9 +588,11 @@ $('#hospitalsTable').on('click', '.btn-edit', function() {
 
     formatPhoneInput();
 
+    isRestrictedStatus = d.hospitalStatus === 'unverified' || d.hospitalStatus === 'independent';
     $('#editHospitalForm [name="hospitalStatus"]').select2({
         placeholder: 'Choose Status',
-        data: generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        data: isRestrictedStatus ? generateStatusData([d.hospitalStatus]) : generateStatusData(['Unverified', 'Active', 'On Hold', 'Discontinued']),
+        disabled: isRestrictedStatus,
         dropdownParent: $('#editHospitalModal .modal-body'),
         escapeMarkup: function (markup) {
             return markup;
@@ -597,48 +605,63 @@ $('#hospitalsTable').on('click', '.btn-edit', function() {
         }
     });
     $('#editHospitalForm [name="hospitalStatus"]').val(d.hospitalStatus).trigger('change');
+    isRestrictedStatus && $('#editHospitalForm [name="hospitalStatus"]').parents('.col-12').find('.warning-message').show();
 
-    $('#editHospitalForm [name="adminId"]').empty();
-    $('#editHospitalForm [name="adminId"]').select2({
+    $('#editHospitalForm [name="adminId"]').empty().select2({
         placeholder: 'Choose Admin',
+        ajax: {
+            url: baseUrl + 'dashboard/getAllUnconnectedHospitalAdminsDatas',
+            method: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function(response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                const selectedData = d && d.adminId
+                    ? [{
+                        id: d.adminId,
+                        text: `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((a) => a.id === 'current').text}`,
+                        selected: true
+                    }]
+                    : [];
+
+                const allData = selectedData.concat(
+                    response.data.map(function(data) {
+                        return {
+                            id: data.adminId,
+                            text: `${data.adminEmail} | ${data.adminName} | ${generateStatusData(['not linked']).find((a) => a.id === 'not linked').text}`,
+                        };
+                    })
+                );
+
+                const filteredData = allData.filter(function(data) {
+                    const searchText = data.text.toLowerCase();
+                    return searchText.includes(searchTerm);
+                });
+
+                return {
+                    results: filteredData
+                };
+            },
+            error: function(err) {
+                console.error('Error fetching admin data:', err);
+            }
+        },
         allowClear: true,
         dropdownParent: $('#editHospitalModal .modal-body'),
         escapeMarkup: function(markup) {
             return markup;
-        },
-        templateResult: function(data) {
-            return data.text;
-        },
-        templateSelection: function(data) {
-            return data.text || 'Choose Admin';
         }
     });
 
-    var preselectedOption = new Option(
-        `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
-        d.adminId,
-        true, 
-        true  
-    );
-    $('#editHospitalForm [name="adminId"]').append(preselectedOption).trigger('change');
-
-    $.ajax({
-        url: baseUrl + 'dashboard/getAllUnconnectedHospitalAdminsDatas',
-        method: 'GET',
-        success: function(response) {
-            var res = JSON.parse(response);
-            res.data.forEach(function(data) {
-                var option = new Option(
-                    `${data.adminEmail} | ${data.adminName} | ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`,
-                    data.adminId
-                );
-                $('#editHospitalForm [name="adminId"]').append(option);
-            });
-        },
-        error: function(err) {
-            console.error('Error fetching admin data:', err);
-        }
-    });
+    if (d.adminId) {
+        var preselectedOption = new Option(
+            `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
+            d.adminId,
+            true, 
+            true  
+        );
+        $('#editHospitalForm [name="adminId"]').append(preselectedOption).trigger('change');
+    }
 });
 
 $('#editHospitalForm').on('submit', function(e) {
@@ -722,16 +745,15 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
         {
             data: 'companyLogo',
             className: 'align-middle',
-            responsivePriority: 100,
             orderable: false,
             render: function(data, type, row) {
                 let logo = data ? `${baseUrl}uploads/logos/${data}` : `${baseUrl}assets/images/company-placeholder.jpg`;
-                return `<img src="${logo}" width="45px" height="45px">`;
+                return `<img class="rounded border border-secondary-subtl" src="${logo}" width="45px" height="45px">`;
             }
         },
         {
             data: 'companyName',
-            className: 'align-middle'
+            className: 'align-middle text-nowrap'
         },
         {
             data: 'adminEmail',
@@ -748,7 +770,6 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
         {
             data: 'billingUsed',
             className: 'align-middle',
-            responsivePriority: 1,
             render: function(data, type, row) {
                 var current = row.billingAmount - row.billingUsed;
                 var percentage = current != 0 ? parseInt((current / row.billingAmount) * 100) : 0;
@@ -776,7 +797,7 @@ var companiesTable = $('#companiesTable').DataTable($.extend(true, {}, DataTable
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export align-middle',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
@@ -951,13 +972,13 @@ $('#companiesTable').on('click', '.btn-edit', function() {
     $('#editCompanyForm [name="companyPhone"]').val(d.companyPhone);
     formatPhoneInput();
 
-    $('#editCompanyForm [name="billingAmount"]').val(d.billingAmount);
-    formatCurrencyInput();
-
+    $('#editCompanyForm [name="billingId"]').val(d.billingId);  
+    var isUnverified = d.companyStatus == 'unverified';
     $('#editCompanyForm [name="companyStatus"]').select2({
         placeholder: 'Choose Status',
-        data: generateStatusData(['Active', 'On Hold', 'Discontinued']),
+        data: isUnverified ? generateStatusData([d.companyStatus]) : generateStatusData(['Active', 'On Hold', 'Discontinued']),
         dropdownParent: $('#editCompanyModal .modal-body'),
+        disabled: isUnverified,
         escapeMarkup: function (markup) {
             return markup;
         },
@@ -969,6 +990,7 @@ $('#companiesTable').on('click', '.btn-edit', function() {
         }
     });
     $('#editCompanyForm [name="companyStatus"]').val(d.companyStatus).trigger('change');
+    isUnverified && $('#editCompanyForm [name="companyStatus"]').parents('.col-12').find('.warning-message').show();
 
     $('#editCompanyForm [name="adminId"]').empty();
     $('#editCompanyForm [name="adminId"]').select2({
@@ -1095,15 +1117,16 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
         {
             data: 'companyLogo',
             className: 'align-middle',
-            responsivePriority: 100,
+            responsivePriority: 3,
             orderable: false,
             render: function(data, type, row) {
-                return `<img src="${baseUrl}uploads/logos/${data}" width="45px" height="45px">`;
+                let logo = data ? `${baseUrl}uploads/logos/${data}` : `${baseUrl}assets/images/hospital-placeholder.jpg`;
+                return `<img class="rounded border border-secondary-subtl" src="${logo}" width="45px" height="45px">`;
             }
         },
         {
             data: 'companyName',
-            className: 'align-middle',
+            className: 'text-nowrap align-middle',
         },
         {
             data: 'billingStartedAt',
@@ -1146,14 +1169,14 @@ var billingsTable = $('#billingsTable').DataTable($.extend(true, {}, DataTableSe
         },
         {
             data: 'billingStatus',
-            className: 'align-middle',
+            className: 'text-nowrap align-middle',
             render: function(data, type, row) {
                 return generateStatusData([data]).find((d) => d.id === data)?.text || '';
             }
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             responsivePriority: 2,
             defaultContent: `
@@ -1293,19 +1316,19 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editDoctorModal" title="Edit Doctor">
                         <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteDoctorModal" title="Delete Doctor">
                         <i class="fa-solid fa-trash-can"></i>
@@ -1314,7 +1337,7 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
         }
     ],
     columnDefs: [
-        {width: '180px', target: 4}
+        {width: '180px', target: 6}
     ]
 }));
 
@@ -1323,7 +1346,6 @@ $('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', functi
 });
 
 $('#addDoctorModal').on('hidden.bs.modal', function(e) {
-    console.log('addDoctorModal closed and reset'); // Debugging
     $(e.target).find('form').trigger('reset');
 });
 
@@ -1485,14 +1507,14 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             render: function(data, type, row, meta) {
                 if (data.historyhealthTotalBill == 0 && data.historyhealthDiscount == 0) {
                     return `
                     <button 
                         type="button" 
-                        class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                        class="btn-view btn-primary rounded-2" 
                         data-bs-toggle="modal" 
                         data-bs-target="#detailHistoryModal"
                         title="View History">
@@ -1503,7 +1525,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                     return `
                         <button 
                             type="button" 
-                            class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                            class="btn-view btn-primary rounded-2" 
                             data-bs-toggle="modal" 
                             data-bs-target="#detailHistoryModal"
                             title="View History">
@@ -1520,7 +1542,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
     ],
     columnDefs: [
-        {width: '180px', target: 4}
+        {width: '180px', target: 8}
     ],
     footerCallback: function (row, data, start, end, display) {
         var api = this.api();
@@ -1673,43 +1695,78 @@ var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSe
 
 // Employees CRUD
 var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'company/Employee/getAllEmployeesDatas', // base URL diubah
+    ajax: baseUrl + 'company/getAllEmployeesDatas',
     columns: [
         {
             data: null,
-            className: 'text-start',
+            className: 'text-start align-middle',
             render: function (data, type, row, meta) {
                 return meta.row + 1;
             }
         },
-        {data: 'employeeNIK'},
-        {data: 'employeeName'},
-        {data: 'employeeEmail'},
-        {data: 'employeeAddress'},
-        {data: 'employeePhone'},
-        {data: 'employeeBirth'},
-        {data: 'employeeGender'},
+        {
+            data: 'employeeNIK',
+            className: 'text-nowrap align-middle'
+        },
+        {
+            data: 'employeeName',
+            className: 'text-nowrap align-middle'
+        },
+        {
+            data: 'employeeStatus',
+            className: 'text-nowrap align-middle',
+            render: function(data) {
+                return generateStatusData([data]).find((d) => d.id == data).text;
+            }
+        },
+        {
+            data: 'employeeGender',
+            className: 'text-nowrap align-middle',
+            render: function(data) {
+                return capitalizeWords(data);
+            }
+        },
+        {
+            data: 'employeeEmail',
+            className: 'text-nowrap align-middle'
+        },
+        {
+            data: 'employeePhone',
+            className: 'text-nowrap align-middle'
+        },
+        {
+            data: 'employeeBirth',
+            className: 'text-nowrap align-middle',
+            render: function(data) {
+                return moment(data).format('D MMMM YYYY')
+            }
+        },
+        {
+            data: 'employeeAddress',
+            className: 'align-middle'
+        },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-view btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    onclick="viewEmployeeInNewTab(this)">
+                    class="btn-view btn-primary rounded-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#viewEmployeeModal">
                     <i class="fa-regular fa-eye"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    data-bs-toggle="modal" 
+                    class="btn-edit btn-warning rounded-2" 
+                    data-bs-toggle="modal"
                     data-bs-target="#editEmployeeModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteEmployeeModal">
                     <i class="fa-solid fa-trash-can"></i>
@@ -1718,7 +1775,7 @@ var employeesTable = $('#employeesTable').DataTable($.extend(true, {}, DataTable
         }
     ],
     columnDefs: [
-        {width: '240px', target: 8}
+        {width: '180px', target: 8}
     ]
 }));
 
@@ -1730,14 +1787,17 @@ $('#addEmployeeButton, #editEmployeeButton, #deleteEmployeeButton').on('click', 
 $('#addEmployeeForm').on('submit', function(e) {
     e.preventDefault();
     var formData = new FormData(this);
+    removeCleaveFormat();
     $.ajax({
-        url: baseUrl + 'company/Employee/addEmployee',
+        url: baseUrl + 'company/Employees/addEmployee',
         method: 'POST',
         data: formData,
         contentType: false,
         processData: false,
         success: function(response) {
+            console.log(response);
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addEmployeeModal').modal('hide');
                 reloadTableData(employeesTable);
@@ -1745,20 +1805,29 @@ $('#addEmployeeForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatPhoneInput()
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatPhoneInput()
                 displayFormValidation('#addEmployeeForm', res.errors);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });
 
 $('#addEmployeeModal').on('show.bs.modal', function() {
-    $(this).find('select#employeeGender').select2({
+    $(this).find('#addEmployeeForm [name="employeeGender"]').select2({
         placeholder: 'Choose Gender',
         dropdownParent: $('#addEmployeeModal .modal-body')
     });
-    $(this).find('select#insuranceId').select2({
+
+    $(this).find('#addEmployeeForm [name="insuranceId"]').select2({
         ajax: {
             url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
             type: 'GET',
@@ -1776,7 +1845,7 @@ $('#addEmployeeModal').on('show.bs.modal', function() {
                         .map(function (data) {
                         return {
                             id: data.insuranceId,
-                            text: data.insuranceTier + ' | ' + data.insuranceAmount
+                            text: data.insuranceTier + ' | ' + formatToRupiah(data.insuranceAmount)
                         };
                     })
                 };
@@ -1790,59 +1859,242 @@ $('#addEmployeeModal').on('show.bs.modal', function() {
     });
 });
 
+// View Data Employee
+$('#employeesTable').on('click', '.btn-view', function() {
+    var data = employeesTable.row($(this).parents('tr')).data();
+    if (data.employeePhoto) {
+        $('#viewEmployeeModal #imgPreview').attr('src', baseUrl+'uploads/profiles/'+data.employeePhoto);
+    }
+
+    $('#viewEmployeeModal #employeeNIK').html(data.employeeNIK);
+    $('#viewEmployeeModal #employeeName').html(data.employeeName);
+    $('#viewEmployeeModal #employeeEmail').html(data.employeeEmail);
+    $('#viewEmployeeModal #employeePassword').html(data.employeePassword);
+    $('#viewEmployeeModal #employeeAddress').html(data.employeeAddress);
+    $('#viewEmployeeModal #employeeStatus').html(generateStatusData([data.employeeStatus]).find((d) => d.id == data.employeeStatus).text);
+    $('#viewEmployeeModal #employeeBirth').html(moment(data.employeeBirth).format('dddd, D MMMM YYYY'))
+    $('#viewEmployeeModal #employeeGender').html(capitalizeWords(data.employeeGender))
+    $('#viewEmployeeModal #employeePhone').html(data.employeePhone);
+    $('#viewEmployeeModal #insuranceTier').html(capitalizeWords(data.insuranceTier));
+    $('#viewEmployeeModal #totalBillingAmount').html(formatToRupiah(data.insuranceAmount, false, false));
+
+    $.ajax({
+        url: baseUrl + 'company/getEmployeeDetails?nik=' + data.employeeNIK,
+        method: 'GET',
+        success: function(response) {
+            var res = JSON.parse(response).data[0];
+            let billingRemaining = data.insuranceAmount - res.totalBillingUsed;
+            $('#viewEmployeeModal #totalBillingUsed').html(formatToRupiah(res.totalBillingUsed, false, false));
+            $('#viewEmployeeModal #totalBillingRemaining').html(formatToRupiah(billingRemaining));
+            $('#viewEmployeeModal #totalBilledTreatments').html(res.totalBilledTreatments);
+            $('#viewEmployeeModal #totalReferredTreatments').html(res.totalReferredTreatments);
+            $('#viewEmployeeModal #totalFreeTreatments').html(res.totalFreeTreatments);
+            $('#viewEmployeeModal #totalTreatments').html(res.totalTreatments);
+            $('#viewEmployeeModal #totalBilledTreatmentsThisMonth').html(res.totalBilledTreatmentsThisMonth);
+            $('#viewEmployeeModal #totalReferredTreatmentsThisMonth').html(res.totalReferredTreatmentsThisMonth);
+            $('#viewEmployeeModal #totalFreeTreatmentsThisMonth').html(res.totalFreeTreatmentsThisMonth);
+            $('#viewEmployeeModal #totalTreatmentsThisMonth').html(res.totalTreatmentsThisMonth);
+        }
+    });
+    
+    getEmployeeFamilies(data.employeeNIK);
+});
+
+var employeeFamiliesTable;
+function getEmployeeFamilies(employeeNIK) {
+    if ($.fn.DataTable.isDataTable('#employeeFamiliesTable')) {
+        $('#employeeFamiliesTable').DataTable().ajax.url(baseUrl + 'company/getFamiliesByEmployeeNIK?nik=' + employeeNIK).load();
+        return;
+    }
+    employeeFamiliesTable = $('#employeeFamiliesTable').DataTable($.extend(true, {}, DataTableSettings, {
+        ajax: baseUrl + 'company/getFamiliesByEmployeeNIK?nik=' + employeeNIK,
+        columns: [
+            {
+                data: null,
+                className: 'text-start align-middle',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {
+                data: 'familyNIK',
+                className: 'text-start text-nowrap align-middle'
+            },
+            {
+                data: 'familyName',
+                className: 'text-nowrap align-middle'
+            },
+            {
+                data: 'familyStatus',
+                className: 'text-nowrap align-middle',
+                render: function(data) {
+                    return generateStatusData([data]).find((d) => d.id == data).text;
+                }
+            },
+            {
+                data: 'familyGender',
+                className: 'text-nowrap align-middle',
+                render: function(data) {
+                    return capitalizeWords(data);
+                }
+            },
+            {
+                data: 'familyEmail',
+                className: 'text-nowrap align-middle'
+            },
+            {
+                data: 'familyPhone',
+                className: 'text-nowrap align-middle'
+            },
+            {
+                data: 'familyBirth',
+                className: 'text-nowrap align-middle',
+                render: function(data) {
+                    return moment(data).format('D MMMM YYYY')
+                }
+            },
+            {
+                data: 'familyAddress',
+                className: 'align-middle'
+            },
+            {
+                data: null,
+                className: 'text-end user-select-none no-export text-nowrap align-middle',
+                orderable: false,
+                defaultContent: `
+                    <button 
+                        type="button" 
+                        class="btn-view btn-primary rounded-2">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                `
+            }
+        ],
+        columnDefs: [
+            {width: '80px', target: 9}
+        ]
+    }));
+}
+
+var viewFamilyTreatmentModal;
+$('#employeeFamiliesTable').on('click', '.btn-view', function() {
+    viewFamilyTreatmentModal = new bootstrap.Modal(document.getElementById('viewFamilyTreatmentModal'));
+    viewFamilyTreatmentModal.show();
+    const $backdrops = $('.modal-backdrop.show');
+    if ($backdrops.length >= 2) {
+        $backdrops.eq(1).css('z-index', '1055');
+        $('#viewFamilyTreatmentModal').css('z-index', '1056');
+    }
+    var data = employeeFamiliesTable.row($(this).parents('tr')).data();
+
+    $('#viewFamilyTreatmentModal #totalBilledTreatments').html(data.totalBilledTreatments);
+    $('#viewFamilyTreatmentModal #totalReferredTreatments').html(data.totalReferredTreatments);
+    $('#viewFamilyTreatmentModal #totalFreeTreatments').html(data.totalFreeTreatments);
+    $('#viewFamilyTreatmentModal #totalTreatments').html(data.totalTreatments);
+    $('#viewFamilyTreatmentModal #totalBilledTreatmentsThisMonth').html(data.totalBilledTreatmentsThisMonth);
+    $('#viewFamilyTreatmentModal #totalReferredTreatmentsThisMonth').html(data.totalReferredTreatmentsThisMonth);
+    $('#viewFamilyTreatmentModal #totalFreeTreatmentsThisMonth').html(data.totalFreeTreatmentsThisMonth);
+    $('#viewFamilyTreatmentModal #totalTreatmentsThisMonth').html(data.totalTreatmentsThisMonth);
+})
+
 // Edit Data Employee
 $('#employeesTable').on('click', '.btn-edit', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
+
     if (data.employeePhoto) {
-        $('#editEmployeeForm #imgPreview').attr('src', baseUrl+'uploads/logos/'+data.employeePhoto);
+        $('#editEmployeeForm #imgPreview').attr('src', baseUrl+'uploads/profiles/'+data.employeePhoto);
     }
+
     $('#editEmployeeForm [name="employeeNIK"]').val(data.employeeNIK);
     $('#editEmployeeForm [name="employeeName"]').val(data.employeeName);
     $('#editEmployeeForm [name="employeeEmail"]').val(data.employeeEmail);
-    $('#editEmployeeForm [name="employeePhone"]').val(data.employeePhone);
     $('#editEmployeeForm [name="employeePassword"]').val(data.employeePassword);
     $('#editEmployeeForm [name="employeeAddress"]').val(data.employeeAddress);
-    $('#editEmployeeForm [name="employeeBirth"]').val(data.employeeBirth);
-    $('#editEmployeeForm [name="employeeGender"]').val(data.employeeGender);
-    $('#editEmployeeForm [name="employeeStatus"]').val(data.employeeStatus);
-    var insuranceId = data.insuranceId;
-    if (insuranceId) {
-        var selectedInsurance = '<option value="'+insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
-    }
-    $('#editEmployeeForm select#insuranceId').html(selectedInsurance);
-    $('#editEmployeeForm select#insuranceId').select2({
+    $('#editEmployeeForm [name="employeeBirth"]')[0]._flatpickr.setDate(data.employeeBirth);
+
+    var isUnverified = data.employeeStatus == 'unverified';
+    $('#editEmployeeForm [name="employeeStatus"]').select2({
+        minimumInputLength: 0,
+        placeholder: 'Choose Status',
+        data: isUnverified ? generateStatusData([data.employeeStatus]) : generateStatusData(['Active', 'On Hold', 'Discontinued']),
+        disabled: isUnverified,
+        dropdownParent: $('#editEmployeeModal .modal-body'),
+        escapeMarkup: function(markup) {
+            return markup;
+        }
+    });
+    $('#editEmployeeForm [name="employeeStatus"]').val(data.employeeStatus).trigger('change');
+    isUnverified && $('#editEmployeeForm [name="employeeStatus"]').parents('.col-12').find('.warning-message').show();
+
+    $('#editEmployeeForm [name="employeePhone"]').val(data.employeePhone);
+    formatPhoneInput()
+
+    $('#editEmployeeForm [name="employeeGender"]').select2({
+        minimumInputLength: 0,
+        placeholder: 'Choose Gender',
+        dropdownParent: $('#editEmployeeModal .modal-body'),
+    });
+    $('#editEmployeeForm [name="employeeGender"]').val(data.employeeGender).trigger('change');
+    
+    $('#editEmployeeForm [name="insuranceId"]').select2({
+        ajax: {
+            url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function(response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                return {
+                    results: response.data
+                        .filter(function(d) {
+                            const insuranceTier = d.insuranceTier.toLowerCase().includes(searchTerm);
+                            const insuranceAmount = d.insuranceAmount.toLowerCase().includes(searchTerm);
+                            return insuranceTier || insuranceAmount;
+                        })
+                        .map(function(d) {
+                            return {
+                                id: d.insuranceId,
+                                text: `${d.insuranceTier} | ${d.insuranceAmount}`,
+                                selected: d.insuranceId === data.insuranceId
+                            }
+                        })
+                };
+            }
+        },
+        minimumInputLength: 0,
         placeholder: 'Choose Insurance',
-        allowClear: true,
         dropdownParent: $('#editEmployeeModal .modal-body'),
     });
 
-    $.ajax({
-        url: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
-        method: 'GET',
-        success: function(response) {
-            var res = JSON.parse(response);
+    var selectedOption = new Option(
+        `${data.insuranceTier} - ${formatToRupiah(data.insuranceAmount, true, false)}`,
+        data.insuranceId,
+        true,
+        true
+    )
+    $('#editEmployeeForm [name="insuranceId"]').append(selectedOption).trigger('change');
+});
 
-            let optionList = [selectedInsurance];
-            $.each(res.data, function(index, data) {
-                optionList += '<option value="'+data.insuranceId+'">'+data.insuranceTier+' | '+data.insuranceAmount+'</option>';
-            });
-
-            $('#editEmployeeForm select#insuranceId').html(optionList);
-            $('#editEmployeeForm select#insuranceId').val(insuranceId).trigger('change');
-        }
-    });
+$('#editEmployeeForm #newEmployeeNIK').change(function() {
+    $('#editEmployeeForm #newEmployeeNIKInput').toggle();
+    $('#editEmployeeForm #newEmployeeNIKInput').find('input').val('');
+    $('#editEmployeeForm #newEmployeeNIKInput').find('.error-message').remove();
+    $('#editEmployeeForm #newEmployeeNIKInput').find('.is-invalid').removeClass('is-invalid');
 });
 
 $('#editEmployeeForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
-        url: baseUrl + 'company/Employee/editEmployee', // base URL diubah
+        url: baseUrl + 'company/Employees/editEmployee',
         method: 'POST',
         data: new FormData(this),
         contentType: false,
         processData: false,
         success: function(response) {
+            console.log(response);
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editEmployeeModal').modal('hide');
                 reloadTableData(employeesTable);
@@ -1850,29 +2102,38 @@ $('#editEmployeeForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatPhoneInput();
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatPhoneInput();
                 displayFormValidation('#editEmployeeForm', res.errors);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });
 
-// Delete Employee
+// Delete Data Employee
 $('#employeesTable').on('click', '.btn-delete', function() {
     var data = employeesTable.row($(this).parents('tr')).data();
     $('#deleteEmployeeForm #employeeName').html(data.employeeName);
-    $('#deleteEmployeeForm #employeeNIK').val(data.employeeNIK);
+    $('#deleteEmployeeForm [name="employeeNIK"]').val(data.employeeNIK);
 });
 
 $('#deleteEmployeeForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'company/Employee/deleteEmployee', // base URL diubah
+        url: baseUrl + 'company/Employees/deleteEmployee',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteEmployeeModal').modal('hide');
                 reloadTableData(employeesTable);
@@ -1882,62 +2143,68 @@ $('#deleteEmployeeForm').on('submit', function(e) {
     });
 });
 
+
+// Insurances CRUD
 var insurancesTable = $('#insurancesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'company/Insurance/getAllInsuranceByCompanyId',
+    ajax: baseUrl + 'company/getAllInsuranceByCompanyId',
     columns: [
         {
             data: null,
-            className: 'text-start',
+            className: 'text-start align-middle',
             render: function (data, type, row, meta) {
                 return meta.row + 1;
             }
         },
         {
             data: 'insuranceTier',
-            className: 'text-start'
+            className: 'text-start align-middle'
         },
         {
             data: 'insuranceAmount',
-            className: 'text-end'
+            className: 'text-end align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
         },
         {
             data: 'insuranceDescription',
-            className: 'text-start'
+            className: 'text-start align-middle'
         },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editInsuranceModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteInsuranceModal">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             `
         }
+    ],
+    columnDefs: [
+        {width: '130px', target: 4}
     ]
 }));
-
-$('#addInsuranceModal').on('shown.bs.modal', function() {
-});
 
 $('#addInsuranceButton, #editInsuranceButton, #deleteInsuranceButton').on('click', function() {
     reloadTableData(insurancesTable);
 });
 
-// Add Data Company
+// Add Data Insurance
 $('#addInsuranceForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'company/insurance/addInsurance',
@@ -1947,37 +2214,44 @@ $('#addInsuranceForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addInsuranceModal').modal('hide');
-                reloadTableData(companiesTable);
+                reloadTableData(insurancesTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatCurrencyInput();
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatCurrencyInput();
                 displayFormValidation('#addInsuranceForm', res.errors);
             }
         }
     });
 });
 
+// Edit Data Insurance
 $('#insurancesTable').on('click', '.btn-edit', function() {
     var data = insurancesTable.row($(this).parents('tr')).data();
     $('#editInsuranceForm [name="insuranceId"]').val(data.insuranceId);
     $('#editInsuranceForm [name="insuranceTier"]').val(data.insuranceTier);
     $('#editInsuranceForm [name="insuranceAmount"]').val(data.insuranceAmount);
+    formatCurrencyInput();
     $('#editInsuranceForm [name="insuranceDescription"]').val(data.insuranceDescription);
 });
 
 $('#editInsuranceForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
         url: baseUrl + 'company/insurance/editInsurance',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editInsuranceModal').modal('hide');
                 reloadTableData(insurancesTable);
@@ -1985,8 +2259,10 @@ $('#editInsuranceForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatCurrencyInput();
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatCurrencyInput();
                 displayFormValidation('#editInsuranceForm', res.errors);
             }
         }
@@ -1997,205 +2273,95 @@ $('#editInsuranceForm').on('submit', function(e) {
 $('#insurancesTable').on('click', '.btn-delete', function() {
     var data = insurancesTable.row($(this).parents('tr')).data();
     $('#deleteInsuranceForm #insuranceTier').html(data.insuranceTier);
-    $('#deleteInsuranceForm #insuranceId').val(data.insuranceId);
+    $('#deleteInsuranceForm [name="insuranceId"]').val(data.insuranceId);
 });
 
 $('#deleteInsuranceForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'company/Insurance/deleteInsurance', // base URL diubah
+        url: baseUrl + 'company/insurance/deleteInsurance', // base URL diubah
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteInsuranceModal').modal('hide');
-                reloadTableData(insuranceTable);
+                reloadTableData(insurancesTable);
                 displayAlert('delete success');
             }
         }
     });
 });
 
-var allfamiliesTable = $('#allfamiliesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: {
-        url: baseUrl + 'company/Family/getAllFamilyDatas',
-        dataSrc: 'data', 
-        error: function (xhr, error, thrown) {
-            console.error("AJAX Error:", error);
-            console.error("XHR:", xhr);
-            alert("Error loading data: " + thrown);
-        }
-    },
-    columns: [
-        {
-            data: null,
-            className: 'text-start',
-            render: function (data, type, row, meta) {
-                return meta.row + 1;
-            }
-        },
-        {data: 'familyNIK'},
-        {data: 'familyName'},
-        {data: 'familyEmail'},
-        {data: 'familyAddress'},
-        {data: 'familyBirth'},
-        {data: 'familyGender'},
-        {
-            data: null,
-            className: 'text-end user-select-none no-export',
-            orderable: false,
-            defaultContent: `
-                <button 
-                    type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#editFamilyModal2">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                </button>
-                <button 
-                    type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#deleteFamilyModal2">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            `
-        }
-    ],
-}));
 
-$('#addFamilyModal2').on('shown.bs.modal', function() {
-    // Tambahkan kode jika memerlukan dropdown atau elemen interaktif lainnya
-});
-
-$('#addFamilyButton2, #editFamilyButton2, #deleteFamilyButton2').on('click', function() {
-    reloadTableData(allfamiliesTable);
-});
-
-// Add Data Family
-$('#addFamilyForm2').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'company/Family/addFamily', // URL untuk menambahkan data
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function(response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                $('#addFamilyModal2').modal('hide');
-                reloadTableData(allfamiliesTable);
-                displayAlert('add success');
-            } else if (res.status === 'failed') {
-                $('.error-message').remove();
-                $('.is-invalid').removeClass('is-invalid');
-                displayAlert(res.failedMsg, res.errorMsg ?? null);
-            } else if (res.status === 'invalid') {
-                displayFormValidation('#addFamilyForm2', res.errors);
-            }
-        }
-    });
-});
-
-// Edit Data Family
-$('#allfamiliesTable').on('click', '.btn-edit', function() {
-    var data = allfamiliesTable.row($(this).parents('tr')).data();
-    $('#editFamilyForm2 [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm2 [name="employeeNIK"]').val(data.employeeNIK);
-    $('#editFamilyForm2 [name="familyName"]').val(data.familyName);
-    $('#editFamilyForm2 [name="familyEmail"]').val(data.familyEmail);
-    $('#editFamilyForm2 [name="familyAddress"]').val(data.familyAddress);
-    $('#editFamilyForm2 [name="familyBirth"]').val(data.familyBirth);
-    $('#editFamilyForm2 [name="familyGender"]').val(data.familyGender);
-    $('#editFamilyForm2 [name="familyStatus"]').val(data.familyStatus);
-});
-
-$('#editFamilyForm2').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'company/Family/editFamily', // URL untuk mengedit data
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function(response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                $('#editFamilyModal2').modal('hide');
-                reloadTableData(allfamiliesTable);
-                displayAlert('edit success');
-            } else if (res.status === 'failed') {
-                $('.error-message').remove();
-                $('.is-invalid').removeClass('is-invalid');
-                displayAlert(res.failedMsg, res.errorMsg ?? null);
-            } else if (res.status === 'invalid') {
-                displayFormValidation('#editFamilyForm2', res.errors);
-            }
-        }
-    });
-});
-
-// Delete Family
-$('#allfamiliesTable').on('click', '.btn-delete', function() {
-    var data = allfamiliesTable.row($(this).parents('tr')).data();
-    $('#deleteFamilyForm2 #familyName').html(data.familyName);
-    $('#deleteFamilyForm2 #familyNIK').val(data.familyNIK);
-});
-
-$('#deleteFamilyForm2').on('submit', function(e) {
-    e.preventDefault();
-    $.ajax({
-        url: baseUrl + 'company/Family/deleteFamily', // URL untuk menghapus data
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function(response) {
-            var res = JSON.parse(response);
-            if (res.status === 'success') {
-                $('#deleteFamilyModal2').modal('hide');
-                reloadTableData(allfamiliesTable);
-                displayAlert('delete success');
-            }
-        }
-    });
-});
-
+// Families CRUD
 var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: {
-        url: baseUrl + 'company/Family/getFamiliesByemployeeNIK',
-        dataSrc: 'data', 
-        error: function (xhr, error, thrown) {
-            console.error("AJAX Error:", error);
-            console.error("XHR:", xhr);
-            alert("Error loading data: " + thrown);
-        }
-    },
+    ajax: baseUrl + 'company/getAllFamilyDatas',
     columns: [
         {
             data: null,
-            className: 'text-start',
+            className: 'text-start align-middle',
             render: function (data, type, row, meta) {
                 return meta.row + 1;
             }
         },
-        {data: 'familyNIK'},
-        {data: 'familyName'},
-        {data: 'familyEmail'},
-        {data: 'familyAddress'},
-        {data: 'familyBirth'},
-        {data: 'familyGender'},
+        {
+            data: 'familyNIK',
+            className: 'align-middle'
+        },
+        {
+            data: 'familyName',
+            className: 'align-middle'
+        },
+        {
+            data: 'familyStatus',
+            className: 'align-middle',
+            render: function(data) {
+                return generateStatusData([data]).find((d) => d.id === data).text;
+            }
+        },
+        {
+            data: 'familyGender',
+            className: 'align-middle',
+            render: function(data) {
+                return capitalizeWords(data);
+            }
+        },
+        {
+            data: 'familyEmail',
+            className: 'align-middle'
+        },
+        {
+            data: 'familyPhone',
+            className: 'align-middle'
+        },
+        {
+            data: 'familyBirth',
+            className: 'align-middle',
+            render: function(data) {
+                return moment(data).format('D MMMM YYYY');
+            }
+        },
+        {
+            data: 'familyAddress',
+            className: 'align-middle'
+        },
         {
             data: null,
-            className: 'text-end user-select-none no-export',
+            className: 'text-end user-select-none no-export text-nowrap align-middle',
             orderable: false,
             defaultContent: `
                 <button 
                     type="button" 
-                    class="btn-edit btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-edit btn-warning rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#editFamilyModal">
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
                 <button 
                     type="button" 
-                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    class="btn-delete btn-danger rounded-2" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteFamilyModal">
                     <i class="fa-solid fa-trash-can"></i>
@@ -2203,25 +2369,68 @@ var familiesTable = $('#familiesTable').DataTable($.extend(true, {}, DataTableSe
             `
         }
     ],
+    columnDefs: [
+        {width: '130px', target: 9}
+    ]
 }));
-
-$('#addFamilyModal').on('shown.bs.modal', function() {
-    // Tambahkan kode jika memerlukan dropdown atau elemen interaktif lainnya
-});
 
 $('#addFamilyButton, #editFamilyButton, #deleteFamilyButton').on('click', function() {
     reloadTableData(familiesTable);
 });
 
 // Add Data Family
+$('#addFamilyModal').on('show.bs.modal', function() {
+    $('#addFamilyForm [name="familyGender"]').select2({
+        placeholder: 'Choose Gender',
+        dropdownParent: $('#addFamilyModal .modal-body')
+    });
+
+    $('#addFamilyForm [name="employeeNIK"]').select2({
+        ajax: {
+            url: baseUrl + 'company/getAllEmployeesDatas',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                return {
+                    results: response.data
+                        .filter(function (data) {
+                            const nikMatch = data.employeeNIK.toLowerCase().includes(searchTerm);
+                            const nameMatch = data.employeeName.toLowerCase().includes(searchTerm);
+                            const statusMatch = data.employeeStatus.toLowerCase().includes(searchTerm);
+                            return nikMatch || nameMatch || statusMatch;
+                        })
+                        .map(function (data) {
+                            return {
+                                id: data.employeeNIK,
+                                text: `
+                                ${data.employeeNIK} | 
+                                ${data.employeeName} | 
+                                ${generateStatusData([data.employeeStatus]).find((d) => d.id === data.employeeStatus).text}`
+                            };
+                        }) ?? []
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Employee',
+        dropdownParent: $('#addFamilyModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; }
+    });
+});
+
 $('#addFamilyForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
-        url: baseUrl + 'company/Family/addFamily', // URL untuk menambahkan data
+        url: baseUrl + 'company/Families/addFamily',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addFamilyModal').modal('hide');
                 reloadTableData(familiesTable);
@@ -2229,35 +2438,126 @@ $('#addFamilyForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatPhoneInput()
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatPhoneInput()
                 displayFormValidation('#addFamilyForm', res.errors);
             }
         }
     });
 });
 
+
 // Edit Data Family
 $('#familiesTable').on('click', '.btn-edit', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
+    $('#editFamilyForm #newFamilyNIKInput').hide();
+
     $('#editFamilyForm [name="familyNIK"]').val(data.familyNIK);
-    $('#editFamilyForm [name="employeeNIK"]').val(data.employeeNIK);
     $('#editFamilyForm [name="familyName"]').val(data.familyName);
     $('#editFamilyForm [name="familyEmail"]').val(data.familyEmail);
     $('#editFamilyForm [name="familyAddress"]').val(data.familyAddress);
-    $('#editFamilyForm [name="familyBirth"]').val(data.familyBirth);
-    $('#editFamilyForm [name="familyGender"]').val(data.familyGender);
-    $('#editFamilyForm [name="familyStatus"]').val(data.familyStatus);
+
+    $('#editFamilyForm [name="familyPhone"]').val(data.familyPhone);
+    formatPhoneInput();
+
+    $('#editFamilyForm [name="familyBirth"]')[0]._flatpickr.setDate(data.familyBirth);
+    
+    $('#editFamilyForm [name="familyGender"]').select2({
+        placeholder: 'Choose Gender',
+        dropdownParent: $('#editFamilyModal .modal-body'),
+    });
+    $('#editFamilyForm [name="familyGender"]').val(data.familyGender).trigger('change');
+
+    var isUnverified = data.familyStatus == 'unverified';
+    $('#editFamilyForm [name="familyStatus"]').select2({
+        placeholder: 'Choose Status',
+        data: isUnverified ? generateStatusData([data.familyStatus]) : generateStatusData(['Active', 'On Hold', 'Archived']),
+        disabled: isUnverified,
+        dropdownParent: $('#editFamilyModal .modal-body'),
+        escapeMarkup: function(markup) {
+            return markup;
+        }
+    });
+    $('#editFamilyForm [name="familyStatus"]').val(data.familyStatus).trigger('change');
+    isUnverified && $('#editFamilyForm [name="familyStatus"]').parents('.col-12').find('.warning-message').show();
+
+    $('#editFamilyForm [name="employeeNIK"]').select2({
+        ajax: {
+            url: baseUrl + 'company/getAllEmployeesDatas',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                return {
+                    results: response.data
+                    .filter(function (d) {
+                        const nikMatch = d.employeeNIK.toLowerCase().includes(searchTerm);
+                        const nameMatch = d.employeeName.toLowerCase().includes(searchTerm);
+                        const statusMatch = d.employeeStatus.toLowerCase().includes(searchTerm);
+                        return nikMatch || nameMatch || statusMatch;
+                    })
+                    .map(function (d) {
+                        if (d.employeeNIK != data.employeeNIK) {
+                            return {
+                                id: d.employeeNIK,
+                                text: `
+                                ${d.employeeNIK} | 
+                                ${d.employeeName} | 
+                                ${generateStatusData([d.employeeStatus]).find((a) => a.id === d.employeeStatus).text}`,
+                            };
+                        } else {
+                            return {
+                                id: d.employeeNIK,
+                                text: `
+                                ${d.employeeNIK} | 
+                                ${d.employeeName} | 
+                                ${generateStatusData(['current']).find((a) => a.id === 'current').text}`,
+                                selected: true
+                            };
+                        }
+                    }) ?? []
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        placeholder: 'Choose Employee',
+        dropdownParent: $('#editFamilyModal .modal-body'),
+        escapeMarkup: function (markup) { return markup; },
+    });
+    $('#editFamilyForm [name="employeeNIK"]').val(data.employeeNIK).trigger('change');
+
+    if (data.employeeNIK) {
+        var preselectedOption = new Option(
+            `${data.employeeNIK} | ${data.employeeName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
+            data.employeeNIK,
+            true, 
+            true  
+        );
+        $('#editFamilyForm [name="employeeNIK"]').append(preselectedOption).trigger('change');
+    }
+});
+
+$('#editFamilyForm #newFamilyNIK').change(function() {
+    $('#editFamilyForm #newFamilyNIKInput').toggle();
+    $('#editFamilyForm #newFamilyNIKInput').find('input').val('');
+    $('#editFamilyForm #newFamilyNIKInput').find('.error-message').remove();
+    $('#editFamilyForm #newFamilyNIKInput').find('.is-invalid').removeClass('is-invalid');
 });
 
 $('#editFamilyForm').on('submit', function(e) {
     e.preventDefault();
+    removeCleaveFormat();
     $.ajax({
-        url: baseUrl + 'company/Family/editFamily', // URL untuk mengedit data
+        url: baseUrl + 'company/Families/editFamily',
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editFamilyModal').modal('hide');
                 reloadTableData(familiesTable);
@@ -2265,10 +2565,18 @@ $('#editFamilyForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatPhoneInput();
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
             } else if (res.status === 'invalid') {
+                formatPhoneInput();
                 displayFormValidation('#editFamilyForm', res.errors);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });
@@ -2277,25 +2585,127 @@ $('#editFamilyForm').on('submit', function(e) {
 $('#familiesTable').on('click', '.btn-delete', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
     $('#deleteFamilyForm #familyName').html(data.familyName);
-    $('#deleteFamilyForm #familyNIK').val(data.familyNIK);
+    $('#deleteFamilyForm [name="familyNIK"]').val(data.familyNIK);
 });
 
 $('#deleteFamilyForm').on('submit', function(e) {
     e.preventDefault();
     $.ajax({
-        url: baseUrl + 'company/Family/deleteFamily', // URL untuk menghapus data
+        url: baseUrl + 'company/Families/deleteFamily', // URL untuk menghapus data
         method: 'POST',
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteFamilyModal').modal('hide');
                 reloadTableData(familiesTable);
                 displayAlert('delete success');
+            } else if (res.status === 'failed') {
+                $('#deleteFamilyModal').modal('hide');
+                displayAlert(res.failedMsg, res.errorMsg ?? null);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });
 
 
-//Maps
+
+// Treatment History CRUD
+var treatmentHistoryTable = $('#treatmentHistoryTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'company/getHistoryHealthByCompanyId',
+    columns: [
+        {
+            data: null,
+            className: 'text-start align-middle',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: 'patientNIK',
+            className: 'align-middle'
+        },
+        {
+            data: 'patientName',
+            className: 'align-middle'
+        },
+        {
+            data: 'historyhealthRole',
+            className: 'align-middle'
+        },
+        {
+            data: 'historyhealthDate',
+            className: 'align-middle',
+            render: function(data) {
+                return moment(data).format('D MMMM YYYY');
+            }
+        },
+        {
+            data: 'historyhealthDoctorFee',
+            className: 'align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
+        },
+        {
+            data: 'historyhealthMedicineFee',
+            className: 'align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
+        },
+        {
+            data: 'historyhealthLabFee',
+            className: 'align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
+        },
+        {
+            data: 'historyhealthActionFee',
+            className: 'align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
+        },
+        {
+            data: 'historyhealthDiscount',
+            className: 'align-middle',
+            render: function(data) {
+                return '- ' + formatToRupiah(data);
+            }
+        },
+        {
+            data: 'historyhealthTotalBill',
+            className: 'align-middle',
+            render: function(data) {
+                return formatToRupiah(data);
+            }
+        },
+        {
+            data: 'hospitalName',
+            className: 'align-middle'
+        },
+        {
+            data: 'doctorName',
+            className: 'align-middle'
+        },
+        {
+            data: 'status',
+            className: 'align-middle',
+            render: function(data) {
+                return generateStatusData([data]).find((d) => d.id = data).text;
+            }
+        },
+    ],
+    columnDefs: [
+        {width: '250px', target: 13}
+    ]
+}));

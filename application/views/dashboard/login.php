@@ -19,7 +19,7 @@
                 </div>
                 <div class="login-form col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center p-md-5 px-4 py-5">
                     <h1 class="mb-5">
-                        Login Account
+                        Login Dashboard
                     </h1>
                     <div id="loginAlert" data-flashdata="<?= $this->session->flashdata('flashdata');?>"></div>
                     <form class="row gy-2 d-flex justify-content-center px-3" action="<?= base_url('authDashboard/loginDashboard') ?>" method="POST">

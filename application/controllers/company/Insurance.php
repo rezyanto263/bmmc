@@ -1,14 +1,16 @@
 <?php 
 
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 use Ramsey\Uuid\Uuid;
+
 class Insurance extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
-            redirect('dashboard');
+        if ($this->session->userdata('adminRole') != 'company') {
+            redirect('dashboard/login');
         }
         
         $this->load->model('M_insurance');
@@ -27,7 +29,7 @@ class Insurance extends CI_Controller {
             'sidebar' => 'partials/company/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'company/Insurance',
+            'contentBody' => 'company/insurance',
             'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
@@ -40,8 +42,10 @@ class Insurance extends CI_Controller {
         $companyId = $this->session->userdata('companyId');
         $insuranceDatas = $this->M_insurance->getAllInsuranceByCompanyId($companyId);
         $datas = array(
-            'data' => $insuranceDatas
+            'data' => $insuranceDatas,
+            'csrfToken' => $this->security->get_csrf_hash()
         );
+
         echo json_encode($datas);
     }
 
@@ -72,7 +76,7 @@ class Insurance extends CI_Controller {
         // Validasi form
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $uuid = Uuid::uuid7();
             $companyId = $this->session->userdata('companyId');
@@ -84,7 +88,7 @@ class Insurance extends CI_Controller {
                 'insuranceDescription' => $this->input->post('insuranceDescription')
             );
             $this->M_insurance->insertInsurance($insuranceData);
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
@@ -121,7 +125,7 @@ class Insurance extends CI_Controller {
         // Validasi form
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $insuranceId = $this->input->post('insuranceId');
             $companyId = $this->session->userdata('companyId');
@@ -131,7 +135,7 @@ class Insurance extends CI_Controller {
                 'insuranceDescription' => $this->input->post('insuranceDescription')
             );
             $this->M_insurance->updateInsurance($insuranceId, $insuranceData);
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
@@ -139,7 +143,7 @@ class Insurance extends CI_Controller {
         $insuranceId = $this->input->post('insuranceId');
         $this->M_insurance->deleteInsurance($insuranceId);
         
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
 
 }

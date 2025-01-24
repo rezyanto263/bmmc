@@ -11,7 +11,6 @@ use League\OAuth2\Client\Provider\Google;
 class SendEmail {
 
     public function getMailer() {
-        $mail = $this->mail;
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();

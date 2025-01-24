@@ -4,7 +4,7 @@
             <div class="row h-100">
                 <div class="login-design col-6 d-none d-lg-flex gap-3 flex-lg-column justify-content-center align-items-center py-5">
                     <h3 class="fw-bold mb-4 text-white">WELCOME TO</h3>
-                    <img class="" src="../assets/images/logo.png" alt="">
+                    <img class="" src="<?= base_url('assets/images/logo.png') ?>" alt="">
                     <h5 class="text-white mb-4">BALI MITRA MEDICAL CENTER</h5>
                     <p class="text-white text-center mx-5 mb-4">
                         At BMMC (Bali Mitra Medical Center), your health is our priority. We provide comprehensive health insurance services tailored to meet the unique needs of our clients, ensuring peace of mind and quality care when you need it most.
@@ -24,11 +24,11 @@
                         <div class="mb-3 p-0">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent">
-                                    <i class="las la-id-card fs-4"></i>
+                                    <i class="las la-envelope fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="NIN/NIK" name="userNIK" value="<?= set_value('userNIK'); ?>" required>
+                                <input class="form-control" type="text" placeholder="Email" name="userEmail" value="<?= set_value('userEmail'); ?>" required>
                             </div>
-                            <?= form_error('userNIK', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
+                            <?= form_error('userEmail', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                         </div>
                         <div class="p-0">
                             <div class="input-group p-0">
@@ -42,13 +42,15 @@
                             </div>
                             <?= form_error('userPassword', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                         </div>
-                        <div class="d-flex justify-content-between px-0 mb-5 text-secondary fs-6">
+                        <div class="d-flex justify-content-between px-0 text-secondary fs-6">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="rememberMe">
                                 <label class="form-check-label">Remember me</label>
                             </div>
                             <a href="<?= base_url('dashboard/forgotpassword') ?>" class="text-secondary">Forgot password?</a>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                        <div class="g-recaptcha my-4 d-flex justify-content-center" data-sitekey="<?= $_ENV['CAPTCHA_SITE_KEY'] ?>"></div>
                         <button type="submit" class="btn-primary">LOGIN</button>
                     </form>
                 </div>

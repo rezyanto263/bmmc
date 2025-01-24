@@ -50,7 +50,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Amount">
                                     <i class="las la-wallet fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Insurance Amount" name="insuranceAmount">
+                                <input class="form-control currency-input" type="text" placeholder="Insurance Amount" name="insuranceAmount">
                             </div>
                         </div>
                         <div class="col-12">
@@ -61,6 +61,7 @@
                                 <textarea class="form-control" placeholder="Insurance Description" name="insuranceDescription"></textarea>
                             </div>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -73,34 +74,49 @@
 </div>
 
 <!-- Modal Edit Insurance -->
-<div class="modal fade" id="editInsuranceModal" tabindex="-1" aria-labelledby="editInsuranceModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="editInsuranceModal">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editInsuranceModalLabel">Edit Insurance</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editInsuranceForm">
-                    <div class="mb-3">
-                        <label for="insuranceId" class="form-label">Insurance ID</label>
-                        <input type="text" class="form-control" id="insuranceId" name="insuranceId" readonly>
+            <form id="editInsuranceForm">
+                <div class="modal-header border-0">
+                    <h1 class="modal-title fs-4">EDIT INSURANCE</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body border-0">
+                    <div class="row gy-4">
+                        <input type="hidden" name="insuranceId">
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Tier Name">
+                                    <i class="las la-tag fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Insurance Tier Name" name="insuranceTier">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Amount">
+                                    <i class="las la-wallet fs-4"></i>
+                                </span>
+                                <input class="form-control currency-input" type="text" placeholder="Insurance Amount" name="insuranceAmount">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Insurance Description">
+                                    <i class="las la-comment-dollar fs-4"></i>
+                                </span>
+                                <textarea class="form-control" placeholder="Insurance Description" name="insuranceDescription"></textarea>
+                            </div>
+                        </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                     </div>
-                    <div class="mb-3">
-                        <label for="insuranceTier" class="form-label">Insurance Tier</label>
-                        <input type="text" class="form-control" id="insuranceTier" name="insuranceTier">
-                    </div>
-                    <div class="mb-3">
-                        <label for="insuranceAmount" class="form-label">Insurance Amount</label>
-                        <input type="text" class="form-control" id="insuranceAmount" name="insuranceAmount">
-                    </div>
-                    <div class="mb-3">
-                        <label for="insuranceDescription" class="form-label">Insurance Description</label>
-                        <textarea class="form-control" id="insuranceDescription" name="insuranceDescription"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="submit" class="btn-primary" id="editInsuranceButton">SAVE</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -118,8 +134,9 @@
                 </div>
                 <div class="modal-body border-0">
                     Are you sure want to delete <span class="fw-bold" id="insuranceTier"></span> Insurance?
-                    <input type="number" id="insuranceId" name="insuranceId" hidden>
-                </div>
+                    <input type="hidden" name="insuranceId">
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                </div>  
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
                     <button type="submit" class="btn-primary" id="deleteInsuranceButton">DELETE</button>

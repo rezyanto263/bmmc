@@ -29,8 +29,10 @@ class AuthDashboard extends CI_Controller {
 
                 if ($adminDatas['adminRole'] === 'admin') {
                     redirect('dashboard');
-                } elseif ($adminDatas['adminRole'] === 'company') {
+                } else if ($adminDatas['adminRole'] === 'company') {
                     redirect('company/dashboard');
+                } else if ($adminDatas['adminRole'] === 'hospital') {
+                    redirect('hospital/dashboard');
                 } 
             }
         }
@@ -39,10 +41,10 @@ class AuthDashboard extends CI_Controller {
         if ($this->session->userdata('adminRole')) {
             if ($this->session->userdata('adminRole') === 'admin') {
                 redirect('dashboard');
-            } elseif ($this->session->userdata('adminRole') === 'company') {
+            } else if ($this->session->userdata('adminRole') === 'company') {
                 redirect('company/dashboard');
-            } elseif ($this->session->userdata('adminRole') === 'hospital') {
-                redirect('hospitals/hospital');
+            } else if ($this->session->userdata('adminRole') === 'hospital') {
+                redirect('hospital/dashboard');
             }
         }
 
@@ -116,31 +118,14 @@ class AuthDashboard extends CI_Controller {
         }
 
         if (!empty($adminDatas) && !($adminDatas['adminRole'] !== 'admin' && $adminDatas['status'] == NULL)) {
-            if ($adminDatas['status'] == 'unverified') {
-                $this->session->set_flashdata('flashdata', 'account unverified');
-                redirect('dashboard/login');
-            }
-
             if (password_verify($adminPassword, $adminDatas['adminPassword'])) {
                 if ($rememberMe) {
                     $this->input->set_cookie('adminLoginKey', hash('sha256', $adminDatas['adminEmail']), 0);
                     $this->input->set_cookie('adminKeyReference', $adminDatas['adminId'], 0);
                 }
-    
-                // Fetch company details based on adminId
-                if ($adminDatas['adminRole'] === 'company') {
-                    $companyData = $this->M_auth->getCompanyDetails($adminDatas['adminId']);
-                    
-                    // Set company data in session
-                    $companySessionData = array(
-                        'companyId' => $companyData['companyId'],
-                        'companyName' => $companyData['companyName'],
-                        'companyLogo' => $companyData['companyLogo'],
-                        'companyPhone' => $companyData['companyPhone'],
-                        'companyAddress' => $companyData['companyAddress'],
-                        'companyCoordinate' => $companyData['companyCoordinate'],
-                    );
-                    $this->session->set_userdata($companySessionData);
+
+                if (($adminDatas['adminRole'] === 'company' || $adminDatas['adminRole'] === 'hospital') && $adminDatas['status'] == 'unverified') {
+                    $this->M_auth->updateUnverifiedAdmin($adminDatas['adminId'], $adminDatas['adminRole'], array($adminDatas['adminRole'].'Status' => 'active'));
                 }
     
                 // Set admin data in session
@@ -157,14 +142,8 @@ class AuthDashboard extends CI_Controller {
                 } elseif ($this->session->adminRole == 'company') {
                     redirect('company/dashboard');
                 } elseif ($this->session->adminRole == 'hospital') {
-                    redirect('hospitals/hospital');
+                    redirect('hospital/dashboard');
                 }
-
-                // if ($adminDatas['adminRole'] === 'admin') {
-                //     redirect('dashboard');
-                // } elseif ($adminDatas['adminRole'] === 'company') {
-                //     redirect('company/dashboard');
-                // } 
             } else {
                 $this->session->set_flashdata('flashdata', 'wrong email or password');
                 redirect('dashboard/login');
@@ -181,6 +160,8 @@ class AuthDashboard extends CI_Controller {
 
         $sessionDatas = array('adminId', 'adminName', 'adminEmail', 'adminRole');
         $this->session->unset_userdata($sessionDatas);
+
+        session_destroy();
 
         redirect('dashboard/login');
     }

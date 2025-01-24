@@ -38,10 +38,40 @@ class M_historyhealth extends CI_Model {
         return $results;
     }
 
-    // sementara
     public function getDiseaseDatas()
     {
         return $this->db->get('disease')->result_array();
+    }
+
+    public function getHistoryHealthByCompanyId($companyId) {
+        $this->db->select('
+                hh.*, 
+                d.doctorName,
+                h.hospitalName,
+                IFNULL(e.employeeName, f.familyName) AS patientName,
+                CASE 
+                    WHEN hh.historyhealthReferredTo IS NOT NULL THEN "referred"
+                    WHEN hh.historyhealthTotalBill = 0 THEN "free"
+                    ELSE IFNULL(i.invoiceStatus, "unpaid")
+                END AS status
+        ');
+        $this->db->from('company c');
+        $this->db->join('billing b', 'b.companyId = c.companyId', 'left');
+        $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
+        $this->db->join('historyhealth hh', 'hh.billingId = b.billingId', 'left');
+        $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
+        $this->db->join('employee e', 'e.employeeNIK = hh.patientNIK AND hh.historyhealthRole = "employee"', 'left');
+        $this->db->join('family f', 'f.familyNIK = hh.patientNIK AND hh.historyhealthRole = "family"', 'left');
+        $this->db->join('doctor d', 'd.doctorId = hh.doctorId', 'left');
+        $this->db->where('c.companyId', $companyId);
+        return $this->db->get()->result_array();
+    }
+
+    public function getHistoryHealthByPatientNIK($patientNIK) {
+        $this->db->select('*');
+        $this->db->from('historyhealth');
+        $this->db->where('patientNIK', $patientNIK);
+        return $this->db->get()->result_array();
     }
 }
 

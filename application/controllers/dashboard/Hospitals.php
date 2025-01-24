@@ -6,9 +6,9 @@ class Hospitals extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        // if ($this->session->userdata('adminRole') != 'admin') {
-        //     redirect('dashboard');
-        // }
+        if ($this->session->userdata('adminRole') != 'admin') {
+            redirect('dashboard/login');
+        }
 
         $this->load->model('M_hospitals');
     }    
@@ -55,14 +55,6 @@ class Hospitals extends CI_Controller {
     public function addHospital() {
         $validate = array(
             array(
-                'field' => 'adminId',
-                'label' => 'Admin',
-                'rules' => 'required',
-                'errors' => array(
-                    'required' => 'Hospital should provide a %s.'
-                )
-            ),
-            array(
                 'field' => 'hospitalName',
                 'label' => 'Name',
                 'rules' => 'required|trim',
@@ -106,14 +98,15 @@ class Hospitals extends CI_Controller {
         } else {
             $checkHospitalCoordinate = $this->M_hospitals->checkHospital('hospitalCoordinate', $this->input->post('hospitalCoordinate'));
             if (!$checkHospitalCoordinate) {
+                $adminId = htmlspecialchars($this->input->post('adminId') ?: '');
                 $hospitalDatas = array(
-                    'hospitalName' => $this->input->post('hospitalName'),
-                    'adminId' => $this->input->post('adminId'),
+                    'hospitalName' => htmlspecialchars($this->input->post('hospitalName'), ENT_COMPAT),
                     'hospitalPhone' => htmlspecialchars($this->input->post('hospitalPhone')),
-                    'hospitalAddress' => $this->input->post('hospitalAddress'),
-                    'hospitalCoordinate' => $this->input->post('hospitalCoordinate'),
-                    'hospitalStatus' => $this->input->post('hospitalStatus')
+                    'hospitalAddress' => htmlspecialchars($this->input->post('hospitalAddress'), ENT_COMPAT),
+                    'hospitalCoordinate' => htmlspecialchars($this->input->post('hospitalCoordinate')),
+                    'hospitalStatus' => 'unverified'
                 );
+                $adminId && $hospitalDatas['adminId'] = $adminId;
 
                 if ($_FILES['hospitalLogo']['name']) {
                     $fileName = strtoupper(trim(str_replace('.', ' ',$hospitalDatas['hospitalName']))).'-'.time();
@@ -176,14 +169,6 @@ class Hospitals extends CI_Controller {
     public function editHospital() {
         $validate = array(
             array(
-                'field' => 'adminId',
-                'label' => 'Admin',
-                'rules' => 'required',
-                'errors' => array(
-                    'required' => 'Hospital should provide a %s.'
-                )
-            ),
-            array(
                 'field' => 'hospitalName',
                 'label' => 'Name',
                 'rules' => 'required|trim',
@@ -224,15 +209,16 @@ class Hospitals extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            $hospitalCoordinate = $this->input->post('hospitalCoordinate');
+            $hospitalCoordinate = htmlspecialchars($this->input->post('hospitalCoordinate'));
+            $hospitalStatus = htmlspecialchars($this->input->post('hospitalStatus') ?: '');
 
             $hospitalDatas = array(
-                'hospitalName' => $this->input->post('hospitalName'),
-                'adminId' => $this->input->post('adminId') ?: NULL,
+                'hospitalName' => htmlspecialchars($this->input->post('hospitalName'), ENT_COMPAT),
+                'adminId' => htmlspecialchars($this->input->post('adminId') ?: '') ?: NULL,
                 'hospitalPhone' => htmlspecialchars($this->input->post('hospitalPhone')),
-                'hospitalAddress' => $this->input->post('hospitalAddress'),
-                'hospitalStatus' => $this->input->post('hospitalStatus')
+                'hospitalAddress' => htmlspecialchars($this->input->post('hospitalAddress'), ENT_COMPAT),
             );
+            $hospitalStatus && $hospitalDatas['hospitalStatus'] = $hospitalStatus;
 
             if ($hospitalCoordinate) {
                 $checkHospitalCoordinate = $this->M_hospitals->checkHospital('hospitalCoordinate', $hospitalCoordinate);

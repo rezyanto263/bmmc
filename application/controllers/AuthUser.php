@@ -18,21 +18,21 @@ class AuthUser extends CI_Controller {
         $keyReference = $this->input->cookie('keyReference', TRUE);
 
         if ($loginKey) {
-            $employeeDatas = $this->M_auth->checkEmployee('employeeId', $keyReference);
-            if ($loginKey === hash('sha256', $employeeDatas['employeeNIK'])) {
+            $employeeDatas = $this->M_auth->checkEmployee('employeeNIK', $keyReference);
+            if ($loginKey === hash('sha256', $employeeDatas['employeeEmail'])) {
                 $this->_setSession($employeeDatas, 'employee');
                 redirect('user/profile');
             }
 
-            $familyDatas = $this->M_auth->checkFamily('employeeId', $keyReference);
-            if ($loginKey === hash('sha256', $familyDatas['familyNIK'])) {
+            $familyDatas = $this->M_auth->checkFamily('familyNIK', $keyReference);
+            if ($loginKey === hash('sha256', $familyDatas['familyEmail'])) {
                 $this->_setSession($familyDatas, 'family');
                 redirect('user/profile');
             }
         }
 
         // Check Session
-        if ($this->session->userdata('familyNIK')) {
+        if ($this->session->userdata('familyEmail')) {
             redirect('home');
         }
 
@@ -52,27 +52,14 @@ class AuthUser extends CI_Controller {
     }
 
     public function loginUser() {
-        $userNIK = htmlspecialchars($this->input->post('userNIK'));
-        $userPassword = $this->input->post('userPassword');
-        $rememberMe = $this->input->post('rememberMe') ?: FALSE;
-        // $userDatas = $this->M_auth->checkEmployee('employeeNIK', $userNIK);
-        // var_dump($userDatas);
-        // die();
-        if ($userDatas = $this->M_auth->checkEmployee('employeeNIK', $userNIK)) {
-            $userType = 'employee';
-        } else if ($userDatas = $this->M_auth->checkFamily('familyNIK', $userNIK)) {
-            $userType = 'family';
-        }
-        
         $validate = array(
             array(
-                'field' => 'userNIK',
-                'label' => 'NIN/NIK',
-                'rules' => 'required|trim|numeric|min_length[16]|max_length[16]',
+                'field' => 'userEmail',
+                'label' => 'Email',
+                'rules' => 'required|trim|valid_email',
                 'errors' => array(
                     'required' => 'You should provide %s.',
-                    'min_length' => '%s must be at least 16 characters in length.',
-                    'max_length' => '%s max 16 characters in length.'
+                    'valid_email' => 'You must provide a valid %s.'
                 )
             ),
             array(
@@ -92,19 +79,46 @@ class AuthUser extends CI_Controller {
         if ($this->form_validation->run() == FALSE) {
             $this->index();
         } else {
-            $this->_login($userPassword, $userDatas, $userType, $rememberMe);
+            $userEmail = htmlspecialchars($this->input->post('userEmail'));
+            $userPassword = htmlspecialchars($this->input->post('userPassword'));
+            $rememberMe = $this->input->post('rememberMe') ?: FALSE;
+
+            $ch = curl_init('https://www.google.com/recaptcha/api/siteverify');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                'secret' => $_ENV['CAPTCHA_SECRET_KEY'],
+                'response' => $this->input->post('g-recaptcha-response')
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            $captchaResult = json_decode($response);
+
+            if ($userDatas = $this->M_auth->checkEmployee('employeeEmail', $userEmail)) {
+                $userType = 'employee';
+            } else if ($userDatas = $this->M_auth->checkFamily('familyEmail', $userEmail)) {
+                $userType = 'family';
+            }
+
+            $this->_login($userPassword, $userDatas, $userType, $captchaResult, $rememberMe);
         }
     }
 
-    private function _login($userPassword, $userDatas, $userType, $rememberMe = FALSE) {
-        // var_dump($userDatas);
-        // die();
+    private function _login($userPassword, $userDatas, $userType, $captchaResult, $rememberMe = FALSE) {
+        if (!$captchaResult->success) {
+            $this->session->set_flashdata('flashdata', 'you are a robot');
+            redirect('login');
+        }
+
         if ($userType === "employee"){
             if (!empty($userDatas)) {
                 if (password_verify($userPassword, $userDatas['employeePassword'])) {
                     if ($rememberMe) {
-                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIK']), 0);
-                        $this->input->set_cookie('keyReference', $userDatas['employeeId'], 0);
+                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['employeeEmail']), 0);
+                        $this->input->set_cookie('keyReference', $userDatas['employeeNIK'], 0);
+                    }
+
+                    if ($userDatas['employeeStatus'] == 'unverified') {
+                        $this->M_auth->updateEmployee($userDatas['employeeNIK'], array('employeeStatus' => 'active'));
                     }
     
                     $this->_setSession($userDatas, $userType);
@@ -121,10 +135,14 @@ class AuthUser extends CI_Controller {
             if (!empty($userDatas)) {
                 if (password_verify($userPassword, $userDatas['familyPassword'])) {
                     if ($rememberMe) {
-                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['userNIK']), 0);
-                        $this->input->set_cookie('keyReference', $userDatas['employeeId'], 0);
+                        $this->input->set_cookie('loginKey', hash('sha256',$userDatas['familyEmail']), 0);
+                        $this->input->set_cookie('keyReference', $userDatas['familyNIK'], 0);
                     }
-    
+
+                    if ($userDatas['familyStatus'] == 'unverified') {
+                        $this->M_auth->updateFamily($userDatas['familyNIK'], array('familyStatus' => 'active'));
+                    }
+
                     $this->_setSession($userDatas, $userType);
                     redirect('user/profile');
                 } else {
@@ -137,29 +155,6 @@ class AuthUser extends CI_Controller {
             }
         }
     }
-
-    // private function _loginFamily($userPassword, $familyDatas, $userType, $rememberMe = FALSE) {
-    //     // var_dump($userDatas);
-    //     // die();
-
-    //     if (!empty($familyDatas)) {
-    //         if (password_verify($userPassword, $familyDatas['familyPassword'])) {
-    //             if ($rememberMe) {
-    //                 $this->input->set_cookie('loginKey', hash('sha256',$familyDatas['userNIK']), 0);
-    //                 $this->input->set_cookie('keyReference', $familyDatas['employeeId'], 0);
-    //             }
-
-    //             $this->_setSession($familyDatas, $userType);
-    //             redirect('profile');
-    //         } else {
-    //             $this->session->set_flashdata('flashdata', 'wrong password');
-    //             redirect('login');
-    //         }
-    //     } else {
-    //         $this->session->set_flashdata('flashdata', 'not found');
-    //         redirect('login');
-    //     }
-    // }
 
     private function _setSession($userDatas, $userType) {
         if ($userType == 'employee') {
@@ -204,7 +199,7 @@ class AuthUser extends CI_Controller {
         $userType = $this->session->userdata('userType');
         $sessionDatas = array('userNIK', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
 
-        $userType == 'family'? $sessionDatas[]='employeeId' : '';
+        $userType == 'family'? $sessionDatas[]='employeeNIK' : '';
 
         $this->session->sess_destroy($sessionDatas);
 

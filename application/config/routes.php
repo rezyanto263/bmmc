@@ -54,9 +54,9 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 // User
-$route['home'] = 'user/LandingToo';
+$route['home'] = 'user/LandingPage';
 $route['login'] = 'AuthUser';
-$route['logout'] = 'AuthUser/logout';
+$route['logout'] = 'AuthUser/logoutUser';
 
 // Dashboard
 $route['dashboard'] = 'dashboard/dashboard';
@@ -84,11 +84,14 @@ $route['hospital/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'hospital/Histo
 $route['hospital/getHospitalQueueDatas'] = 'hospital/Queue/getHospitalQueueDatas';
 $route['hospital/getHDiseaseDatas'] = 'hospital/Disease/getDiseaseDatas';
 
-$route['company/Employee/getAllEmployeesDatas'] = 'company/Employee/getAllEmployeesDatas';
-$route['company/Family/getAllFamilyDatas'] = 'company/Family/getAllFamilyDatas';
-$route['company/Family/getFamiliesByEmployeeNIK'] = 'company/Family/getFamiliesByEmployeeNIK';
+$route['company/getAllEmployeesDatas'] = 'company/Employees/getAllEmployeesDatas';
+$route['company/getEmployeeDetails'] = 'company/Employees/getEmployeeDetails';
+$route['company/getAllInsuranceByCompanyId'] = 'company/Insurance/getAllInsuranceByCompanyId';
+$route['company/getAllFamilyDatas'] = 'company/Families/getAllFamilyDatas';
+$route['company/getFamiliesByEmployeeNIK'] = 'company/Families/getFamiliesByEmployeeNIK';
 $route['company/getPatientByNIK'] = 'company/Hospitals/scanQR';
 $route['company/getPatientHistoryHealthDetailsByNIK/(:num)?'] = 'company/Hospitals/getCPatientHistoryHealthDetailsByNIK/$1';
+$route['company/getHistoryHealthByCompanyId'] = 'company/TreatmentHistory/getHistoryHealthByCompanyId';
 
 $route['landing/getActiveHospitalDatas'] = 'user/LandingPage/getActiveHospitalDatas';
 
@@ -96,8 +99,7 @@ $route['landing/getActiveHospitalDatas'] = 'user/LandingPage/getActiveHospitalDa
 $route['user/getUserHistories'] = 'user/profile/getUserHistories';
 $route['user/editEmployee'] = 'user/User/editEmployee';
 $route['user/editFamily'] = 'user/User/editFamily';
-$route['company/dashboard'] = 'company/dashboard';
-$route['landing'] = 'user/landing/Landing';
+$route['landing'] = 'user/landingpage';
 
 // Hospital
 $route['hospital/hHistories'] = 'hospital/hHistories';

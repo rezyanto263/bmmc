@@ -4,66 +4,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Dashboard extends CI_Controller {
 
-    public function __construct()
-{
-    parent::__construct();
-    // Pastikan hanya admin atau company yang dapat mengakses
-    if ($this->session->userdata('adminRole') != ('admin' || 'company')) {
-        redirect('dashboard');
+    public function __construct() {
+        parent::__construct();
+        if ($this->session->userdata('adminRole') != 'company') {
+            redirect('dashboard');
+        }
+
+        $this->load->model('M_companies');
     }
 
-    $this->load->model('M_companies');
+    public function index() {
 
-    // Ambil adminId dari session yang sudah login
-    $adminId = $this->session->userdata('adminId');
+        $adminId = $this->session->userdata('adminId');
 
-    // Ambil data perusahaan berdasarkan adminId
-    $companyData = $this->M_companies->getCompanyByAdminId($adminId);
+        $companyData = $this->M_companies->getCompanyByAdminId($adminId);
 
-    // Jika data perusahaan ada, simpan ke session
-    if (!empty($companyData)) {
-        $this->session->set_userdata('companyId', $companyData['companyId']);
-        $this->session->set_userdata('companyName', $companyData['companyName']);
-        $this->session->set_userdata('companyLogo', $companyData['companyLogo']);
-        $this->session->set_userdata('companyPhone', $companyData['companyPhone']);
-        $this->session->set_userdata('companyAddress', $companyData['companyAddress']);
-        $this->session->set_userdata('companyCoordinate', $companyData['companyCoordinate']);
+        if (!empty($companyData)) {
+            $this->session->set_userdata('companyId', $companyData['companyId']);
+            $this->session->set_userdata('companyName', $companyData['companyName']);
+            $this->session->set_userdata('companyLogo', $companyData['companyLogo']);
+            $this->session->set_userdata('companyPhone', $companyData['companyPhone']);
+            $this->session->set_userdata('companyAddress', $companyData['companyAddress']);
+            $this->session->set_userdata('companyCoordinate', $companyData['companyCoordinate']);
+        }
+
+        $company = array(
+            'companyId' => $this->session->userdata('companyId'),
+            'companyName' => $this->session->userdata('companyName'),
+            'companyLogo' => $this->session->userdata('companyLogo'),
+            'companyPhone' => $this->session->userdata('companyPhone'),
+            'companyAddress' => $this->session->userdata('companyAddress'),
+            'companyCoordinate' => $this->session->userdata('companyCoordinate')
+        );
+
+        $datas = array(
+            'title' => 'BMMC Company | Dashboard',
+            'subtitle' => 'Dashboard',
+            'contentType' => 'dashboard',
+            'company' => $company
+        );
+
+        $partials = array(
+            'head' => 'partials/head',
+            'sidebar' => 'partials/company/sidebar',
+            'floatingMenu' => 'partials/floatingMenu',
+            'contentHeader' => 'partials/contentHeader',
+            'contentBody' => 'company/Dashboard',
+            'footer' => 'partials/dashboard/footer',
+            'script' => 'partials/script'
+        );
+
+        $this->load->vars($datas);
+        $this->load->view('master', $partials);
     }
-}
-
-public function index()
-{
-    // Ambil data perusahaan dari session
-    $company = array(
-        'companyId' => $this->session->userdata('companyId'),
-        'companyName' => $this->session->userdata('companyName'),
-        'companyLogo' => $this->session->userdata('companyLogo'),
-        'companyPhone' => $this->session->userdata('companyPhone'),
-        'companyAddress' => $this->session->userdata('companyAddress'),
-        'companyCoordinate' => $this->session->userdata('companyCoordinate')
-    );
-
-    // Kirim data ke view
-    $datas = array(
-        'title' => 'BIM Dashboard | Companies',
-        'subtitle' => 'Companies',
-        'contentType' => 'dashboard',
-        'company' => $company // Kirim data perusahaan ke view
-    );
-
-    $partials = array(
-        'head' => 'partials/head',
-        'sidebar' => 'partials/company/sidebar',
-        'floatingMenu' => 'partials/floatingMenu',
-        'contentHeader' => 'partials/contentHeader',
-        'contentBody' => 'company/Dashboard',
-        'footer' => 'partials/dashboard/footer',
-        'script' => 'partials/script'
-    );
-
-    $this->load->vars($datas);
-    $this->load->view('master', $partials);
-}
 
 
     public function editCompany()
@@ -108,7 +101,7 @@ public function index()
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $companyCoordinate = $this->input->post('companyCoordinate');
 
@@ -132,13 +125,18 @@ public function index()
                     $this->_deleteLogo($this->input->post('companyId'));
                     $companyDatas['companyLogo'] = $companyLogo['data']['file_name'];
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $companyLogo['error']));
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 'upload failed', 
+                        'errorMsg' => $companyLogo['error'], 
+                        'csrfToken' => $this->security->get_csrf_hash()
+                    ));
                     return;
                 }
             }
 
             $this->M_companies->updateCompany($this->input->post('companyId'), $companyDatas);
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 

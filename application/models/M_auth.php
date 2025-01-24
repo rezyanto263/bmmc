@@ -23,6 +23,7 @@ class M_auth extends CI_Model {
     
         return $query->row_array();  // Return company data as an associative array
     }
+
     public function checkAdmin($param, $adminData) {
         $this->db->select('a.*,
             IF(a.adminRole = "company", c.companyStatus, 
@@ -53,15 +54,20 @@ class M_auth extends CI_Model {
         $this->db->update('admin', array('adminPassword' => $adminPassword, 'adminToken' => NULL));
     }
 
-    public function getEmployeeDataById($employeeId) {
+    public function getEmployeeDataById($employeeNIK) {
         $this->db->select('employeeNIK, employeeName, employeeEmail, employeeAddress, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
         $this->db->from('employee');
-        $this->db->where('employeeNIK', $employeeId);
+        $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->get()->row_array();
     }
 
-    public function updateEmployee($employeeId, $employeeData) {
-        $this->db->where('employeeNIK', $employeeId);
+    public function updateUnverifiedAdmin($adminId, $adminRole, $adminDatas) {
+        $this->db->where('adminId', $adminId);
+        return $this->db->update($adminRole, $adminDatas);
+    }
+
+    public function updateEmployee($employeeNIK, $employeeData) {
+        $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->update('employee', $employeeData);
     }
 
@@ -105,8 +111,8 @@ class M_auth extends CI_Model {
         return $this->db->get_where('family', ['employeeNIK' => $employeeNIK])->result_array();
     }
 
-    public function updateEmployeePassword($employeeId, $newPassword) {
-        $this->db->where('employeeNIK', $employeeId);
+    public function updateEmployeePassword($employeeNIK, $newPassword) {
+        $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->update('employee', array('employeePassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
     }
 
@@ -130,8 +136,8 @@ class M_auth extends CI_Model {
     }
     
 
-    public function rememberEmployeeLogin($employeeId, $rememberToken) {
-        $this->db->where('employeeNIK', $employeeId);
+    public function rememberEmployeeLogin($employeeNIK, $rememberToken) {
+        $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->update('employee', array('rememberToken' => $rememberToken));
     }
 

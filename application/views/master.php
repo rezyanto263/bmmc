@@ -52,8 +52,5 @@
 <?php } ?>
 
     <?php $this->load->view($script); ?>
-
-
-
 </body>
 </html>

@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th>#</th>
+                <th>Logo</th>
                 <th>Name</th>
                 <th>Admin</th>
                 <th>Address</th>
@@ -19,6 +20,7 @@
         <tfoot>
             <tr>
                 <th>#</th>
+                <th>Logo</th>
                 <th>Name</th>
                 <th>Admin</th>
                 <th>Address</th>
@@ -56,7 +58,7 @@
                             <label class="btn-warning mt-3 text-center w-50" for="addImgFile2">UPLOAD PHOTO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="hospitalPhoto" class="imgFile" id="addImgFile2" hidden>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-lg-7">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Name">
                                     <i class="las la-hospital fs-4"></i>
@@ -64,22 +66,12 @@
                                 <input class="form-control" type="text" placeholder="Name" name="hospitalName">
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">   
+                        <div class="col-12 col-lg-5">   
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Phone">
                                     <i class="las la-phone fs-4"></i>
                                 </span>
                                 <input class="form-control phone-input" type="text" placeholder="Phone Number" name="hospitalPhone">
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6">   
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Status">
-                                    <i class="las la-tag fs-4"></i>
-                                </span>
-                                <select class="form-control" id="hospitalStatus" name="hospitalStatus">
-                                    <option hidden></option>
-                                </select>
                             </div>
                         </div>
                         <div class="col-12">

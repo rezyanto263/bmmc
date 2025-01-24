@@ -17,31 +17,31 @@
         <div class="sidebar-menu">
             <ul class="p-0 m-0">
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Hospital'?'active':''; ?>" href="<?= base_url('hospital/Hospital') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Hospital">
-                        <i class="las la-hospital fs-4"></i>
-                        <span>Hospital</span>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Dashboard'?'active':''; ?>" href="<?= base_url('hospital/dashboard') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Dashboard">
+                        <i class="las la-stream fs-4"></i>
+                        <span>Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('hospital/History') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
-                        <i class="las la-book-medical fs-4"></i>
-                        <span>History</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospital/Doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
-                        <i class="las la-stethoscope fs-4"></i>
-                        <span>Doctors</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Queue'?'active':''; ?>" href="<?= base_url('hospital/Queue') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Queue">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Queue'?'active':''; ?>" href="<?= base_url('hospital/queue') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Queue">
                         <i class="las la-hourglass-half fs-4"></i>
                         <span>Queue</span>
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Disease'?'active':''; ?>" href="<?= base_url('hospital/Disease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Disease">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('hospital/history') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
+                        <i class="las la-book-medical fs-4"></i>
+                        <span>History</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospital/doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
+                        <i class="las la-stethoscope fs-4"></i>
+                        <span>Doctors</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Disease'?'active':''; ?>" href="<?= base_url('hospital/disease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Disease">
                         <i class="las la-sad-tear fs-4"></i>
                         <span>Disease</span>
                     </a>
