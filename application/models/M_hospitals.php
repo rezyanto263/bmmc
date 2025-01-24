@@ -38,10 +38,15 @@ class M_hospitals extends CI_Model {
     }
 
     public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
-        $this->db->select('hh.*, h.hospitalName, d.doctorName, 
-                            IF(hh.historyhealthReferredTo IS NULL, i.invoiceStatus, "referred") AS historyhealthStatus,
+        $this->db->select('hh.*, h.hospitalName, d.doctorName,
                             GROUP_CONCAT(DISTINCT ds.diseaseName SEPARATOR "|") AS diseaseNames,
-                            GROUP_CONCAT(DISTINCT ds.diseaseInformation SEPARATOR "|") AS diseaseInformations');
+                            GROUP_CONCAT(DISTINCT ds.diseaseInformation SEPARATOR "|") AS diseaseInformations,
+                            CASE 
+                                WHEN hh.historyhealthReferredTo IS NOT NULL THEN "referred"
+                                WHEN hh.historyhealthTotalBill = 0 THEN "free"
+                                ELSE IFNULL(i.invoiceStatus, "unpaid")
+                            END AS status
+        ');
         $this->db->from('historyhealth hh');
         $this->db->join('billing b', 'b.billingId = hh.billingId', 'left');
         $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
