@@ -2638,7 +2638,10 @@ var treatmentHistoryTable = $('#treatmentHistoryTable').DataTable($.extend(true,
         },
         {
             data: 'historyhealthRole',
-            className: 'align-middle'
+            className: 'align-middle',
+            render: function(data) {
+                return capitalizeWords(data);
+            }
         },
         {
             data: 'historyhealthDate',
