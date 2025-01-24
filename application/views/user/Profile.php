@@ -10,12 +10,19 @@
         <?= isset($employeeDatas['employeeName']) && $employeeDatas['employeeName'] ? $employeeDatas['employeeName'] : (isset($employeeDatas['familyName']) ? $employeeDatas['familyName'] : '') ?>
       </div>
       <div class="d-flex justify-content-center align-items-center">
+      <?php if (!empty($employeeDatas['employeeName'])): ?>
         <button type="button" class="bg-transparent border-0 me-2" data-bs-toggle="modal"
-          data-bs-target="#staticBackdrop">
+          data-bs-target="#editEmployee">
           <i class="fa-solid fa-pen-to-square text-success logout text-decoration-underline">
             Update</i>
         </button>
-
+        <?php else: ?>
+          <button type="button" class="bg-transparent border-0 me-2" data-bs-toggle="modal"
+            data-bs-target="#editFamily">
+            <i class="fa-solid fa-pen-to-square text-success logout text-decoration-underline">
+              Update</i>
+          </button>
+          <?php endif; ?>
         <a href="<?= base_url('logout') ?>" class="text-danger logout ms-2"><i
             class="fa-solid fa-right-from-bracket text-decoration-underline">
             Logout</i></a>
@@ -35,16 +42,16 @@
         class="position-absolute bottom-0 end-0 d-none d-lg-block" style="width: 100px" alt="" />
 
       <img src="<?= base_url("assets/images/Vector") ?>.png" class="position-absolute bottom-0 d-none d-lg-block"
-        style="width: 100px; right: 200px" alt="" />
+        style="width: 100px; right: 200px" alt="" /> 
 
       <!-- gambar qr -->
       <div class="d-flex justify-content-center">
-        <img src="<?= base_url("assets/images/qr.png") ?>" class="img-qr" alt="" />
+        <img src="<?= 'data:image/png;base64,' . base64_encode($qr) ?>" class="img-qr" alt="" />
       </div>
 
-      <h2 class="text-center fs-5">Barcode Keluarga Anda!</h2>
+      
     </section>
-
+    <h2 class="text-center fs-5">  <strong> Faskes Tingkat :  </strong> <?= $insuranceData['insuranceTier']; ?></h2>
     <!-- bagian data keluarga -->
     <section class="mt-5">
       <!-- haader -->
@@ -214,7 +221,12 @@
           </thead>
           <tbody>
             <tr>
-              <td>Rp. 50.000.000,00</td>
+            <td><?php if (!empty($insuranceData) && is_array($insuranceData)): ?>
+                <p>Rp. <?= number_format($insuranceData['insuranceAmount'], 2, ',', '.'); ?></p>
+              <?php else: ?>
+                  <p>Insurance data tidak tersedia.</p>
+              <?php endif; ?>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -230,7 +242,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>Rp. 50.000.000,00</td>
+              <td>Rp. <?= number_format($insuranceData['totalBillingUsed'], 2, ',', '.'); ?></td>
             </tr>
           </tbody>
         </table>
@@ -244,15 +256,16 @@
     </div>
     <div class="content-body py-3">
       <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-      <table class="table" id="riwayatTable" style="width:100%">
+      <table class="table" id="userHistoryTable" style="width:100%">
         <thead>
           <tr>
             <th>#</th>
             <th>Patient Name</th>
+            <th>Hospital</th>
             <th>Doctor Name</th>
+            <th>Disease</th>
             <th>Bill</th>
             <th>Date</th>
-            <th>History Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -260,10 +273,11 @@
           <tr>
             <th>#</th>
             <th>Patient Name</th>
+            <th>Hospital</th>
             <th>Doctor Name</th>
+            <th>Disease</th>
             <th>Bill</th>
             <th>Date</th>
-            <th>History Status</th>
             <th>Actions</th>
           </tr>
         </tfoot>
@@ -271,34 +285,83 @@
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="email" class="col-form-label">Email</label>
-              <input type="email" class="form-control" id="email" value="igedeangga@gmail.com" />
-            </div>
-            <div class="mb-3">
-              <label for="password" class="col-form-label">Change Password</label>
-              <input type="password" class="form-control" id="password" placeholder="**********" />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+   <!-- Modal -->
+<div class="modal fade" id="editEmployee" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="editEmployeeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="<?= base_url('user/profile/editEmployee') ?>" method="post">
+            <input type="hidden" class="form-control" id="NIK" name="employeeNIK" value="<?= $employeeDatas['employeeNIK'] ?>" required />
+          <div class="mb-3">
+            <label for="email" class="col-form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="employeeEmail" value="<?= $employeeDatas['employeeEmail'] ?>" required />
+          </div>
+          <div class="mb-3">
+            <label for="current-password" class="col-form-label">Password Lama</label>
+            <input type="password" class="form-control" id="current-password" name="oldPassword" placeholder="Masukkan password lama" required />
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="col-form-label">Password Baru</label>
+            <input type="password" class="form-control" id="new-password" name="newPassword" placeholder="****" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="col-form-label">Konfirmasi Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="****" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editFamily" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="editFamilyLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Akun</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="<?= base_url('user/profile/editfamily') ?>" method="post">
+            <input type="hidden" class="form-control" id="NIK" name="familyNIK" value="<?= $employeeDatas['familyNIK'] ?>" required />
+          <div class="mb-3">
+            <label for="email" class="col-form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="familyEmail" value="<?= $employeeDatas['familyEmail'] ?>" required />
+          </div>
+          <div class="mb-3">
+            <label for="current-password" class="col-form-label">Password Lama</label>
+            <input type="password" class="form-control" id="current-password" name="oldPassword" placeholder="Masukkan password lama" required />
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="col-form-label">Password Baru</label>
+            <input type="password" class="form-control" id="new-password" name="newPassword" placeholder="****" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="col-form-label">Konfirmasi Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="****" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 </body>

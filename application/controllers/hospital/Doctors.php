@@ -19,8 +19,8 @@ class Doctors extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Hospital | Doctors',
-            'subtitle' => 'Doctors',
+            'title' => 'BMMC Hospital | Doctor',
+            'subtitle' => 'Doctor',
             'contentType' => 'dashboard'
         );
 
@@ -29,7 +29,7 @@ class Doctors extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospitals/Doctors',
+            'contentBody' => 'hospital/Doctor',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -38,14 +38,29 @@ class Doctors extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getHospitalDoctorsDatas() {
+    public function getHospitalDoctorDatas() {
         $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
         $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
         if ($hospitalDatas) {
-            $doctorsDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $doctorDatas = $this->M_doctors->getHospitalDoctorDatas('hospitalId', $hospitalDatas['hospitalId']);
             $datas = array(
-                'data' => $doctorsDatas
+                'data' => $doctorDatas
+            );
+            echo json_encode($datas);
+        } else {
+            echo json_encode(['data' => []]);
+        }
+    }
+
+    public function getActiveHospitalDoctorDatas() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+    
+        if ($hospitalDatas) {
+            $doctorDatas = $this->M_doctors->getActiveHospitalDoctorDatas('hospitalId', $hospitalDatas['hospitalId']);
+            $datas = array(
+                'data' => $doctorDatas
             );
             echo json_encode($datas);
         } else {
@@ -59,7 +74,7 @@ class Doctors extends CI_Controller {
         $validate = array(
             array(
                 'field' => 'doctorName',
-                'label' => 'Name',
+                'label' => 'Name apt',
                 'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
                 'errors' => array(
                     'required' => 'Doctor should provide a %s.',
@@ -88,7 +103,7 @@ class Doctors extends CI_Controller {
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.',
+                    'required' => 'Doctor should provide a %s.',
                 )
             ),
             array(
@@ -105,7 +120,7 @@ class Doctors extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $doctorDatas = array(
                 'hospitalId' => $hospitalDatas['hospitalId'],
@@ -117,7 +132,7 @@ class Doctors extends CI_Controller {
             );
             $this->M_doctors->insertDoctor($doctorDatas);
 
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
@@ -156,7 +171,7 @@ class Doctors extends CI_Controller {
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.',
+                    'required' => 'Doctor should provide a %s.',
                 )
             ),
             array(
@@ -173,7 +188,7 @@ class Doctors extends CI_Controller {
 
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $doctorDatas = array(
                 'hospitalId' => $hospitalDatas['hospitalId'],
@@ -185,7 +200,7 @@ class Doctors extends CI_Controller {
             );
             $this->M_doctors->updateDoctor($this->input->post('doctorId'), $doctorDatas);
 
-            echo json_encode(array('status' => 'success'));
+            echo json_encode(array('status' => 'success', 'data' => $doctorDatas, 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
@@ -193,9 +208,8 @@ class Doctors extends CI_Controller {
         $doctorId = $this->input->post('doctorId');
         
         $this->M_doctors->deleteDoctor($doctorId);
-        echo json_encode(array('status' => 'success'));
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }
-
 
 }
 

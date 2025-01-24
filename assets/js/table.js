@@ -1342,7 +1342,7 @@ var doctorsTable = $('#doctorsTable').DataTable($.extend(true, {}, DataTableSett
 }));
 
 $('#addDoctorButton, #editDoctorButton, #deleteDoctorButton').on('click', function() {
-    reloadTableData(doctorsTable);
+    reloadTableData(doctorTable);
 });
 
 $('#addDoctorModal').on('hidden.bs.modal', function(e) {
@@ -1361,9 +1361,10 @@ $('#addDoctorForm').on('submit', function(e) {
         processData: false,
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#addDoctorModal').modal('hide');
-                reloadTableData(doctorsTable);
+                reloadTableData(doctorTable);
                 displayAlert('add success');
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
@@ -1384,8 +1385,8 @@ $('#addDoctorModal').on('shown.bs.modal', function () {
 });
 
 // Edit Data Doctor
-$('#doctorsTable').on('click', '.btn-edit', function() {
-    var data = doctorsTable.row($(this).parents('tr')).data();
+$('#doctorTable').on('click', '.btn-edit', function() {
+    var data = doctorTable.row($(this).parents('tr')).data();
     $('#editDoctorForm [name="doctorId"]').val(data.doctorId);
     $('#editDoctorForm [name="doctorName"]').val(data.doctorName);
     $('#editDoctorForm [name="doctorAddress"]').val(data.doctorAddress);
@@ -1396,11 +1397,10 @@ $('#doctorsTable').on('click', '.btn-edit', function() {
 
 $('#editDoctorModal').on('shown.bs.modal', function () {
     $(this).find('select#doctorStatus').select2({
-        placeholder: 'Choose',
+        placeholder: 'Choose Status',
         dropdownParent: $('#editDoctorModal .modal-body')
     });
 });
-
 
 $('#editDoctorForm').on('submit', function(e) {
     e.preventDefault();
@@ -1410,10 +1410,11 @@ $('#editDoctorForm').on('submit', function(e) {
         data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#editDoctorModal').modal('hide');
                 displayAlert('edit success');
-                reloadTableData(doctorsTable);
+                reloadTableData(doctorTable);
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
@@ -1426,25 +1427,27 @@ $('#editDoctorForm').on('submit', function(e) {
 });
 
 // Delete Data Doctor
-$('#doctorsTable').on('click', '.btn-delete', function() {
-    var data = doctorsTable.row($(this).parents('tr')).data();
+$('#doctorTable').on('click', '.btn-delete', function() {
+    var data = doctorTable.row($(this).parents('tr')).data();
     $('#deleteDoctorForm #doctorName').html(data.doctorName);
     $('#deleteDoctorForm #doctorId').val(data.doctorId);
 })
 
 $('#deleteDoctorForm').on('submit', function(e) {
     e.preventDefault();
-    var doctorId = $('#deleteDoctorForm #doctorId').val();
     $.ajax({
         url: baseUrl + 'hospital/doctors/deleteDoctor',
         method: 'POST',
-        data: {doctorId: doctorId},
+        data: $(this).serialize(),
         success: function(response) {
             var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
                 $('#deleteDoctorModal').modal('hide');
-                reloadTableData(doctorsTable);
                 displayAlert('delete success');
+                reloadTableData(doctorTable);
+            } else if (res.status === 'failed') {
+                displayAlert(res.failedMsg);
             }
         }
     });
@@ -1475,9 +1478,20 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {data: 'historyhealthRole'},
         {data: 'companyName'},
-        {data: 'doctorName'},
+        {
+            data: 'doctorName',
+            name: 'doctorName',
+            render: function (data, type, row) {
+                if (row.historyhealthTotalBill == 0 && row.historyhealthDiscount == 0) {
+                    return 'Referred';
+                } else {
+                    return data;
+                }
+            }
+        },
         {
             data: 'historyhealthDate',
+            name: 'historyhealthDate',
             render: function (data, type, row) {
                 if (type === 'display' || type === 'filter') {
                     if (data) {
@@ -1501,6 +1515,7 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
         },
         {
             data: 'historyhealthTotalBill',
+            name: 'historyhealthTotalBill',
             render: function (data) {
                 return 'Rp ' + parseFloat(data).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
@@ -1534,40 +1549,31 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
                     `;
                 }
             }
-        },
-        { 
-            data: 'patientNIK',
-            visible: false, 
-            searchable: true
-        },
+        }
     ],
     columnDefs: [
         {width: '180px', target: 8}
     ],
     footerCallback: function (row, data, start, end, display) {
         var api = this.api();
-        var pageTotal = api.column(7, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-        $(api.column(7).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+        var columnIndex = api.column('historyhealthTotalBill:name').index();
+        var pageTotal = api.column(columnIndex, { page: 'current' }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+        $(api.column(columnIndex).footer()).html(`Rp ${pageTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
     },
-    buttons: [
+    buttons: [...DataTableSettings.buttons.slice(0, 4),
         {
             text: "Year",
             className: "btn btn-primary dropdown-toggle",
             action: function (e, dt, node, config) {
-                var column = dt.column(5);
+                var columnIndex = dt.column('historyhealthDate:name').index();
                 var list = [];
-    
-                column.data().unique().each(function (value) {
+                dt.column(columnIndex).data().unique().each(function (value) {
                     if (value) {
                         var item = moment(value, 'YYYY-MM-DD').format('YYYY');
-                        if (!list.includes(item)) {
-                            list.push(item);
-                        }
+                        if (!list.includes(item)) list.push(item);
                     }
                 });
-    
                 list.sort();
-    
                 createDropdown(node, list, 'year', 'YYYY');
             }
         },
@@ -1575,23 +1581,25 @@ var hHistoriesTable = $('#hHistoriesTable').DataTable($.extend(true, {}, DataTab
             text: "Month",
             className: "btn btn-primary dropdown-toggle",
             action: function (e, dt, node, config) {
-                var column = dt.column(5);
+                var columnIndex = dt.column('historyhealthDate:name').index();
                 var list = [];
-    
-                column.data().unique().each(function (value) {
+                dt.column(columnIndex).data().unique().each(function (value) {
                     if (value) {
                         var item = moment(value, 'YYYY-MM-DD').format('MMMM');
-                        if (!list.includes(item)) {
-                            list.push(item);
-                        }
+                        if (!list.includes(item)) list.push(item);
                     }
                 });
-    
                 list.sort();
-    
                 createDropdown(node, list, 'month', 'MMMM');
             }
-        }
+        },
+        {
+            text: '<i class="fa-solid fa-arrows-rotate fs-5 pt-1 px-0 px-md-1"></i>',
+            className: '',
+            action: function (e, dt, node, config) {
+                dt.ajax.reload(null, false);
+            }
+        },
     ]
 }));
 
@@ -1628,15 +1636,15 @@ function createDropdown(node, list, type, format) {
 
 function applyFilters() {
     var dt = hHistoriesTable;
-
     console.log("Applying Filters:", selectedYear, selectedMonth);
+    var dateColumnIndex = dt.column('historyhealthDate:name').index();
+    dt.column(dateColumnIndex).search('');
 
-    dt.column(5).search('');
-
-    dt.column(5).search((selectedYear && selectedMonth) ? 
+    dt.column(dateColumnIndex).search((selectedYear && selectedMonth) ? 
         function(value) { return moment(value, 'DD MMMM YYYY').format('YYYY MMMM') === selectedYear + ' ' + selectedMonth; } 
         : selectedYear || selectedMonth, true, false).draw();
 }
+
 
 // Detail History Health Hospital
 $('#hHistoriesTable').on('click', '.btn-view', function() {
@@ -1652,14 +1660,14 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     const formattedAFee = 'Rp ' + parseFloat(data.historyhealthActionFee).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const formattedDiscount = 'Rp ' + parseFloat(data.historyhealthDiscount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    if (data.historyhealthRole == "employee") {
+    if (data.historyhealthRole === "employee") {
         $('#detailContent #patientName').text(data.employeeName);
     } else {
         $('#detailContent #patientName').text(data.familyName);
     }
 
     $('#detailContent #detailDoctorName').text(data.doctorName);
-    $('#detailContent #diseaseName').text(data.diseaseName ? data.diseaseName : 'Rujukan');
+    $('#detailContent #diseaseName').text(data.diseaseName ? data.diseaseName : 'Referred');
     $('#detailContent #historyhealthRole').text(data.historyhealthRole);
     $('#detailContent #employeeName').text(data.employeeName);
     $('#detailContent #companyName').text(data.companyName);
@@ -1675,8 +1683,262 @@ $('#hHistoriesTable').on('click', '.btn-view', function() {
     $('#detailContent #historyhealthTotalBill').text(formattedBill);
 });
 
+// CRUD hospital queue
+var hQueueTable = $('#hQueueTable').DataTable($.extend(true, {}, DataTableSettings, {
+    ajax: baseUrl + 'hospital/getHospitalQueueDatas', 
+    columns: [
+        {
+            data: null,
+            className: 'text-start',
+            render: function (data, type, row, meta) {
+                return meta.row + 1;
+            }
+        },
+        {
+            data: null,
+            render: function (data, type, row) {
+                return row.familyName ? row.familyName : row.employeeName;
+            }
+        },
+        {
+            data: null,
+            render: function (data, type, row) {
+                return row.familyName ? 'Family' : 'Employee';
+            }
+        },
+        {data: 'companyName'},
+        {data: 'createdAt'},
+        {
+            data: null,
+            className: 'text-end user-select-none no-export',
+            orderable: false,
+            defaultContent: `
+                <button 
+                    type="button" 
+                    class="btn-add btn-primary rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addTreatmentModal"
+                     title="Process for Treatment">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-add btn-warning rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addReferralModal"
+                     title="Assign As Referral">
+                        <i class="fa-regular fa-share-from-square"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn-delete btn-danger rounded-2 ms-1 mx-0 px-4 d-inline-block my-1" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteQueueModal" title="Remove from Queue">
+                        <i class="fa-solid fa-trash-can"></i>
+                </button>
+            `
+        }
+    ],
+    columnDefs: [
+        {width: '180px', target: 1}
+    ]
+}));
+
+$('#addTreatmentButton, #addReferralButton, #deleteQueueButton').on('click', function() {
+    reloadTableData(hQueueTable);
+});
+
+// Add Data Referral and Data Treatment From Queue
+$('#hQueueTable').on('click', '.btn-add', function() {
+    var data = hQueueTable.row($(this).parents('tr')).data();
+    const formattedInsuranceAmount = 'Rp ' + parseFloat(data.insuranceAmount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    if ($(this).attr('data-bs-target') === '#addReferralModal') {
+        $('#addReferralForm [name="patientNIK"]').val(data.patientNIK);
+        $('#referralEmployeeName').text(data.employeeName);
+        $('#referralCompanyName').text(data.companyName);
+        $('#referralPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#addReferralForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
+        $('#addReferralForm [name="historyhealthDescription"]').val('');
+        $('#addReferralForm [name="historyhealthReferredTo"]').val('');
+
+    } else if ($(this).attr('data-bs-target') === '#addTreatmentModal') {
+        $('#addTreatmentForm [name="patientNIK"]').val(data.patientNIK);
+        $('#treatmentEmployeeName').text(data.employeeName);
+        $('#treatmentCompanyName').text(data.companyName);
+        $('#treatmentPatientName').text(data.familyName ? data.familyName : data.employeeName);
+        $('#addTreatmentForm [name="role"]').val(data.familyName ? 'Family' : 'Employee');
+        $('#addTreatmentForm #insuranceAmount ').text(formattedInsuranceAmount);
+        $('#addTreatmentForm [name="treatmentDescription"]').val('');
+        $('#addTreatmentForm [name="historyhealthDoctorFee"]').val(data.historyhealthDoctorFee || 0);
+        $('#addTreatmentForm [name="historyhealthMedicineFee"]').val(data.historyhealthMedicineFee || 0);
+        $('#addTreatmentForm [name="historyhealthLabFee"]').val(data.historyhealthLabFee || 0);
+        $('#addTreatmentForm [name="historyhealthActionFee"]').val(data.historyhealthActionFee || 0);
+        $('#addTreatmentForm [name="historyhealthDiscount"]').val(data.historyhealthDiscount || 0);
+
+        // Menghitung total bill saat membuka form
+        const doctorFee = parseFloat(data.historyhealthDoctorFee) || 0;
+        const medicineFee = parseFloat(data.historyhealthMedicineFee) || 0;
+        const labFee = parseFloat(data.historyhealthLabFee) || 0;
+        const actionFee = parseFloat(data.historyhealthActionFee) || 0;
+        const discount = parseFloat(data.historyhealthDiscount) || 0;
+
+        const totalBill = (doctorFee + medicineFee + labFee + actionFee) - discount;
+        $('#addTreatmentForm [name="historyhealthTotalBill"]').val(totalBill < 0 ? 0 : totalBill.toFixed(2));
+         
+        $('#addTreatmentForm').find('select#doctorId').select2({
+            ajax: {
+                url: baseUrl + 'hospital/getActiveHospitalDoctorDatas',
+                type: 'GET',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (response) {
+                    return {
+                        results: $.map(response.data, function (data) {
+                            return {
+                                id: data.doctorId,
+                                text: data.doctorName + ' | ' + data.doctorSpecialization
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            placeholder: 'Choose Doctor',
+            allowClear: true,
+            dropdownParent: $('#addTreatmentModal .modal-body')
+        });
+        
+        $('#addTreatmentForm').find('select#diseaseId').select2({
+            ajax: {
+                url: baseUrl + 'hospital/getCompanyInsuredDisease?id='+data.companyId,
+                type: 'GET',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (response) {
+                    return {
+                        results: $.map(response.data, function (data) {
+                            return {
+                                id: data.diseaseId,
+                                text: data.diseaseName
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            placeholder: 'Choose Disease',
+            allowClear: true,
+            dropdownParent: $('#addTreatmentModal .modal-body')
+        });
+    }
+});
+
+// add Treatment
+document.addEventListener('input', function (e) {
+    const formElement = e.target.closest('#addTreatmentForm');
+    if (!formElement) return; 
+    if (e.target.classList.contains('validate-non-negative')) {
+        let value = e.target.value;        
+        const numericValue = parseFloat(value) || 0;
+        if (numericValue < 0) {
+            e.target.value = 0; 
+        } else {
+            e.target.value = numericValue; 
+        }
+    }
+
+    const doctorFee = parseFloat(document.getElementById('historyhealthDoctorFee').value) || 0;
+    const medicineFee = parseFloat(document.getElementById('historyhealthMedicineFee').value) || 0;
+    const labFee = parseFloat(document.getElementById('historyhealthLabFee').value) || 0;
+    const actionFee = parseFloat(document.getElementById('historyhealthActionFee').value) || 0;
+    const discount = parseFloat(document.getElementById('historyhealthDiscount').value) || 0;
+    const totalBill = (doctorFee + medicineFee + labFee + actionFee) - discount;
+    const validTotal = totalBill < 0 ? 0 : totalBill;
+    document.getElementById('historyhealthTotalBill').value = validTotal.toFixed(2);
+});
+
+
+$('#addTreatmentForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'hospital/history/addTreatment',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#addTreatmentModal').modal('hide');
+                reloadTableData(hQueueTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addTreatmentForm', res.errors);
+            }
+        }
+    });
+});
+
+// add Referral
+$('#addReferralForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: baseUrl + 'hospital/history/addReferral',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#addReferralModal').modal('hide');
+                reloadTableData(hQueueTable);
+                displayAlert('add success');
+            } else if (res.status === 'failed') {
+                $('.error-message').remove();
+                $('.is-invalid').removeClass('is-invalid');
+                displayAlert(res.failedMsg);
+            } else if (res.status === 'invalid') {
+                displayFormValidation('#addReferralForm', res.errors);
+            }
+        }
+    });
+});
+
+// Delete Data Queue
+$('#hQueueTable').on('click', '.btn-delete', function() {
+    var data = hQueueTable.row($(this).parents('tr')).data();
+    $('#deleteQueueForm #patientName').html(data.familyName ? data.familyName : data.employeeName);
+    $('#deleteQueueForm #patientNIK').val(data.patientNIK);
+})
+
+$('#deleteQueueForm').on('submit', function(e) {
+    e.preventDefault();
+    var patientNIK = $('#deleteQueueForm #patientNIK').val();
+    $.ajax({
+        url: baseUrl + 'hospital/queue/deleteQueue',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            var res = JSON.parse(response);
+            res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
+            if (res.status === 'success') {
+                $('#deleteQueueModal').modal('hide');
+                reloadTableData(hQueueTable);
+                displayAlert('delete success');
+            }
+        }
+    });
+});
+
+// hospital disease
 var hDiseaseTable = $('#hDiseaseTable').DataTable($.extend(true, {}, DataTableSettings, {
-    ajax: baseUrl + 'hospital/getHDiseaseDatas', 
+    ajax: baseUrl + 'hospitals/getHDiseaseDatas', 
     columns: [
         {
             data: null,

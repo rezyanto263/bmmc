@@ -1,6 +1,11 @@
 <div class="content-body py-3">
     <div id="#crudAlert" data-flashdata="" data-errorflashdata=""></div>
-    <table id="doctorsTable" class="table" style="width:100%">
+    <button type="button" class="btn-primary w-100 my-3 d-flex align-items-center justify-content-center gap-2"
+        data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+        <i class="las la-plus-circle fs-4"></i>
+        ADD DOCTOR
+    </button>
+    <table id="doctorTable" class="table" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -25,7 +30,6 @@
         </tfoot>
     </table>
 </div>
-
 
 <!-- Modal Add -->
 <div class="modal fade" id="addDoctorModal">
@@ -84,13 +88,12 @@
                                 <select class="form-control" id="doctorStatus" name="doctorStatus">
                                     <option hidden ></option>
                                     <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
                                     <option value="disabled">Disabled</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
@@ -160,13 +163,12 @@
                                 <select class="form-control" id="doctorStatus" name="doctorStatus">
                                     <option hidden></option>
                                     <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="suspended">Suspended</option>
                                     <option value="disabled">Disabled</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-danger" data-bs-dismiss="modal">CANCEL</button>
@@ -192,6 +194,7 @@
                     Are you sure want to delete <span class="fw-bold" id="doctorName"></span> account?
                     <input type="text" id="doctorId" name="doctorId" hidden>
                 </div>
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 <div class="modal-footer border-0">
                     <button type="button" class="btn-primary" data-bs-dismiss="modal">CANCEL</button>
                     <button type="submit" class="btn-danger" id="deleteDoctorButton">DELETE</button>

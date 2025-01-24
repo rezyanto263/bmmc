@@ -54,8 +54,8 @@ class M_auth extends CI_Model {
         $this->db->update('admin', array('adminPassword' => $adminPassword, 'adminToken' => NULL));
     }
 
-    public function getEmployeeDataById($employeeNIK) {
-        $this->db->select('employeeNIK, employeeName, employeeEmail, employeeAddress, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
+    public function getEmployeeDataById($employeeId) {
+        $this->db->select('employeeNIK, insuranceId, employeeName, employeeEmail, employeeAddress, employeePhone, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
         $this->db->from('employee');
         $this->db->where('employeeNIK', $employeeNIK);
         return $this->db->get()->row_array();
@@ -71,16 +71,41 @@ class M_auth extends CI_Model {
         return $this->db->update('employee', $employeeData);
     }
 
+    public function getInsuranceByEmployeeId($employeeId)
+    {
+        // Mengambil insuranceId dari tabel employee berdasarkan employeeId
+        $this->db->select('i.*,
+                IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed,
+        ');
+        $this->db->from('employee e');
+        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
+        $this->db->where('e.employeeNIK', $employeeId);
+        return $this->db->get()->row_array();
+    }
+
+    public function getInsuranceByFamilyId($familyId)
+    {
+        $this->db->select('i.*, IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed');
+        $this->db->from('employee e');
+        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
+        $this->db->where('f.familyNIK', $familyId);        
+        return $this->db->get()->row_array();
+    }
+
     public function getFamilyDataById($familyId) {
-        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyGender, familyPassword, familyStatus, familyPhoto');
+        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyPhone, familyGender, familyPassword, familyStatus');
         $this->db->from('family');
         $this->db->where('familyNIK', $familyId);
         return $this->db->get()->row_array();
     }
 
-    public function updateFamily($familyNIK, $familyData) {
-        $this->db->where('familyNIK', $familyNIK);
-        return $this->db->update('family', $familyData);
+    public function updateFamily($familyId, $employeeData) {
+        $this->db->where('familyNIK', $familyId);
+        return $this->db->update('family', $employeeData);
     }
 
     public function validateEmployeeLogin($NIK, $password) {
@@ -135,6 +160,19 @@ class M_auth extends CI_Model {
         return null;  // If no password is found, return null
     }
     
+    public function getCurrentPasswordByFamilyNIK($familyNIK) {
+        $this->db->select('familyPassword');
+        $this->db->from('family');
+        $this->db->where('familyNIK', $familyNIK);
+        $query = $this->db->get();
+        $result = $query->row();
+        
+        if ($result) {
+            return $result->familyPassword;
+        }
+        
+        return null;  // If no password is found, return null
+    }
 
     public function rememberEmployeeLogin($employeeNIK, $rememberToken) {
         $this->db->where('employeeNIK', $employeeNIK);

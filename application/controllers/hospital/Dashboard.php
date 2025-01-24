@@ -12,36 +12,21 @@ class Dashboard extends CI_Controller {
         }
 
         $this->load->model('M_hospitals');
+        $this->load->model('M_admins');
     }
     
 
-    public function index() {
-        $adminId = $this->session->userdata('adminId');
-
-        $hospitalData = $this->M_hospitals->checkHospital('adminId', $adminId);
-
-        if (!empty($hospitalData)) {
-            $this->session->set_userdata('hospitalId', $hospitalData['hospitalId']);
-            $this->session->set_userdata('hospitalName', $hospitalData['hospitalName']);
-            $this->session->set_userdata('hospitalLogo', $hospitalData['hospitalLogo']);
-            $this->session->set_userdata('hospitalPhone', $hospitalData['hospitalPhone']);
-            $this->session->set_userdata('hospitalAddress', $hospitalData['hospitalAddress']);
-            $this->session->set_userdata('hospitalCoordinate', $hospitalData['hospitalCoordinate']);
-        }
-
-        $hospital = array(
-            'hospitalId' => $this->session->userdata('hospitalId'),
-            'hospitalName' => $this->session->userdata('hospitalName'),
-            'hospitalLogo' => $this->session->userdata('hospitalLogo'),
-            'hospitalPhone' => $this->session->userdata('hospitalPhone'),
-            'hospitalAddress' => $this->session->userdata('hospitalAddress'),
-            'hospitalCoordinate' => $this->session->userdata('hospitalCoordinate')
-        );
+    public function index()
+    {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
 
         $datas = array(
             'title' => 'BMMC Hospital | Dashboard',
             'subtitle' => 'Dashboard',
-            'contentType' => 'dashboard'
+            'contentType' => 'dashboard',
+            'admin' => $adminDatas,
+            'hospital' => $hospitalDatas
         );
 
         $partials = array(
@@ -49,7 +34,7 @@ class Dashboard extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospitals/Hospital',
+            'contentBody' => 'hospital/Dashboard',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );

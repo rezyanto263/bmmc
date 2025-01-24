@@ -161,6 +161,7 @@ class AuthUser extends CI_Controller {
 
             $sessionDatas = array(
                 'userNIK' => $userDatas['employeeNIK'],
+                'insuranceId' => $userDatas['insuranceId'],
                 'userName' => $userDatas['employeeName'],
                 'userEmail' => $userDatas['employeeEmail'],
                 'userAddress' => $userDatas['employeeAddress'],
@@ -197,13 +198,13 @@ class AuthUser extends CI_Controller {
         delete_cookie('keyReference');
 
         $userType = $this->session->userdata('userType');
-        $sessionDatas = array('userNIK', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
+        $sessionDatas = array('userNIK', 'insuranceId', 'userPhoto', 'userName', 'userEmail', 'userAddress', 'userBirth', 'userGender', 'userPassword', 'userStatus');
 
         $userType == 'family'? $sessionDatas[]='employeeNIK' : '';
 
         $this->session->sess_destroy($sessionDatas);
 
-        redirect('login');
+        redirect('home');
     }
 
 }

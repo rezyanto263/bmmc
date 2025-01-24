@@ -2,6 +2,8 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Ramsey\Uuid\Uuid;
+
 class History extends CI_Controller {
 
     public function __construct()
@@ -20,7 +22,7 @@ class History extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BIM Hospital | History',
+            'title' => 'BMMC Hospital | History',
             'subtitle' => 'History',
             'contentType' => 'dashboard'
         );
@@ -30,7 +32,7 @@ class History extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospitals/History',
+            'contentBody' => 'hospital/History',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -53,14 +55,225 @@ class History extends CI_Controller {
         }
     }
 
-    public function getHPatientHistoryHealthDetailsByNIK($patientNIK) {
+    public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
         $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
         $datas = array(
             'data' => $historyhealthDatas
         );
         echo json_encode($datas);
     }
-    
+
+    public function addReferral() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+        $validate = array(
+            array(
+                'field' => 'historyhealthDescription',
+                'label' => 'Description',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.'
+                )
+            ),
+            array(
+                'field' => 'historyhealthReferredTo',
+                'label' => 'Referred To',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.',
+                )
+            ),
+            array(
+                'field' => 'patientNIK',
+                'label' => 'NIK',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.'
+                )
+            ),
+            array(
+                'field' => 'role',
+                'label' => 'Role',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'Referral should provide a %s.'
+                )
+            ),
+        );
+        $this->form_validation->set_rules($validate);
+
+        if ($this->form_validation->run() == FALSE) {
+            $errors = $this->form_validation->error_array();
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
+            return;
+        }
+
+        $BillingId = $this->M_historyhealth->checkBillByPatientNIK ($this->input->post('patientNIK'), $this->input->post('role'));
+        if (!$BillingId) {
+            echo json_encode(array('status' => 'invalid', 'errors' => 'BillId Patient not found.', 'csrfToken' => $this->security->get_csrf_hash()));
+            return;
+        }
+        $uuid = Uuid::uuid7();
+        $referralDatas = array(
+            'historyhealthId' => $uuid->toString(),
+            'hospitalId' => $hospitalDatas['hospitalId'],
+            'billingId' => $BillingId['billingId'],
+            'patientNIK' => htmlspecialchars($this->input->post('patientNIK')),
+            'historyhealthRole' => htmlspecialchars($this->input->post('role')),
+            'historyhealthDescription' => htmlspecialchars($this->input->post('historyhealthDescription')),
+            'historyhealthReferredTo' => htmlspecialchars($this->input->post('historyhealthReferredTo')),
+        );
+        $this->M_historyhealth->insertReferral($referralDatas);
+        $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+    }
+
+    public function addTreatment() {
+        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
+        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+        $validate = array(
+            array(
+                'field' => 'diseaseId',
+                'label' => 'Disease ID',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'doctorId',
+                'label' => 'Doctor ID',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthDoctorFee',
+                'label' => 'Doctor Fee',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthMedicineFee',
+                'label' => 'Medicine Fee',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthLabFee',
+                'label' => 'Lab Fee',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthActionFee',
+                'label' => 'Action Fee',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthDiscount',
+                'label' => 'Discount',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthDate',
+                'label' => 'Date',
+                'rules' => 'required|valid_date',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                    'valid_date' => 'The %s field must be a valid date.',
+                )
+            ),
+            array(
+                'field' => 'patientNIK',
+                'label' => 'Patient NIK',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'role',
+                'label' => 'Role',
+                'rules' => 'required|trim',
+                'errors' => array(
+                    'required' => 'The %s field is required.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthTotalBill',
+                'label' => 'Total Bill',
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => array(
+                    'required' => 'Treatment should provide an %s.',
+                    'numeric' => 'The %s field must contain only numbers.',
+                    'greater_than_equal_to' => 'The %s must be a positive number.',
+                )
+            ),
+            array(
+                'field' => 'historyhealthDescription',
+                'label' => 'Description',
+                'rules' => 'trim',
+            )
+        );
+        $this->form_validation->set_rules($validate);
+
+        if ($this->form_validation->run() == FALSE) {
+            $errors = $this->form_validation->error_array();
+            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
+            return;
+        }
+
+        $BillingId = $this->M_historyhealth->checkBillByPatientNIK ($this->input->post('patientNIK'), $this->input->post('role'));
+        if (!$BillingId) {
+            echo json_encode(array('status' => 'invalid', 'errors' => 'BillId Patient not found.', 'csrfToken' => $this->security->get_csrf_hash()));
+            return;
+        }
+        $uuid = Uuid::uuid7();
+        $treatmentDatas = array(
+            'historyhealthId' => $uuid->toString(),
+            'hospitalId' => $hospitalDatas['hospitalId'],
+            'doctorId' => $this->input->post('doctorId'),
+            'billingId' => $BillingId['billingId'],
+            'historyhealthDoctorFee' => $this->input->post('historyhealthDoctorFee'),
+            'historyhealthMedicineFee' => $this->input->post('historyhealthMedicineFee'),
+            'historyhealthLabFee' => $this->input->post('historyhealthLabFee'),
+            'historyhealthActionFee' => $this->input->post('historyhealthActionFee'),
+            'historyhealthDiscount' => $this->input->post('historyhealthDiscount'),
+            'historyhealthDate' => $this->input->post('historyhealthDate'),
+            'patientNIK' => htmlspecialchars($this->input->post('patientNIK')),
+            'historyhealthRole' => htmlspecialchars($this->input->post('role')),
+            'historyhealthTotalBill' => $this->input->post('historyhealthTotalBill'),
+            'historyhealthDescription' => htmlspecialchars($this->input->post('historyhealthDescription')),
+        );
+        $this->M_historyhealth->insertTreatment($treatmentDatas);
+        $this->M_historyhealth->insertHisealtheas($treatmentDatas['historyhealthId'], $this->input->post('diseaseId'));
+        $this->M_hospitals->deleteQueue($this->input->post('patientNIK'), $hospitalDatas['hospitalId']);
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+    }
 }
 
 ?>

@@ -29,7 +29,7 @@ class Disease extends CI_Controller {
             'sidebar' => 'partials/hospital/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'hospitals/Disease',
+            'contentBody' => 'hospital/Disease',
             'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
@@ -39,8 +39,18 @@ class Disease extends CI_Controller {
     }
 
     public function getDiseaseDatas() {
-        $diseaseDatas = $this->M_historyhealth->getDiseaseDatas();
+        $diseaseDatas = $this->M_hospitals->getDiseaseDatas();
         $datas = array(
+            'data' => $diseaseDatas
+        );
+
+        echo json_encode($datas);
+    }
+
+    public function getCompanyInsuredDisease() {
+        $companyId = $this->input->get("id");
+        $diseaseDatas = $this->M_hospitals->getCompanyInsuredDisease($companyId);
+        $datas = array( 
             'data' => $diseaseDatas
         );
 
