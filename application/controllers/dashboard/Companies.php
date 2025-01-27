@@ -236,57 +236,73 @@ class Companies extends CI_Controller {
     
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
+            echo json_encode(array(
+                'status' => 'invalid', 
+                'errors' => $errors, 
+                'csrfToken' => $this->security->get_csrf_hash()
+            ));
+            return;
         } else {
-            $companyCoordinate = htmlspecialchars($this->input->post('companyCoordinate'));
-            $companyStatus = htmlspecialchars($this->input->post('companyStatus') ?? '');
+            $companyCoordinate = htmlspecialchars($this->input->post('companyCoordinate') ?: '') ?: NULL;
+            $companyStatus = htmlspecialchars($this->input->post('companyStatus') ?: '') ?: NULL;
 
             $companyDatas = array(
                 'companyName' => htmlspecialchars($this->input->post('companyName'), ENT_COMPAT),
                 'adminId' => htmlspecialchars($this->input->post('adminId')),
                 'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
-                'companyAddress' => htmlspecialchars($this->input->post('companyAddress')),
+                'companyAddress' => htmlspecialchars($this->input->post('companyAddress'), ENT_COMPAT),
             );
             $companyStatus && $companyDatas['companyStatus'] = $companyStatus;
 
-            $billingId = htmlspecialchars($this->input->post('billingId'));
-            $billingAmount = htmlspecialchars($this->input->post('billingAmount'));
+            $billingId = htmlspecialchars($this->input->post('billingId') ?: '') ?: NULL;
+            $billingAmount = htmlspecialchars($this->input->post('billingAmount') ?: '') ?: NULL;
             $billingDatas = array(
                 'billingId' => $billingId,
                 'billingAmount' => $billingAmount
             );
 
-
-            if ($_FILES['companyLogo']['name']) {
+            if (!empty($_FILES['companyLogo']['name'])) {
                 $fileName = strtoupper(trim(str_replace('.', ' ',$companyDatas['companyName']))).'-'.time();
                 $companyLogo = $this->_uploadImage('companyLogo', array('file_name' => $fileName, 'upload_path' => FCPATH . 'uploads/logos/'));
                 if ($companyLogo['status']) {
                     $this->_deleteImage($this->input->post('companyId'), 'companyLogo', FCPATH . 'uploads/logos/');
                     $companyDatas['companyLogo'] = $companyLogo['data']['file_name'];
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $companyLogo['error'], 'csrfToken' => $this->security->get_csrf_hash()));
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 'upload failed', 
+                        'errorMsg' => $companyLogo['error'], 
+                        'csrfToken' => $this->security->get_csrf_hash()));
                     return;
                 }
             }
 
-            if ($_FILES['companyPhoto']['name']) {
+            if (!empty($_FILES['companyPhoto']['name'])) {
                 $fileName = strtoupper(trim(str_replace('.', ' ',$companyDatas['companyName']))).'-'.time();
                 $companyPhoto = $this->_uploadImage('companyPhoto', array('file_name' => $fileName, 'upload_path' => FCPATH . 'uploads/photos/'));
                 if ($companyPhoto['status']) {
                     $this->_deleteImage($this->input->post('companyId'), 'companyPhoto', FCPATH . 'uploads/photos/');
                     $companyDatas['companyPhoto'] = $companyPhoto['data']['file_name'];
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $companyPhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 'upload failed', 
+                        'errorMsg' => $companyPhoto['error'], 
+                        'csrfToken' => $this->security->get_csrf_hash()));
                     return;
                 }
             }
 
-            if ($companyCoordinate) {
+            if (!empty($companyCoordinate)) {
                 $checkCompanyCoordinate = $this->M_companies->checkCompany('companyCoordinate', $companyCoordinate);
                 if (!$checkCompanyCoordinate) {
                     $companyDatas['companyCoordinate'] = $companyCoordinate;
                 } else {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'coordinate used', 'csrfToken' => $this->security->get_csrf_hash()));
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 'coordinate used', 
+                        'csrfToken' => $this->security->get_csrf_hash()
+                    ));
                     return;
                 }
             }
@@ -356,15 +372,25 @@ class Companies extends CI_Controller {
             ));
             return;
         }
-    
+
+        $this->load->model('M_families');
+        $this->load->model('M_employees');
+
         $patientData = $role == 'employee' 
             ? $this->M_companies->getEmployeeByNIK($NIK) 
             : $this->M_companies->getFamilyByNIK($NIK);
-    
+
+        $insuranceData = $role == 'employee'
+            ? $this->M_employees->getEmployeeDetails($NIK)
+            : $this->M_families->getFamiliesByEmployeeNIK($NIK);
+
         if ($patientData) {
             echo json_encode(array(
                 'status' => 'success',
-                'data' => $patientData,
+                'data' => array(
+                    'profile' => $patientData, 
+                    'insurance' => $insuranceData
+                ),
                 'csrfToken' => $this->security->get_csrf_hash()
             ));
         } else {

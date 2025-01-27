@@ -40,7 +40,7 @@
 <div class="modal fade" id="addFamilyModal">    
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form id="addFamilyForm">
+            <form id="addFamilyForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">ADD FAMILY</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -49,7 +49,7 @@
                     <div class="row gy-4">
                         <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                             <div class="imgContainer">
-                                <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
+                                <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
                             </div>
                             <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD PHOTO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="familyPhoto" class="imgFile" id="addImgFile" hidden>

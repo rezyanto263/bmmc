@@ -50,7 +50,7 @@ class Profile extends CI_Controller {
             'employeeDatas' => $employeeDatas, // Send data to the view
             'familyMembers' => $familyMembers,
             'insuranceData' => $insuranceData,
-            'qr' => $this->generateQR(base64_encode($employeeDatas['employeeNIK'] . '-employee'))
+            'qr' => $this->generateQR(base64_encode($this->session->userdata('userNIK'). '-' . $userType))
         );
 
         $partials = array(

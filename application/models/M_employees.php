@@ -36,8 +36,7 @@ class M_employees extends CI_Model {
         return $this->db->get()->result_array();
     }
 
-    public function getCompanyByAdminId($adminId)
-    {
+    public function getCompanyByAdminId($adminId) {
         $this->db->where('adminId', $adminId);
         $query = $this->db->get('company');
         return $query->row_array();
@@ -52,6 +51,8 @@ class M_employees extends CI_Model {
     }
     
     public function getEmployeeByNIK($employeeNIK) {
+        $this->db->select('e.*, i.insuranceTier, i.insuranceAmount');
+        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId');
         $this->db->where('employeeNIK', $employeeNIK);
         $query = $this->db->get('employee');
         return $query->row_array();

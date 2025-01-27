@@ -41,7 +41,7 @@
 <div class="modal fade" id="addEmployeeModal">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <form id="addEmployeeForm">
+            <form id="addEmployeeForm" enctype="multipart/form-data">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">ADD EMPLOYEE</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -50,7 +50,7 @@
                     <div class="row gy-4">
                         <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                                 <div class="imgContainer">
-                                    <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/company-placeholder.jpg'); ?>" alt="Employee Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Employee Photo">
+                                    <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Employee Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Employee Photo">
                                 </div>
                                 <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD PHOTO</label>
                                 <input type="file" accept="image/jpg, image/jpeg, image/png" name="employeePhoto" class="imgFile" id="addImgFile" hidden>
@@ -137,7 +137,6 @@
     </div>
 </div>
 
-
 <!-- Modal View -->
 <div class="modal fade" id="viewEmployeeModal">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen">
@@ -152,7 +151,7 @@
                     <div class="row gy-4 mt-auto mb-5">
                         <div class="col-12 col-xl-3 my-auto mb-4 mb-xl-auto d-flex justify-content-center">
                             <div class="imgContainer my-auto" style="max-width: 300px; width: 300px; height: auto;">
-                                <img src="<?= base_url('assets/images/user-placeholder.png') ?>" id="imgPreview" alt="User Photo"  draggable="false">
+                                <img src="<?= base_url('assets/images/user-placeholder.png') ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" id="imgPreview" alt="User Photo"  draggable="false">
                             </div>
                         </div>
                         <div class="col-12 col-xl-9 my-auto">

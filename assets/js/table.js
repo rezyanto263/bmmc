@@ -370,6 +370,7 @@ $('#deleteAdminForm').on('submit', function(e) {
                 displayAlert('delete success');
                 reloadTableData(adminsTable);
             } else if (res.status === 'failed') {
+                $('#deleteAdminModal').modal('hide');
                 displayAlert(res.failedMsg);
             }
         }
@@ -672,7 +673,7 @@ $('#editHospitalForm').on('submit', function(e) {
         method: 'POST',
         data: new FormData(this),
         contentType: false,
-        processData: false,
+        processResults: false,
         success: function(response) {
             var res = JSON.parse(response);
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
@@ -992,47 +993,65 @@ $('#companiesTable').on('click', '.btn-edit', function() {
     $('#editCompanyForm [name="companyStatus"]').val(d.companyStatus).trigger('change');
     isUnverified && $('#editCompanyForm [name="companyStatus"]').parents('.col-12').find('.warning-message').show();
 
-    $('#editCompanyForm [name="adminId"]').empty();
-    $('#editCompanyForm [name="adminId"]').select2({
+    $('#editCompanyForm [name="adminId"]').empty().select2({
         placeholder: 'Choose Admin',
-        allowClear: true,
+        ajax: {
+            url: baseUrl + 'dashboard/getAllUnconnectedCompanyAdminsDatas',
+            method: 'GET',
+            dataType: 'json',
+            delay: 250,
+            processResults: function(response, params) {
+                const searchTerm = params.term ? params.term.toLowerCase() : '';
+                const selectedData = d && d.adminId
+                    ? [{
+                        id: d.adminId,
+                        text: `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((a) => a.id === 'current').text}`,
+                        selected: true
+                    }]
+                    : [];
+
+                const allData = selectedData.concat(
+                    response.data.map(function(data) {
+                        return {
+                            id: data.adminId,
+                            text: `
+                                ${data.adminEmail} | 
+                                ${data.adminName} | 
+                                ${generateStatusData(['not linked']).find((a) => a.id === 'not linked').text}
+                            `,
+                        };
+                    })
+                );
+
+                const filteredData = allData.filter(function(data) {
+                    const searchText = data.text.toLowerCase();
+                    return searchText.includes(searchTerm);
+                });
+
+                return {
+                    results: filteredData
+                };
+            },
+            error: function(err) {
+                console.error('Error fetching admin data:', err);
+            }
+        },
         dropdownParent: $('#editCompanyModal .modal-body'),
         escapeMarkup: function(markup) {
             return markup;
-        },
-        templateResult: function(data) {
-            return data.text;
-        },
-        templateSelection: function(data) {
-            return data.text || 'Choose Admin';
         }
     });
 
-    var preselectedOption = new Option(
-        `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
-        d.adminId,
-        true, 
-        true  
-    );
-    $('#editCompanyForm [name="adminId"]').append(preselectedOption).trigger('change');
+    if (d.adminId) {
+        var preselectedOption = new Option(
+            `${d.adminEmail} | ${d.adminName} | ${generateStatusData(['current']).find((d) => d.id === 'current').text}`,
+            d.adminId,
+            true, 
+            true  
+        );
+        $('#editCompanyForm [name="adminId"]').append(preselectedOption).trigger('change');
+    }
 
-    $.ajax({
-        url: baseUrl + 'dashboard/getAllUnconnectedCompanyAdminsDatas',
-        method: 'GET',
-        success: function(response) {
-            var res = JSON.parse(response);
-            res.data.forEach(function(data) {
-                var option = new Option(
-                    `${data.adminEmail} | ${data.adminName} | ${generateStatusData(['not linked']).find((d) => d.id === 'not linked').text}`,
-                    data.adminId
-                );
-                $('#editCompanyForm [name="adminId"]').append(option);
-            });
-        },
-        error: function(err) {
-            console.error('Error fetching admin data:', err);
-        }
-    });
 });
 
 $('#changeBillingAmountInput').hide();
@@ -1053,6 +1072,7 @@ $('#editCompanyForm').on('submit', function(e) {
         contentType: false,
         processData: false,
         success: function(response) {
+            console.log(response);
             var res = JSON.parse(response);
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
             if (res.status === 'success') {
@@ -1062,12 +1082,18 @@ $('#editCompanyForm').on('submit', function(e) {
             } else if (res.status === 'failed') {
                 $('.error-message').remove();
                 $('.is-invalid').removeClass('is-invalid');
+                formatPhoneInput();
                 displayAlert(res.failedMsg, res.errorMsg ?? null);
-                formatPhoneInput();
             } else if (res.status === 'invalid') {
-                displayFormValidation('#editCompanyForm', res.errors);
                 formatPhoneInput();
+                displayFormValidation('#editCompanyForm', res.errors);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });
@@ -2346,11 +2372,12 @@ $('#editEmployeeForm #newEmployeeNIK').change(function() {
 
 $('#editEmployeeForm').on('submit', function(e) {
     e.preventDefault();
+    var formData = new FormData(this);
     removeCleaveFormat();
     $.ajax({
         url: baseUrl + 'company/Employees/editEmployee',
         method: 'POST',
-        data: new FormData(this),
+        data: formData,
         contentType: false,
         processData: false,
         success: function(response) {
@@ -2689,7 +2716,9 @@ $('#addFamilyForm').on('submit', function(e) {
     $.ajax({
         url: baseUrl + 'company/Families/addFamily',
         method: 'POST',
-        data: $(this).serialize(),
+        data: new FormData(this),
+        contentType: false,
+        processData: false,
         success: function(response) {
             var res = JSON.parse(response);
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
@@ -2716,6 +2745,7 @@ $('#familiesTable').on('click', '.btn-edit', function() {
     var data = familiesTable.row($(this).parents('tr')).data();
     $('#editFamilyForm #newFamilyNIKInput').hide();
 
+    data.familyPhoto && $('#editFamilyForm #imgPreview').attr('src', baseUrl+'uploads/profiles/'+data.familyPhoto);
     $('#editFamilyForm [name="familyNIK"]').val(data.familyNIK);
     $('#editFamilyForm [name="familyName"]').val(data.familyName);
     $('#editFamilyForm [name="familyEmail"]').val(data.familyEmail);
@@ -2813,10 +2843,13 @@ $('#editFamilyForm #newFamilyNIK').change(function() {
 $('#editFamilyForm').on('submit', function(e) {
     e.preventDefault();
     removeCleaveFormat();
+    var formData = new FormData(this);
     $.ajax({
         url: baseUrl + 'company/Families/editFamily',
         method: 'POST',
-        data: $(this).serialize(),
+        data: formData,
+        contentType: false,
+        processData: false,
         success: function(response) {
             var res = JSON.parse(response);
             res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);

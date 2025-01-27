@@ -24,7 +24,6 @@ $('#scannerModal').on('show.bs.modal', function() {
                 alert('No cameras found.');
             }
         }).catch(function (e) {
-            // console.error(e);
             $('#scannerModal .btn-close').show();
             alert(e);
         });
@@ -62,36 +61,55 @@ $('#qrForm').on('submit', function(e) {
             if (res.status === 'success') {
                 $('#scanResultModal').modal('show');
                 $('#scannerModal').modal('hide');
-                const data = res.data;
+                const pro = res.data.profile;
+                const ins = res.data.insurance[0];
                 $('#scanResultModal').on('shown.bs.modal', function() {
-                    var photo = data.employeePhoto || data.familyPhoto;
-                    var status = data.employeeStatus || data.familyStatus;
+                    var photo = pro.employeePhoto || pro.familyPhoto;
+                    var status = pro.employeeStatus || pro.familyStatus;
                     $('#scanResultModal #imgPreview').attr('src', photo ? `${baseUrl}uploads/profiles/${photo}` : `${baseUrl}assets/images/user-placeholder.png`);
 
+                    var totalBillingRemaining = ins.totalBillingUsed - pro.insuranceAmount;
                     const fields = [
-                        { id: 'nik', value: data.employeeNIK || data.familyNIK },
-                        { id: 'name', value: data.employeeName || data.familyName },
-                        { id: 'role', value: data.familyRole || 'Employee' },
-                        { id: 'birth', value: moment(data.employeeBirth || data.familyBirth).format('dddd, D MMMM YYYY') },
-                        { id: 'gender', value: capitalizeWords(data.employeeGender || data.familyGender) },
-                        { id: 'companyName', value: data.companyName },
-                        { id: 'email', value: data.employeeEmail || data.familyEmail },
-                        { id: 'phone', value: data.employeePhone || data.familyPhone },
-                        { id: 'address', value: data.employeeAddress || data.familyAddress },
-                        { id: 'status', value: generateStatusData([status]).find((d) => d.id === status).text }
+                        { id: 'nik', value: pro.familyNIK || pro.employeeNIK },
+                        { id: 'name', value: pro.employeeName || pro.familyName },
+                        { id: 'role', value: pro.familyNIK ? 'Family' : 'Employee' },
+                        { id: 'birth', value: moment(pro.employeeBirth || pro.familyBirth).format('dddd, D MMMM YYYY') },
+                        { id: 'gender', value: capitalizeWords(pro.employeeGender || pro.familyGender) },
+                        { id: 'companyName', value: pro.companyName },
+                        { id: 'email', value: pro.employeeEmail || pro.familyEmail },
+                        { id: 'phone', value: pro.employeePhone || pro.familyPhone },
+                        { id: 'address', value: pro.employeeAddress || pro.familyAddress },
+                        { id: 'status', value: generateStatusData([status]).find((d) => d.id === status).text },
+                        { id: 'totalTreatmentsThisMonth', value: ins.totalTreatmentsThisMonth },
+                        { id: 'totalBilledTreatmentsThisMonth', value: ins.totalBilledTreatmentsThisMonth },
+                        { id: 'totalReferredTreatmentsThisMonth', value: ins.totalReferredTreatmentsThisMonth },
+                        { id: 'totalFreeTreatmentsThisMonth', value: ins.totalFreeTreatmentsThisMonth },
+                        { id: 'totalTreatments', value: ins.totalTreatments },
+                        { id: 'totalBilledTreatments', value: ins.totalBilledTreatments },
+                        { id: 'totalReferredTreatments', value: ins.totalReferredTreatments },
+                        { id: 'totalFreeTreatments', value: ins.totalFreeTreatments },
+                        { id: 'totalBillingRemaining', value: formatToRupiah(totalBillingRemaining) },
+                        { id: 'insuranceTier', value: pro.insuranceTier },
+                        { id: 'totalBillingUsed', value: formatToRupiah(ins.totalBillingUsed, false, false) },
+                        { id: 'totalBillingAmount', value: formatToRupiah(pro.insuranceAmount, false, false) },
                     ];
 
                     fields.forEach(field => {
-                        console.log(field.value);
                         $(`#scanResultModal #${field.id}`).html(field.value);
                     });
 
                     displayAlert('scan qr success');
-                    getPatientHistoryHealth(data.employeeNIK || data.familyNIK);
+                    getPatientHistoryHealth(pro.employeeNIK || pro.familyNIK);
                 });
             } else if (res.status === 'failed') {
                 displayAlert(res.failedMsg);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
         }
     });
 });

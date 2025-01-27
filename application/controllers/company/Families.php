@@ -141,7 +141,7 @@ class Families extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            $familyPassword = uniqid();
+            $familyPassword = strtoupper(uniqid());
             $familyData = array(
                 'familyNIK' => htmlspecialchars($this->input->post('familyNIK')),
                 'employeeNIK' => htmlspecialchars($this->input->post('employeeNIK')),
@@ -153,7 +153,7 @@ class Families extends CI_Controller {
                 'familyAddress' => htmlspecialchars($this->input->post('familyAddress'), ENT_COMPAT),
             );
 
-            if ($_FILES['familyPhoto']['name']) {
+            if (!empty($_FILES['familyPhoto']['name'])) {
                 $photoFileName = strtoupper(trim(str_replace('.', ' ',$familyData['familyName']))).'-'.time();
                 $familyPhoto = $this->_uploadImage('familyPhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/profiles/'));
                 if ($familyPhoto['status']) {
@@ -245,7 +245,6 @@ class Families extends CI_Controller {
             $newFamilyNIK = htmlspecialchars($this->input->post('newFamilyNIK') ?: '') ?: NULL;
 
             $familyData = array(
-                'familyNIK' => $this->input->post('familyNIK'),
                 'familyName' => $this->input->post('familyName'),
                 'familyEmail' => $this->input->post('familyEmail'),
                 'familyAddress' => $this->input->post('familyAddress'),
@@ -255,14 +254,11 @@ class Families extends CI_Controller {
             !empty($newFamilyNIK) && $familyData['familyNIK'] = $newFamilyNIK;
             !empty($newPassword) && $familyData['familyPassword'] = $newPassword;
 
-            if (!empty($_FILES['familyPhoto']['name'])) {
+            if ($_FILES['familyPhoto']['name']) {
                 $photoFileName = strtoupper(trim(str_replace('.', ' ', $familyData['familyName']))) . '-' . time();
                 $familyPhoto = $this->_uploadImage('familyPhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/profiles/'));
                 if ($familyPhoto['status']) {
-                    $existingFamily = $this->M_families->checkFamily('familyNIK', $familyNIK);
-                    if (!empty($existingFamily['familyPhoto'])) {
-                        $this->_deleteImage($existingFamily['familyPhoto'], FCPATH . 'uploads/profiles/');
-                    }
+                    $this->_deleteImage($familyNIK, 'familyPhoto', FCPATH . 'uploads/profiles/');
                     $familyData['familyPhoto'] = $familyPhoto['data']['file_name'];
                 } else {
                     echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $familyPhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
@@ -299,7 +295,7 @@ class Families extends CI_Controller {
     }
 
     private function _deleteImage($familyNIK, $field, $path) {
-        $familyDatas = $this->M_families->checkFamily('familyNIK', $familyNIK );
+        $familyDatas = $this->M_families->checkFamily('familyNIK', $familyNIK);
         $familyDatas[$field] && unlink($path . $familyDatas[$field]);
     }
     

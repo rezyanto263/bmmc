@@ -113,7 +113,7 @@ class M_companies extends CI_Model {
     }
 
     public function getEmployeeByNIK($employeeNIK) {
-        $this->db->select('e.*, i.insuranceTier, c.companyName');
+        $this->db->select('e.*, i.insuranceTier, i.insuranceAmount, c.companyName');
         $this->db->from('employee e');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
         $this->db->join('company c', 'c.companyId = i.companyId', 'left');
@@ -122,7 +122,7 @@ class M_companies extends CI_Model {
     }
 
     public function getFamilyByNIK($familyNIK) {
-        $this->db->select('f.*, c.companyName');
+        $this->db->select('f.*, i.insuranceTier, i.insuranceAmount, c.companyName');
         $this->db->from('family f');
         $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');

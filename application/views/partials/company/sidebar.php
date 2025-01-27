@@ -23,32 +23,32 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Employees'?'active':''; ?>" href="<?= base_url('company/employees') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Employees">
-                        <i class="las la-user-tie fs-4"></i>
-                        <span>Employees</span>
-                    </a>
-                </li>
-                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insurance'?'active':''; ?>" href="<?= base_url('company/insurance') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insurance">
                         <i class="las la-tag fs-4"></i>
                         <span>Insurance</span>
                     </a>
                 </li>
                 <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Employees'?'active':''; ?>" href="<?= base_url('company/employees') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Employees">
+                        <i class="las la-user-tie fs-4"></i>
+                        <span>Employees</span>
+                    </a>
+                </li>
+                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Families'?'active':''; ?>" href="<?= base_url('company/families') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Families">
-                        <i class="las la-user-injured fs-4"></i>
+                        <i class="las la-users fs-4"></i>
                         <span>Families</span>
                     </a>
                 </li>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Treatment History'?'active':''; ?>" href="<?= base_url('company/treatmenthistory') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Treatment History">
-                        <i class="las la-file-medical fs-4"></i>
+                        <i class="las la-file-medical-alt fs-4"></i>
                         <span>Treatment History</span>
                     </a>
                 </li>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Invoices'?'active':''; ?>" href="<?= base_url('company/invoice') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Invoice">
-                        <i class="las la-file-invoice fs-4"></i>
+                        <i class="las la-file-invoice-dollar fs-4"></i>
                         <span>Monthly Payment</span>
                     </a>
                 </li>

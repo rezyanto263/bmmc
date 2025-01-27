@@ -136,6 +136,83 @@
                             </div>
                         </div>
                     </div>
+                    <h1 class="mb-0">Insurance Details</h1>
+                    <div class="row g-4 mb-5 mt-1">
+                        <div class="col-12 col-lg-4">
+                            <div class="card bg-transparent box-total">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title text-center">TREATMENTS THIS MONTH</h5>
+                                    <h1 class="text-center fw-bold" id="totalTreatmentsThisMonth">0</h1>
+                                    <div class="card-text text-center">
+                                        <hr>
+                                        <div class="d-flex justify-content-around">
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billed">
+                                                <i class="las la-file-medical text-success fs-4"></i>
+                                                <span id="totalBilledTreatmentsThisMonth">0</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Referred">
+                                                <i class="las la-file-medical text-info fs-4"></i>
+                                                <span id="totalReferredTreatmentsThisMonth">0</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Free">
+                                                <i class="las la-file-medical text-secondary-subtl fs-4"></i>
+                                                <span id="totalFreeTreatmentsThisMonth">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="card bg-transparent box-total">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title text-center">TOTAL TREATMENTS</h5>
+                                    <h1 class="text-center fw-bold" id="totalTreatments">0</h1>
+                                    <div class="card-text text-center">
+                                        <hr>
+                                        <div class="d-flex justify-content-around">
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billed">
+                                                <i class="las la-file-medical text-success fs-4"></i>
+                                                <span id="totalBilledTreatments">0</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Referred">
+                                                <i class="las la-file-medical text-info fs-4"></i>
+                                                <span id="totalReferredTreatments">0</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Free">
+                                                <i class="las la-file-medical text-secondary-subtl fs-4"></i>
+                                                <span id="totalFreeTreatments">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="card bg-transparent box-total">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title text-center">INSURANCE BILLING REMAINING</h5>
+                                    <h4 class="text-center fw-bold"  id="totalBillingRemaining">Rp 000.000.000,00</h4>
+                                    <span class="text-center" style="font-size: 0.8rem;" id="insuranceTier" data-bs-toggle="tooltip" data-bs-title="Insurance Tier">
+                                        Insurance Tier
+                                    </span>
+                                    <div class="card-text text-center">
+                                        <hr class="mt-0">
+                                        <div class="d-flex justify-content-around">
+                                            <div class="d-inline-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billing Used">
+                                                <i class="las la-credit-card text-danger fs-4"></i>
+                                                <span style="font-size: 0.8rem;" id="totalBillingUsed">000.000.000</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billing Amount">
+                                                <i class="las la-credit-card text-info fs-4"></i>
+                                                <span style="font-size: 0.8rem;" id="totalBillingAmount">000.000.000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <h1>History Health</h1>
                     <div class="row">
                         <table id="patientTable" class="table" style="width:100%">

@@ -42,11 +42,3 @@
     </div>
 </div>
 
-<!-- Di dalam file view_hospital.php atau file modal -->
-<style>
-    #hospitalMap {
-        height: 400px;  /* Atur tinggi peta sesuai kebutuhan */
-        width: 100%;    /* Pastikan peta memiliki lebar penuh */
-    }
-</style>
-

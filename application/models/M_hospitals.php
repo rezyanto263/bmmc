@@ -55,7 +55,6 @@ class M_hospitals extends CI_Model {
         $this->db->join('hisealtheas hd', 'hd.historyhealthId = hh.historyhealthId', 'left');
         $this->db->join('disease ds', 'ds.diseaseId = hd.diseaseId', 'left');
         $this->db->where('hh.patientNIK', $patientNIK);
-        $this->db->group_by('hh.patientNIK');
         return $this->db->get()->result_array();
     }
 

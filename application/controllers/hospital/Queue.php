@@ -115,14 +115,24 @@ class Queue extends CI_Controller {
             return;
         }
     
+        $this->load->model('M_families');
+        $this->load->model('M_employees');
+
         $patientData = $role == 'employee' 
             ? $this->M_companies->getEmployeeByNIK($NIK) 
             : $this->M_companies->getFamilyByNIK($NIK);
-    
+
+        $insuranceData = $role == 'employee'
+            ? $this->M_employees->getEmployeeDetails($NIK)
+            : $this->M_families->getFamiliesByEmployeeNIK($NIK);
+
         if ($patientData) {
             echo json_encode(array(
                 'status' => 'success',
-                'data' => $patientData,
+                'data' => array(
+                    'profile' => $patientData, 
+                    'insurance' => $insuranceData
+                ),
                 'csrfToken' => $this->security->get_csrf_hash()
             ));
         } else {
