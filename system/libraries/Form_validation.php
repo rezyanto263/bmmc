@@ -1443,6 +1443,48 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Less than or equal to date
+	 *
+	 * @param   string  
+	 * @param   string  
+	 * @return  bool    
+	 */
+	public function less_than_or_equal_to_date($str, $max_date)
+	{
+		$str_timestamp = strtotime($str);
+		$max_timestamp = strtotime($max_date);
+
+		if ($str_timestamp === false || $max_timestamp === false) {
+			return false;
+		}
+
+		return $str_timestamp <= $max_timestamp;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Less than or equal to date
+	 *
+	 * @param   string  
+	 * @param   string  
+	 * @return  bool    
+	 */
+	public function more_than_or_equal_to_date($str, $max_date)
+	{
+		$str_timestamp = strtotime($str);
+		$max_timestamp = strtotime($max_date);
+
+		if ($str_timestamp === false || $max_timestamp === false) {
+			return false;
+		}
+
+		return $str_timestamp >= $max_timestamp;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Value should be within an array of values
 	 *
 	 * @param	string

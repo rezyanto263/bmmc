@@ -1,105 +1,3 @@
-// Theme Mode
-userColorPreference();
-function userColorPreference() {
-    var colorPreference = $.cookie('colorPreference');
-    if (colorPreference) {
-        if (colorPreference === 'dark') {
-            $('body:not(.dark)').addClass('dark');
-            $('#btn-mode i:not(.las.la-sun)').toggleClass('las la-sun las la-moon');
-        } else if (colorPreference === 'light') {
-            $('body').removeClass('dark');
-            $('#btn-mode i:not(.las.la-moon)').toggleClass('las la-sun las la-moon');
-        }
-    } else {
-        var userColorSchema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        $.cookie('colorPreference', userColorSchema, {path: '/'});
-        userColorPreference();
-    }
-}
-
-// Button Mode
-$('#btn-mode').on('click', function() {
-    $('body').toggleClass('dark');
-    $('#btn-mode i').toggleClass('las la-sun las la-moon');
-    var colorPreference = $.cookie('colorPreference') == 'dark'? 'light':'dark';
-    $.cookie('colorPreference', colorPreference, {path: '/'});
-    userColorPreference();
-});
-
-
-// Sidebar Maximize Minimize
-$('#btn-menu').on('click', function() {
-    $('aside').toggleClass('minimize maximize');
-    floatingMenuHandler()
-});
-
-
-// Floating Menu Scroll
-$(window).on('scroll resize', floatingMenuHandler);
-floatingMenuHandler();
-
-function floatingMenuHandler() {
-    const isScrolled = $(window).scrollTop() > 10;
-    const isWideScreen = $(window).width() >= 992;
-    const isMinimized = $('aside').hasClass('minimize');
-    const isMaximized = $('aside').hasClass('maximize');
-
-    if (isScrolled) {
-        $('.floating-btn').css('opacity', 0.5).addClass('flex-column');
-    } else {
-        $('.floating-btn').css('opacity', 1);
-
-        if (isWideScreen || isMinimized) {
-            $('.floating-btn').removeClass('flex-column');
-        } else if (isMaximized) {
-            $('.floating-btn').addClass('flex-column');
-        }
-    }
-}
-
-
-// QR Scanner
-var scanner;
-var cameraStream;
-$('#scannerModal').on('shown.bs.modal', function() {
-    $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
-    try {
-        cameraStream = navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-            cameraStream = stream;
-        });
-        scanner = new Instascan.Scanner({ video: $('#qrScanner').get(0) });
-        scanner.addListener('scan', function (content) {
-            $('#qrData').val(content);
-            $('#qrForm').submit();
-            console.log(content);
-        });
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-            } else {
-                alert('No cameras found.');
-            }
-        }).catch(function (e) {
-            // console.error(e);
-            alert(e);
-        });
-    } catch (error) {
-        console.error('Instascan initialization error:', error);
-    }
-});
-
-$('#scannerModal').on('hidden.bs.modal', function () {
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(function(track) {
-            track.stop();
-        });
-        cameraStream = null;
-    }
-    scanner.stop();
-    scanner = null;
-});	
-
-
 // Show Password
 $('.input-group #btnShowPassword').on('click', function(event) {
     event.preventDefault();
@@ -133,11 +31,22 @@ function isLetterSpaceKey(evt) {
 
 // Capitalize Words
 function capitalizeWords(string) {
+    string = string.toLowerCase();
     return string.replace(/\b[a-z]/g, function(char) {
         return char.toUpperCase();
     });
 }
 
+// Rupiah Format
+function formatToRupiah(amount, Rp = true, showDecimals = true) {
+    return new Intl.NumberFormat('id-ID', {
+        style: Rp ? 'currency' : 'decimal',
+        currency: Rp ? 'IDR' : undefined,
+        useGrouping: true,
+        minimumFractionDigits: showDecimals ? 2 : 0,
+        maximumFractionDigits: showDecimals ? 2 : 0
+    }).format(amount);
+}
 
 // Bootstrap Tooltips
 $('[data-bs-toggle="tooltip"]').each(function() {
@@ -151,3 +60,47 @@ $('.imgFile').on('change', function(e) {
         $(e.target).closest('.col-12').find('.imgContainer img').attr('src', URL.createObjectURL(file));
     }
 });
+
+// Status Color
+function statusColor(data) {
+    switch (data) {
+        case 'active':
+        case 'current':
+        case 'in use':
+        case 'published':
+        case 'billed':
+        case 'paid':
+            return 'bg-success';
+
+        case 'free':
+        case 'unverified':
+            return 'bg-secondary-subtle';
+
+        case 'on hold':
+        case 'pending':
+            return 'bg-warning';
+
+        case 'referred':
+            return 'bg-info';
+
+        case 'discontinued':
+        case 'disabled':
+        case 'archived':
+        case 'finished':
+            return 'bg-secondary';
+
+        case 'unpaid':
+        case 'stopped':
+            return 'bg-danger';
+
+        default:
+            return 'border-2 border-dashed border-secondary'
+    }
+}
+
+function generateStatusData(statuses) {
+    return statuses.map(status => ({
+        id: status.toLowerCase(),
+        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline">${capitalizeWords(status)}</span>`
+    }));
+}

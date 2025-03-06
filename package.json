@@ -1,5 +1,18 @@
 {
+  "name": "bmmc",
+  "version": "1.0.0",
+  "description": "BMMC Website",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "cleave.js": "^1.6.0",
+    "flatpickr": "^4.6.13",
     "jquery": "^3.7.1",
     "select2": "^4.1.0-rc.0",
     "sweetalert2": "^11.6.13"

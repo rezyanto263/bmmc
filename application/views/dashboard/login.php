@@ -19,7 +19,7 @@
                 </div>
                 <div class="login-form col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center p-md-5 px-4 py-5">
                     <h1 class="mb-5">
-                        Login Account
+                        Login Dashboard
                     </h1>
                     <div id="loginAlert" data-flashdata="<?= $this->session->flashdata('flashdata');?>"></div>
                     <form class="row gy-2 d-flex justify-content-center px-3" action="<?= base_url('authDashboard/loginDashboard') ?>" method="POST">
@@ -44,7 +44,7 @@
                             </div>
                             <?= form_error('adminPassword', '<small class="text-danger px-0 lh-1">', '</small>'); ?>
                         </div>
-                        <div class="d-flex justify-content-between px-0 mb-5 text-secondary fs-6">
+                        <div class="d-flex justify-content-between px-0 text-secondary fs-6">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="rememberMe">
                                 <label class="form-check-label">
@@ -55,6 +55,8 @@
                                 Forgot password?
                             </a>
                         </div>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                        <div class="g-recaptcha my-4 d-flex justify-content-center" data-sitekey="<?= $_ENV['CAPTCHA_SITE_KEY'] ?>"></div>
                         <button type="submit" class="btn-primary">
                             LOGIN
                         </button>
