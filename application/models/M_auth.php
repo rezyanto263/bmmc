@@ -4,6 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_auth extends CI_Model {
 
+    /*
+    | ----------------------------------------------------------------
+    | ADMIN QUERY
+    | ----------------------------------------------------------------
+    */
+
     public function getAllAdmin() {
         $this->db->select('a.*,
             IF(a.adminRole = "company", c.companyStatus, 
@@ -15,16 +21,7 @@ class M_auth extends CI_Model {
         return $this->db->get()->result_array();
     }
 
-    public function getCompanyDetails($adminId) {
-        $this->db->select('companyId, companyName, companyLogo, companyPhone, companyAddress, companyCoordinate');
-        $this->db->from('company');  // Assuming the table is named 'companies'
-        $this->db->where('adminId', $adminId);
-        $query = $this->db->get();
-    
-        return $query->row_array();  // Return company data as an associative array
-    }
-
-    public function checkAdmin($param, $adminData) {
+    public function checkAdmin($param, $value) {
         $this->db->select('a.*,
             IF(a.adminRole = "company", c.companyStatus, 
                 IF(a.adminRole = "hospital", h.hospitalStatus, NULL)) AS status
@@ -32,16 +29,8 @@ class M_auth extends CI_Model {
         $this->db->from('admin a');
         $this->db->join('company c', 'c.adminId = a.adminId', 'left');
         $this->db->join('hospital h', 'h.adminId = a.adminId', 'left');
-        $this->db->where('a.' . $param, $adminData);
+        $this->db->where('a.' . $param, $value);
         return $this->db->get()->row_array();
-    }
-
-    public function checkEmployee($param, $employeeData) {
-        return $this->db->get_where('employee', array($param => $employeeData))->row_array();
-    }
-
-    public function checkFamily($param, $familyData) {
-        return $this->db->get_where('family', array($param => $familyData))->row_array();
     }
 
     public function setAdminToken($adminEmail, $adminToken) {
@@ -54,135 +43,104 @@ class M_auth extends CI_Model {
         $this->db->update('admin', array('adminPassword' => $adminPassword, 'adminToken' => NULL));
     }
 
-    public function getEmployeeDataById($employeeId) {
-        $this->db->select('employeeNIK, insuranceId, employeeName, employeeEmail, employeeAddress, employeePhone, employeeBirth, employeeGender, employeePassword, employeeStatus, employeePhoto');
-        $this->db->from('employee');
-        $this->db->where('employeeNIK', $employeeNIK);
-        return $this->db->get()->row_array();
-    }
-
     public function updateUnverifiedAdmin($adminId, $adminRole, $adminDatas) {
         $this->db->where('adminId', $adminId);
         return $this->db->update($adminRole, $adminDatas);
     }
 
-    public function updateEmployee($employeeNIK, $employeeData) {
-        $this->db->where('employeeNIK', $employeeNIK);
-        return $this->db->update('employee', $employeeData);
-    }
+    /*
+    | ----------------------------------------------------------------
+    | USER QUERY
+    | ----------------------------------------------------------------
+    */
 
-    public function getInsuranceByEmployeeId($employeeId)
-    {
-        // Mengambil insuranceId dari tabel employee berdasarkan employeeId
-        $this->db->select('i.*,
-                IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed,
-        ');
-        $this->db->from('employee e');
-        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
-        $this->db->where('e.employeeNIK', $employeeId);
-        return $this->db->get()->row_array();
-    }
-
-    public function getInsuranceByFamilyId($familyId)
-    {
-        $this->db->select('i.*, IFNULL(SUM(hh.historyhealthTotalBill), 0) AS totalBillingUsed');
-        $this->db->from('employee e');
-        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('historyhealth hh', 'hh.patientNIK = e.employeeNIK OR hh.patientNIK = f.familyNIK', 'left');
-        $this->db->where('f.familyNIK', $familyId);        
-        return $this->db->get()->row_array();
-    }
-
-    public function getFamilyDataById($familyId) {
-        $this->db->select('familyNIK, familyName, familyEmail, employeeNIK, familyAddress, familyBirth, familyPhone, familyGender, familyPassword, familyStatus');
-        $this->db->from('family');
-        $this->db->where('familyNIK', $familyId);
-        return $this->db->get()->row_array();
-    }
-
-    public function updateFamily($familyId, $employeeData) {
-        $this->db->where('familyNIK', $familyId);
-        return $this->db->update('family', $employeeData);
-    }
-
-    public function validateEmployeeLogin($NIK, $password) {
-        $this->db->select('employeeNIK, employeePassword');
-        $this->db->from('employee');
-        $this->db->where('employeeNIK', $NIK);
-        $userData = $this->db->get()->row_array();
-
-        if ($userData && password_verify($password, $userData['employeePassword'])) {
-            return $userData;
-        }
-        return FALSE;
-    }
-
-    public function validateFamilyLogin($NIK, $password) {
-        $this->db->select('familyNIK, familyPassword');
-        $this->db->from('family');
-        $this->db->where('familyNIK', $NIK);
-        $userData = $this->db->get()->row_array();
-    
-        if ($userData && password_verify($password, $userData['familyPassword'])) {
-            return $userData;
-        }
-        return FALSE;
-    }    
-
-    public function getFamilyMembersByEmployee($employeeNIK) {
-        return $this->db->get_where('family', ['employeeNIK' => $employeeNIK])->result_array();
-    }
-
-    public function updateEmployeePassword($employeeNIK, $newPassword) {
-        $this->db->where('employeeNIK', $employeeNIK);
-        return $this->db->update('employee', array('employeePassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
-    }
-
-    public function updateFamilyPassword($familyId, $newPassword) {
-        $this->db->where('familyNIK', $familyId);
-        return $this->db->update('family', array('familyPassword' => password_hash($newPassword, PASSWORD_DEFAULT)));
-    }
-
-    public function getCurrentPasswordByNIK($employeeNIK) {
-        $this->db->select('employeePassword');
-        $this->db->from('employee');
-        $this->db->where('employeeNIK', $employeeNIK);
-        $query = $this->db->get();
-        $result = $query->row();
+    public function checkUser($param, $value) {
+        // Gunakan query SQL manual untuk menghindari masalah escaping
+        $sql = "SELECT 
+                    employeeNIK, userNIK, insuranceId, userPhoto, userName, userEmail, userBirth, 
+                    userGender, userPhone, userAddress, userStatus, 
+                    userDepartment, userBand, userRole, userRelationship, userPassword
+                FROM (
+                    SELECT 
+                        employee.employeeNIK AS employeeNIK,
+                        employee.insuranceId AS insuranceId,
+                        employee.employeeNIK AS userNIK,
+                        employee.employeePhoto AS userPhoto,
+                        employee.employeeName AS userName,
+                        employee.employeeEmail AS userEmail,
+                        employee.employeeBirth AS userBirth,
+                        employee.employeeGender AS userGender,
+                        employee.employeePhone AS userPhone,
+                        employee.employeeAddress AS userAddress,
+                        employee.employeeStatus AS userStatus,
+                        employee.employeeDepartment AS userDepartment,
+                        employee.employeeBand AS userBand,
+                        'employee' AS userRole,
+                        'employee' AS userRelationship,
+                        employee.employeePassword AS userPassword,
+                        employee.employeeToken AS userToken
+                    FROM employee
+                    
+                    UNION ALL
+                    
+                    SELECT 
+                        family.employeeNIK AS employeeNIK,
+                        COALESCE(employee.insuranceId, '') AS insuranceId,
+                        family.familyNIK AS userNIK,
+                        family.familyPhoto AS userPhoto,
+                        family.familyName AS userName,
+                        family.familyEmail AS userEmail,
+                        family.familyBirth AS userBirth,
+                        family.familyGender AS userGender,
+                        family.familyPhone AS userPhone,
+                        family.familyAddress AS userAddress,
+                        family.familyStatus AS userStatus,
+                        COALESCE(employee.employeeDepartment, '') AS userDepartment,
+                        COALESCE(employee.employeeBand, '') AS userBand,
+                        'family' AS userRole,
+                        family.familyRelationship AS userRelationship,
+                        family.familyPassword AS userPassword,
+                        family.familyToken AS userToken
+                    FROM family
+                    LEFT JOIN employee ON employee.employeeNIK = family.employeeNIK
+                ) AS users
+                WHERE ".$this->db->protect_identifiers($param)." = ".$this->db->escape($value);
         
-        if ($result) {
-            return $result->employeePassword;
-        }
-        
-        return null;  // If no password is found, return null
+        $query = $this->db->query($sql);
+        return $query->row_array();
     }
     
-    public function getCurrentPasswordByFamilyNIK($familyNIK) {
-        $this->db->select('familyPassword');
-        $this->db->from('family');
-        $this->db->where('familyNIK', $familyNIK);
-        $query = $this->db->get();
-        $result = $query->row();
+    public function updateUnverifiedUser($userNIK, $userRole, $status) {
+        $this->db->where($userRole . 'NIK', $userNIK);
+        return $this->db->update($userRole, array($userRole . 'Status' => $status));
+    }
+
+    public function updateProfile($userNIK, $userRole, $userData) {
+        $this->db->where($userRole . 'NIK', $userNIK);
+        return $this->db->update($userRole, $userData);
+    }
+
+    public function setUserToken($userEmail, $userRole, $userToken) {
+        $this->db->where($userRole . 'Email', $userEmail);
+        return $this->db->update($userRole, array($userRole . 'Token' => $userToken));
+    }
+
+    public function changeUserPassword($userToken, $userPassword) {
+        $this->db->where('familyToken', $userToken);
+        $family = $this->db->get('family')->row();
+        $this->db->where('employeeToken', $userToken);
+        $employee = $this->db->get('employee')->row();
         
-        if ($result) {
-            return $result->familyPassword;
+        if (!empty($family)) {
+            $this->db->update('family', array('familyPassword' => $userPassword, 'familyToken' => NULL));
+        } elseif (!empty($employee)) {
+            $this->db->update('employee', array('employeePassword' => $userPassword, 'employeeToken' => NULL));
+        } else {
+            return false;
         }
-        
-        return null;  // If no password is found, return null
+        return true;
     }
 
-    public function rememberEmployeeLogin($employeeNIK, $rememberToken) {
-        $this->db->where('employeeNIK', $employeeNIK);
-        return $this->db->update('employee', array('rememberToken' => $rememberToken));
-    }
-
-    public function rememberFamilyLogin($familyId, $rememberToken) {
-        $this->db->where('familyNIK', $familyId);
-        return $this->db->update('family', array('rememberToken' => $rememberToken));
-    }
 }
 
 /* End of file M_auth.php */

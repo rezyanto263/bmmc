@@ -29,12 +29,39 @@ class Companies extends CI_Controller {
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'dashboard/companies',
-            'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
 
         $this->load->vars($datas);
         $this->load->view('master', $partials);
+    }
+
+    private function _uploadImage($imageInputField, $customConfig = []) {
+        $defaultConfig = array(
+            'allowed_types' => 'jpg|jpeg|png',
+            'max_size'      => 1024,
+            'max_width'     => 0,
+            'max_height'    => 0
+        );
+
+        $config = array_merge($defaultConfig, $customConfig);
+
+        if (!isset($this->upload)) {
+            $this->load->library('upload');
+        }
+
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload($imageInputField)) {
+            return array('status' => false, 'error' => strip_tags($this->upload->display_errors()));
+        } else {
+            return array('status' => true, 'data' => $this->upload->data());
+        }
+    }
+
+    private function _deleteImage($companyId, $field, $path) {
+        $companyDatas = $this->M_companies->checkCompany('companyId', $companyId);
+        !empty($companyDatas[$field]) && unlink($path . $companyDatas[$field]);
     }
 
     public function getAllCompaniesDatas() {
@@ -109,7 +136,7 @@ class Companies extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $checkCompanyCoordinate = $this->M_companies->checkCompany('companyCoordinate', $this->input->post('companyCoordinate'));
-            if (!$checkCompanyCoordinate) {
+            if (empty($checkCompanyCoordinate)) {
                 $companyDatas = array(
                     'companyName' => htmlspecialchars($this->input->post('companyName')),
                     'adminId' => htmlspecialchars($this->input->post('adminId')),
@@ -151,40 +178,36 @@ class Companies extends CI_Controller {
                     }
                 }
 
-                $this->M_companies->insertCompany($companyDatas, $billingDatas);
-                echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+                $this->load->model('M_admins');
+                $adminDatas = $this->M_admins->checkAdmin('adminId', $companyDatas['adminId']);
+                $adminPassword = strtoupper(uniqid());
+
+                $datas = array(
+                    'accountName' => $adminDatas['adminName'],
+                    'accountEmail' => $adminDatas['adminEmail'],
+                    'accountPassword' => $adminPassword,
+                    'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                );
+
+                $subject = 'Activate Your Company Account on BMMC Partner Website';
+                $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                $this->load->library('sendemail');
+                if ($this->sendemail->send($adminDatas['adminEmail'], $subject, $body)) {
+                    $this->M_admins->updateAdmin($companyDatas['adminId'], array('adminPassword' => password_hash($adminPassword, PASSWORD_DEFAULT)));
+                    $this->M_companies->insertCompany($companyDatas, $billingDatas);
+                    echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+                } else {
+                    echo json_encode(array(
+                        'status' => 'failed',
+                        'failedMsg' => 'send email failed',
+                        'csrfToken' => $this->security->get_csrf_hash()
+                    ));
+                }
             } else {
                 echo json_encode(array('status' => 'failed', 'failedMsg' => 'coordinate used', 'csrfToken' => $this->security->get_csrf_hash()));
             }
         }
-    }
-
-    private function _uploadImage($imageInputField, $customConfig = []) {
-        $defaultConfig = array(
-            'allowed_types' => 'jpg|jpeg|png',
-            'max_size'      => 1024,
-            'max_width'     => 0,
-            'max_height'    => 0
-        );
-
-        $config = array_merge($defaultConfig, $customConfig);
-
-        if (!isset($this->upload)) {
-            $this->load->library('upload');
-        }
-
-        $this->upload->initialize($config);
-
-        if (!$this->upload->do_upload($imageInputField)) {
-            return array('status' => false, 'error' => strip_tags($this->upload->display_errors()));
-        } else {
-            return array('status' => true, 'data' => $this->upload->data());
-        }
-    }
-
-    private function _deleteImage($companyId, $field, $path) {
-        $companyDatas = $this->M_companies->checkCompany('companyId', $companyId);
-        !empty($companyDatas[$field]) && unlink($path . $companyDatas[$field]);
     }
 
     public function editCompany() {
@@ -248,7 +271,6 @@ class Companies extends CI_Controller {
 
             $companyDatas = array(
                 'companyName' => htmlspecialchars($this->input->post('companyName'), ENT_COMPAT),
-                'adminId' => htmlspecialchars($this->input->post('adminId')),
                 'companyPhone' => htmlspecialchars($this->input->post('companyPhone')),
                 'companyAddress' => htmlspecialchars($this->input->post('companyAddress'), ENT_COMPAT),
             );
@@ -256,10 +278,23 @@ class Companies extends CI_Controller {
 
             $billingId = htmlspecialchars($this->input->post('billingId') ?: '') ?: NULL;
             $billingAmount = htmlspecialchars($this->input->post('billingAmount') ?: '') ?: NULL;
-            $billingDatas = array(
-                'billingId' => $billingId,
-                'billingAmount' => $billingAmount
-            );
+            if (!empty($billingId) && !empty($billingAmount)) {
+                $this->load->model('M_invoices');
+                $totalCurrentBillingUsed = $this->M_invoices->checkCurrentBillingByCompanyId($this->input->post('companyId'))['totalBillingUsed'];
+                if ($billingAmount < $totalCurrentBillingUsed) {
+                    echo json_encode(array(
+                        'status' => 'failed', 
+                        'failedMsg' => 'invalid billing amount', 
+                        'csrfToken' => $this->security->get_csrf_hash()
+                    ));
+                    return;
+                }
+            } else {
+                $billingDatas = array(
+                    'billingId' => $billingId,
+                    'billingAmount' => $billingAmount
+                );
+            }
 
             if (!empty($_FILES['companyLogo']['name'])) {
                 $fileName = strtoupper(trim(str_replace('.', ' ',$companyDatas['companyName']))).'-'.time();
@@ -307,6 +342,41 @@ class Companies extends CI_Controller {
                 }
             }
 
+            $adminId = htmlspecialchars($this->input->post('adminId'));
+            $checkCompany = $this->M_companies->checkCompany('companyId', $this->input->post('companyId'));
+            if (!empty($checkCompany) && !empty($adminId) && $adminId !== $checkCompany['adminId']) {
+                $this->load->model('M_admins');
+                $checkAdmin = $this->M_admins->checkAdmin('adminId', $adminId);
+
+                if (!empty($checkAdmin)) {
+                    $adminPassword = strtoupper(uniqid());
+                    $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
+                    $datas = array(
+                        'accountName' => $checkAdmin['adminName'],
+                        'accountEmail' => $checkAdmin['adminEmail'],
+                        'accountPassword' => $adminPassword,
+                        'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                    );
+
+                    $subject = 'Activate Your Company Account on BMMC Partner Website';
+                    $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                    $this->load->library('sendemail');
+                    if ($this->sendemail->send($checkAdmin['accountEmail'], $subject, $body)) {
+                        $this->M_admins->updateAdmin($adminId, array('adminPassword' => $hashedPassword));
+                        $companyDatas['adminId'] = $adminId;
+                    } else {
+                        echo json_encode(array(
+                            'status' => 'failed',
+                            'failedMsg' => 'send email failed',
+                            'csrfToken' => $this->security->get_csrf_hash()
+                        ));
+                        return;
+                    }
+                }
+            }
+
             $this->M_companies->updateCompany($this->input->post('companyId'), $companyDatas, $billingDatas);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
@@ -325,78 +395,6 @@ class Companies extends CI_Controller {
             echo json_encode(array(
                 'status' => 'failed',
                 'failedMsg' => 'can not delete linked data',
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-        }
-    }
-
-    public function scanQR() {
-        $qrInput = $this->input->post('qrData');
-        if (!$qrInput) {
-            echo json_encode(array(
-                'status' => 'failed',
-                'failedMsg' => 'qr data missing',
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-            return;
-        }
-    
-        $decodedData = base64_decode($qrInput, true);
-        if ($decodedData === false) {
-            echo json_encode(array(
-                'status' => 'failed',
-                'failedMsg' => 'invalid qr',
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-            return;
-        }
-
-        
-        $qrData = explode('-', $decodedData);
-        if (!(count($qrData) == 2)) {
-            echo json_encode(array(
-                'status' => 'failed',
-                'failedMsg' => 'incorrect format qr data',
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-            return;
-        }
-        
-        $NIK = trim($qrData[0]) ?: NULL;
-        $role = trim($qrData[1]) ?: NULL;
-        if (!$NIK || !$role) {
-            echo json_encode(array(
-                'status' => 'failed',
-                'failedMsg' => 'incomplete qr data',
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-            return;
-        }
-
-        $this->load->model('M_families');
-        $this->load->model('M_employees');
-
-        $patientData = $role == 'employee' 
-            ? $this->M_companies->getEmployeeByNIK($NIK) 
-            : $this->M_companies->getFamilyByNIK($NIK);
-
-        $insuranceData = $role == 'employee'
-            ? $this->M_employees->getEmployeeDetails($NIK)
-            : $this->M_families->getFamiliesByEmployeeNIK($NIK);
-
-        if ($patientData) {
-            echo json_encode(array(
-                'status' => 'success',
-                'data' => array(
-                    'profile' => $patientData, 
-                    'insurance' => $insuranceData
-                ),
-                'csrfToken' => $this->security->get_csrf_hash()
-            ));
-        } else {
-            echo json_encode(array(
-                'status' => 'failed',
-                'failedMsg' => 'scan not found',
                 'csrfToken' => $this->security->get_csrf_hash()
             ));
         }

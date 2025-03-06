@@ -13,14 +13,14 @@ class Insurance extends CI_Controller {
             redirect('dashboard/login');
         }
         
-        $this->load->model('M_insurance');
+        $this->load->model('M_insurances');
     }
 
     public function index()
     {
         $datas = array(
-            'title' => 'BMMC Company | Insurance',
-            'subtitle' => 'Insurance',
+            'title' => 'BMMC Company | Insurances',
+            'subtitle' => 'Insurances',
             'contentType' => 'dashboard'
         );
 
@@ -29,8 +29,7 @@ class Insurance extends CI_Controller {
             'sidebar' => 'partials/company/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'company/insurance',
-            'footer' => 'partials/dashboard/footer',
+            'contentBody' => 'company/insurances',
             'script' => 'partials/script'
         );
 
@@ -40,7 +39,7 @@ class Insurance extends CI_Controller {
 
     public function getAllInsuranceByCompanyId() {
         $companyId = $this->session->userdata('companyId');
-        $insuranceDatas = $this->M_insurance->getAllInsuranceByCompanyId($companyId);
+        $insuranceDatas = $this->M_insurances->getAllInsuranceByCompanyId($companyId);
         $datas = array(
             'data' => $insuranceDatas,
             'csrfToken' => $this->security->get_csrf_hash()
@@ -87,7 +86,7 @@ class Insurance extends CI_Controller {
                 'insuranceAmount' => $this->input->post('insuranceAmount'),
                 'insuranceDescription' => $this->input->post('insuranceDescription')
             );
-            $this->M_insurance->insertInsurance($insuranceData);
+            $this->M_insurances->insertInsurance($insuranceData);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
@@ -134,14 +133,14 @@ class Insurance extends CI_Controller {
                 'insuranceAmount' => $this->input->post('insuranceAmount'),
                 'insuranceDescription' => $this->input->post('insuranceDescription')
             );
-            $this->M_insurance->updateInsurance($insuranceId, $insuranceData);
+            $this->M_insurances->updateInsurance($insuranceId, $insuranceData);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
     public function deleteInsurance() {
         $insuranceId = $this->input->post('insuranceId');
-        $this->M_insurance->deleteInsurance($insuranceId);
+        $this->M_insurances->deleteInsurance($insuranceId);
         
         echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
     }

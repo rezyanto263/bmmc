@@ -16,48 +16,52 @@ class Profile extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        
-        // Check if the user is logged in by verifying session data
-        if ($this->session->userdata('userType') != 'employee' && $this->session->userdata('userType') != 'family') {
+        if (!in_array($this->session->userdata('userRole'), ['employee', 'family'])) {
             redirect('login');
         }
 
         $this->load->model('M_auth');
-        $this->load->model('M_historyhealth');
+        $this->load->model('M_healthhistories');
     }
 
-    public function index()
-    {
-        $userType = $this->session->userdata('userType');
-        if ($userType == 'employee') {
-            // Use session data for the logged-in employee
-            $employeeId = $this->session->userdata('userNIK');
-            $employeeDatas = $this->M_auth->getEmployeeDataById($employeeId);
-            $familyMembers = $this->M_auth->getFamilyMembersByEmployee($employeeId);
-            $insuranceData = $this->M_auth->getInsuranceByEmployeeId($employeeId);
-        } else {
-            // Assuming you are also retrieving family data if logged in as family
-            $familyId = $this->session->userdata('userNIK');
-            $employeeDatas = $this->M_auth->getFamilyDataById($familyId);
-            $insuranceData = $this->M_auth->getInsuranceByFamilyId($familyId);
-            $familyMembers = null;
+    public function index() {
+        $userData = $this->M_auth->checkUser('userNIK', $this->session->userdata('userNIK'));
+        $this->_initSession($userData);
+
+        $employeeNIK = $userData['employeeNIK'];
+        $userNIK = $userData['userNIK'];
+        $userRole = $userData['userRole'];
+
+        $this->load->library('encryption');
+        $qrData = $this->encryption->encrypt($userNIK . '-' . $userRole);
+
+        $this->load->model('M_families');
+        $families = $this->M_families->getFamiliesByEmployeeNIK($employeeNIK);
+
+        $insuranceMembers = 1;
+        foreach ($families as $family) {
+            if (!in_array($family['familyStatus'], ['archived', 'unverified'])) {
+                $insuranceMembers += 1;
+            }
         }
 
+        $this->load->model('M_insurances');
+        $insurances = array_merge($this->M_insurances->getInsuranceDetailsByEmployeeNIK($employeeNIK), array('insuranceMembers' => $insuranceMembers));
+
         $datas = array(
-            'title' => 'BIM | User',
+            'title' => 'BMMC | Profile',
             'subtitle' => 'Profile',
             'contentType' => 'user',
-            'employeeDatas' => $employeeDatas, // Send data to the view
-            'familyMembers' => $familyMembers,
-            'insuranceData' => $insuranceData,
-            'qr' => $this->generateQR(base64_encode($this->session->userdata('userNIK'). '-' . $userType))
+            'qr' => $this->generateQR($qrData),
+            'insurance' => $insurances,
+            'families' => $families
         );
 
         $partials = array(
             'head' => 'partials/head',
             'navbar' => 'partials/user/navbar',
+            'content' => 'user/profile',
             'footer' => 'partials/user/footer',
-            'content' => 'user/Profile',
             'script' => 'partials/script'
         );
 
@@ -65,249 +69,97 @@ class Profile extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getUserHistories() {
-        $familyDatas = $this->M_auth->checkFamily('familyNIK', $this->session->userdata('userNIK'));
-        if ($familyDatas) {
-            $historiesDatas = $this->M_historyhealth->getUserHistories ($this->session->userdata('userNIK'), 'family');
-        } else {
-            $historiesDatas = $this->M_historyhealth->getUserHistories ($this->session->userdata('userNIK'), 'employee');
+    private function _uploadImage($imageInputField, $customConfig = []) {
+        $defaultConfig = array(
+            'allowed_types' => 'jpg|jpeg|png',
+            'max_size'      => 1024,
+            'max_width'     => 0,
+            'max_height'    => 0
+        );
+
+        $config = array_merge($defaultConfig, $customConfig);
+
+        if (!isset($this->upload)) {
+            $this->load->library('upload');
         }
-        if ($historiesDatas) {
-            $datas = array(
-                'data' => $historiesDatas,
-            );
-            echo json_encode($datas);
+
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload($imageInputField)) {
+            return array('status' => false, 'error' => strip_tags($this->upload->display_errors()));
         } else {
-            echo json_encode(['data' => []]);
+            return array('status' => true, 'data' => $this->upload->data());
         }
     }
 
-    public function editEmployee() {
-        // Validation rules
-        $validate = array(
-            array(
-                'field' => 'employeeEmail',
-                'label' => 'Email',
-                'rules' => 'required|trim|valid_email',
-                'errors' => array(
-                    'required' => 'You should provide a %s.',
-                    'valid_email' => 'The %s field must contain a valid email address.'
-                )
-            ),
-            array(
-                'field' => 'oldPassword',
-                'label' => 'Old Password',
-                'rules' => 'trim', // Not required, only checked if newPassword is provided
-                'errors' => array(
-                    'required' => '%s is required to proceed with the update.'
-                )
-            ),
-            array(
-                'field' => 'newPassword',
-                'label' => 'Password',
-                'rules' => 'trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
-                'errors' => array(
-                    'min_length' => '%s must be at least 8 characters in length.',
-                    'max_length' => '%s max 20 characters in length.',
-                    'regex_match' => '%s must contain at least one uppercase letter and one number.'
-                )
-            ),
-            array(
-                'field' => 'confirmPassword',
-                'label' => 'Password Confirmation',
-                'rules' => 'trim|matches[newPassword]',
-                'errors' => array(
-                    'matches' => '%s does not match the Password.'
-                )
-            )
-        );
-        
-        $this->form_validation->set_rules($validate);
-        
-        // Check if validation fails
-        if ($this->form_validation->run() == FALSE) {
-            // Return errors if validation fails
-            $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
-        } else {
-            // Get the logged-in user's NIK from the session
-            $employeeNIK = $this->input->post('employeeNIK');
-            $oldPassword = htmlspecialchars($this->input->post('oldPassword'));
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            $newEmail = $this->input->post('employeeEmail');
-        
-            // If new password is provided, verify the old password
-            if (!empty($newPassword)) {
-                // Fetch the current password hash from the database (use the employeeNIK to fetch the correct record)
-                $currentPasswordHash = $this->M_auth->getCurrentPasswordByNIK($employeeNIK);
-                
-                // Verify if the old password matches the current password
-                if (!password_verify($oldPassword, $currentPasswordHash)) {
-                    echo json_encode(array('status' => 'invalid', 'errors' => array('oldPassword' => 'The old password is incorrect.')));
-                    return;
-                }
-            }
-        
-            // Prepare employee data for updating
-            $employeeData = array(
-                'employeeEmail' => $newEmail,
-            );
-        
-            // Update the password if a new password is provided
-            if (!empty($newPassword)) {
-                // Hash the new password before saving
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $employeeData['employeePassword'] = $hashedPassword;
-            }
-        
-            // Call model function to update the employee data (email and password)
-            $updateResult = $this->M_auth->updateEmployee($employeeNIK, $employeeData);
-        
-            // Check if update was successful
-            if ($updateResult) {
-                // Update session data for the logged-in user
-                $this->session->set_userdata('userEmail', $newEmail);
-        
-                // Respond with success
-                $this->session->set_flashdata('refresh_needed', true);
-                redirect('user/profile');
-            } else {
-                // Respond with failure if update fails
-                echo json_encode(['success' => false, 'message' => 'Password Lama Salah.']);
-            }
-        }
-    }
-    
-    public function editFamily() {
-        // Validation rules
-        $validate = array(
-            array(
-                'field' => 'familyEmail',
-                'label' => 'Email',
-                'rules' => 'required|trim|valid_email',
-                'errors' => array(
-                    'required' => 'You should provide a %s.',
-                    'valid_email' => 'The %s field must contain a valid email address.'
-                )
-            ),
-            array(
-                'field' => 'oldPassword',
-                'label' => 'Old Password',
-                'rules' => 'trim', // Not required, only checked if newPassword is provided
-                'errors' => array(
-                    'required' => '%s is required to proceed with the update.'
-                )
-            ),
-            array(
-                'field' => 'newPassword',
-                'label' => 'Password',
-                'rules' => 'trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
-                'errors' => array(
-                    'min_length' => '%s must be at least 8 characters in length.',
-                    'max_length' => '%s max 20 characters in length.',
-                    'regex_match' => '%s must contain at least one uppercase letter and one number.'
-                )
-            ),
-            array(
-                'field' => 'confirmPassword',
-                'label' => 'Password Confirmation',
-                'rules' => 'trim|matches[newPassword]',
-                'errors' => array(
-                    'matches' => '%s does not match the Password.'
-                )
-            )
-        );
-        
-        $this->form_validation->set_rules($validate);
-        
-        // Check if validation fails
-        if ($this->form_validation->run() == FALSE) {
-            // Return errors if validation fails
-            $errors = $this->form_validation->error_array();
-            echo json_encode(array('status' => 'invalid', 'errors' => $errors));
-        } else {
-            // Get the logged-in user's NIK from the session
-            $familyNIK = $this->input->post('familyNIK');
-            $oldPassword = htmlspecialchars($this->input->post('oldPassword'));
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            $newEmail = $this->input->post('familyEmail');
-        
-            // If new password is provided, verify the old password
-            if (!empty($newPassword)) {
-                // Fetch the current password hash from the database (use the familyNIK to fetch the correct record)
-                $currentPasswordHash = $this->M_auth->getCurrentPasswordByFamilyNIK($familyNIK);
-                
-                // Verify if the old password matches the current password
-                if (!password_verify($oldPassword, $currentPasswordHash)) {
-                    echo json_encode(array('status' => 'invalid', 'errors' => array('oldPassword' => 'The old password is incorrect.')));
-                    return;
-                }
-            }
-        
-            // Prepare family data for updating
-            $employeeData = array(
-                'familyEmail' => $newEmail,
-            );
-        
-            // Update the password if a new password is provided
-            if (!empty($newPassword)) {
-                // Hash the new password before saving
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $employeeData['familyPassword'] = $hashedPassword;
-            }
-        
-            // Call model function to update the family data (email and password)
-            $updateResult = $this->M_auth->updatefamily($familyNIK, $employeeData);
-        
-            // Check if update was successful
-            if ($updateResult) {
-                // Update session data for the logged-in user
-                $this->session->set_userdata('userEmail', $newEmail);
-        
-                // Respond with success
-                $this->session->set_flashdata('refresh_needed', true);
-                redirect('user/profile');
-            } else {
-                // Respond with failure if update fails
-                echo json_encode(['success' => false, 'message' => 'Password Lama Salah.']);
-            }
-        }
+    private function _deleteImage($userNIK, $field, $path) {
+        $userDatas = $this->M_auth->checkUser('userNIK', $userNIK);
+        $userDatas[$field] && unlink($path . $userDatas[$field]);
     }
 
-    public function generateQR(String $data)
-    {   
+    private function _initSession($userDatas) {
+        $sessionDatas = array(
+            'employeeNIK' => $userDatas['employeeNIK'],
+            'insuranceId' => $userDatas['insuranceId'],
+            'userNIK' => $userDatas['userNIK'],
+            'userPhoto' => $userDatas['userPhoto'],
+            'userName' => $userDatas['userName'],
+            'userEmail' => $userDatas['userEmail'],
+            'userPhone' => $userDatas['userPhone'],
+            'userBirth' => $userDatas['userBirth'],
+            'userGender' => $userDatas['userGender'],
+            'userDepartment' => $userDatas['userDepartment'],
+            'userBand' => $userDatas['userBand'],
+            'userRelationship' => $userDatas['userRelationship'],
+            'userRole' => $userDatas['userRole'],
+            'userStatus' => $userDatas['userStatus'],
+            'userAddress' => $userDatas['userAddress'],
+        );
+
+        $this->session->set_userdata($sessionDatas);
+    }
+
+    public function getAllInsuranceMembersHealhtHistoriesByUserNIK() {
+        $userNIK = $this->session->userdata('userNIK');
+        $healthhistoriesDatas = $this->M_healthhistories->getAllInsuranceMembersHealhtHistoriesByUserNIK($userNIK);
+        $datas = array(
+            'data' => $healthhistoriesDatas
+        );
+
+        echo json_encode($datas);
+    }
+
+    public function generateQR(String $data) {
         $options = new QROptions;
-        $options->version             = 5;
+        $options->version             = 14;
         $options->outputType          = QROutputInterface::GDIMAGE_PNG;
         $options->scale               = 15;
         $options->outputBase64        = false;
         $options->eccLevel            = EccLevel::H;
         $options->addLogoSpace        = true;
-        $options->logoSpaceWidth      = 8;
-        $options->logoSpaceHeight     = 8;
+        $options->logoSpaceWidth      = 16;
+        $options->logoSpaceHeight     = 16;
         $options->imageTransparent    = true;
         $options->addQuietzone        = false;
         $options->drawLightModules    = false;
         $options->cornerRadius        = 10;
-        // $options->drawCircularModules = true;
-        // $options->circleRadius        = 0.4;
         $options->keepAsSquare        = [
             QRMatrix::M_FINDER_DARK,
             QRMatrix::M_FINDER_DOT,
             QRMatrix::M_ALIGNMENT_DARK,
         ];
         $options->moduleValues        = [
-            // QRMatrix::M_FINDER_DARK    => [253, 164, 62],
-            QRMatrix::M_FINDER_DARK    => [69,69,69],
-            QRMatrix::M_FINDER_DOT     => [69,69,69],
-            // QRMatrix::M_FINDER_DOT     => [253, 164, 62],
-            // QRMatrix::M_ALIGNMENT_DARK => [253, 164, 62],
-            QRMatrix::M_ALIGNMENT_DARK => [69,69,69],
-            // QRMatrix::M_ALIGNMENT      => [253, 164, 62],
-            QRMatrix::M_DATA_DARK      => [69,69,69],
-            QRMatrix::M_DARKMODULE     => [69,69,69],
-            QRMatrix::M_FORMAT_DARK    => [69,69,69],
-            QRMatrix::M_TIMING_DARK    => [69,69,69],
+            QRMatrix::M_DARKMODULE       => [69,69,69],
+            QRMatrix::M_DATA_DARK        => [69,69,69],
+            QRMatrix::M_FINDER_DARK      => [69,69,69],
+            QRMatrix::M_SEPARATOR_DARK   => [69,69,69],
+            QRMatrix::M_ALIGNMENT_DARK   => [69,69,69],
+            QRMatrix::M_TIMING_DARK      => [69,69,69],
+            QRMatrix::M_FORMAT_DARK      => [69,69,69],
+            QRMatrix::M_VERSION_DARK     => [69,69,69],
+            QRMatrix::M_QUIETZONE_DARK   => [69,69,69],
+            QRMatrix::M_LOGO_DARK        => [69,69,69],
+            QRMatrix::M_FINDER_DOT       => [69,69,69],
         ];
 
         $qrcode = new QRCode($options);
@@ -315,14 +167,84 @@ class Profile extends CI_Controller {
 
         $qrOutputInterface = new QRWithLogo($options, $qrcode->getQRMatrix());
 
-        // dump the output, with an additional logo
-        // the logo could also be supplied via the options, see the svgWithLogo example
         $data =  $qrOutputInterface->dump(null, FCPATH . 'assets/images/logo.png');
         return $data;
     }
+
+    public function editProfile() {
+        $userNIK = $this->session->userdata('userNIK');
+        $userRole = $this->session->userdata('userRole');
+        $currentUserData = $this->M_auth->checkUser('userNIK', $userNIK);
+        $userData = [];
+
+        if (!empty($this->input->post('currentPassword'))) {
+            $validate = array(
+                array(
+                    'field' => 'currentPassword',
+                    'label' => 'Current Password',
+                    'rules' => 'trim',
+                    'errors' => array(
+                        'required' => '%s is required to proceed with the update.'
+                    )
+                ),
+                array(
+                    'field' => 'newPassword',
+                    'label' => 'Password',
+                    'rules' => 'trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
+                    'errors' => array(
+                        'min_length' => '%s must be at least 8 characters in length.',
+                        'max_length' => '%s max 20 characters in length.',
+                        'regex_match' => '%s must contain at least one uppercase letter and one number.'
+                    )
+                ),
+                array(
+                    'field' => 'confirmPassword',
+                    'label' => 'Password Confirmation',
+                    'rules' => 'trim|matches[newPassword]',
+                    'errors' => array(
+                        'matches' => '%s does not match the Password.'
+                    )
+                )
+            );
+            $this->form_validation->set_rules($validate);
+
+            if ($this->form_validation->run() == FALSE) {
+                $errors = $this->form_validation->error_array();
+                echo json_encode(array('status' => 'invalid', 'errors' => $errors));
+                return;
+            }
+
+            
+            $currentPassword = $this->input->post('currentPassword');
+            $newPassword = $this->input->post('newPassword');
+            if (!empty($newPassword) && password_verify($currentPassword, $currentUserData['userPassword'])) {
+                $userData[$userRole . 'Password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+            }
+        }
+
+        if (!empty($_FILES['userPhoto']['name'])) {
+            $photoFileName = strtoupper(trim(str_replace('.', ' ', $userData['userName']))) . '-' . time();
+            $userPhoto = $this->_uploadImage('userPhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/profiles/'));
+            if ($userPhoto['status']) {
+                if (!empty($currentUserData['userPhoto'])) {
+                    $this->_deleteImage($userNIK, FCPATH . 'uploads/profiles/');
+                }
+                $userData[$userRole . 'Photo'] = $userPhoto['data']['file_name'];
+            } else {
+                echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $userPhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
+                return;
+            }
+        }
+
+        $this->M_auth->updateProfile($userNIK, $userRole, $userData);
+        $newUserData = $this->M_auth->checkUser('userNIK', $userNIK);
+        $this->_initSession($newUserData);
+        echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+    }
+
 }
 
 
-/* End of file Company.php */
+/* End of file Profile.php */
 
 ?>

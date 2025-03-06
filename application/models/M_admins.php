@@ -39,16 +39,18 @@ class M_admins extends CI_Model {
     }
 
     public function checkAdmin($param, $adminData) {
-        $this->db->select('a.*,
-            IF(a.adminRole = "company", c.companyStatus, 
-                IF(a.adminRole = "hospital", h.hospitalStatus, NULL)) AS status
-        ');
+        $this->db->select("a.*, 
+                    CASE 
+                        WHEN a.adminRole = 'company' THEN c.companyStatus 
+                        WHEN a.adminRole = 'hospital' THEN h.hospitalStatus 
+                        ELSE NULL 
+                    END AS status", false);
         $this->db->from('admin a');
-        $this->db->join('company c', 'c.adminId = a.adminId', 'left');
-        $this->db->join('hospital h', 'h.adminId = a.adminId', 'left');
+        $this->db->join('company c', 'c.adminId = a.adminId AND a.adminRole = "company"', 'left');
+        $this->db->join('hospital h', 'h.adminId = a.adminId AND a.adminRole = "hospital"', 'left');
         $this->db->where('a.' . $param, $adminData);
-        return $this->db->get()->row_array();
-    }    
+        return $this->db->get()->row_array() ?: [];
+    }
 
     public function insertAdmin($adminDatas) {
         return $this->db->insert('admin', $adminDatas);

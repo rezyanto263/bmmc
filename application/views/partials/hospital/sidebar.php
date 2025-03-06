@@ -23,41 +23,35 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Queue'?'active':''; ?>" href="<?= base_url('hospital/queue') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Queue">
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Queue'?'active':''; ?>" href="<?= base_url('hospital/queues') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Queues">
                         <i class="las la-hourglass-half fs-4"></i>
-                        <span>Queue</span>
+                        <span>Queues</span>
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'History'?'active':''; ?>" href="<?= base_url('hospital/history') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="History">
-                        <i class="las la-book-medical fs-4"></i>
-                        <span>History</span>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Health Histories'?'active':''; ?>" href="<?= base_url('hospital/healthhistories') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Health Histories">
+                        <i class="las la-file-medical-alt fs-4"></i>
+                        <span>Health Histories</span>
                     </a>
                 </li>
                 <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Doctors'?'active':''; ?>" href="<?= base_url('hospital/doctors') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Doctors">
-                        <i class="las la-stethoscope fs-4"></i>
+                        <i class="las la-user-nurse fs-4"></i>
                         <span>Doctors</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Disease'?'active':''; ?>" href="<?= base_url('hospital/disease') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Disease">
-                        <i class="las la-sad-tear fs-4"></i>
-                        <span>Disease</span>
                     </a>
                 </li>
             </ul>
         </div>
         <div class="sidebar-extramenu">
             <ul class="p-0 m-0">
-                <li>
-                    <a href="#" class="d-flex align-items-center gap-3 ps-4 py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Profile">
-                        <i class="las la-user-circle fs-4" ></i>
-                        <span>Profile</span>
+                <li class="d-none">
+                    <a href="<?= base_url('dashboard/helpsupport'); ?>" class="d-flex align-items-center gap-3 ps-4 py-3 text-info" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Help & Support">
+                        <i class="las la-question-circle fs-4" ></i>
+                        <span>Help & Support</span>
                     </a>
                 </li>
-                <li>
-                    <a href="<?= base_url('dashboard/logout'); ?>" class="d-flex align-items-center gap-3 ps-4 py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Logout">
+                <li style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Logout">
+                    <a data-bs-toggle="modal" data-bs-target="#logoutModal" class="d-flex align-items-center gap-3 ps-4 py-3 btn-logout text-danger">
                         <i class="las la-sign-out-alt fs-4"></i>
                         <span>Logout</span>
                     </a>

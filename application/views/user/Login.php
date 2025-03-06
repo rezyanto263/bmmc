@@ -47,7 +47,7 @@
                                 <input class="form-check-input" type="checkbox" name="rememberMe">
                                 <label class="form-check-label">Remember me</label>
                             </div>
-                            <a href="<?= base_url('dashboard/forgotpassword') ?>" class="text-secondary">Forgot password?</a>
+                            <a href="<?= base_url('forgotpassword') ?>" class="text-secondary">Forgot password?</a>
                         </div>
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                         <div class="g-recaptcha my-4 d-flex justify-content-center" data-sitekey="<?= $_ENV['CAPTCHA_SITE_KEY'] ?>"></div>

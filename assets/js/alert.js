@@ -28,6 +28,13 @@ if (flashdata == 'wrong email or password') {
         icon: 'error',
         confirmButtonText: 'OK'
     });
+} else if (flashdata == 'account discontinued') {
+    Swal.fire({
+        title: 'Failed!',
+        text: 'Your account has been marked as discontinued and cannot be logged in.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
 } else if (flashdata == 'not found') {
     Swal.fire({
         title: 'Failed!',
@@ -111,6 +118,11 @@ function displayAlert(flashdata, message = null) {
             title: 'The email already used!',
             icon: 'error'
         });
+    } else if (flashdata == 'current password is incorrect') {
+        Toast.fire({
+            title: 'Current password is incorrect!',
+            icon: 'error'
+        });
     } else if (flashdata == 'delete failed') {
         Toast.fire({
             title: "Error! You can't delete this account.",
@@ -137,6 +149,11 @@ function displayAlert(flashdata, message = null) {
             title: "Data not found!",
             icon: 'error'
         });
+    } else if (flashdata == 'billing not found') {
+        Toast.fire({
+            title: "Billing not found!",
+            icon: 'error'
+        });
     } else if (flashdata == 'invalid qr') {
         Toast.fire({
             title: "Invalid QR Code Data",
@@ -155,6 +172,11 @@ function displayAlert(flashdata, message = null) {
     } else if (flashdata == 'incomplete qr data') {
         Toast.fire({
             title: "QR data is incomplete",
+            icon: 'error'
+        });
+    } else if (flashdata == 'add queue failed') {
+        Toast.fire({
+            title: `Sorry, you are not allowed to queue because company status is ${message}`,
             icon: 'error'
         });
     } else if (flashdata == 'billing date not valid') {
@@ -177,6 +199,86 @@ function displayAlert(flashdata, message = null) {
             title: "Oops! Something went wrong, and we couldn’t send your email. Give it another try in a bit.",
             icon: 'error'
         });
+    } else if (flashdata == 'disease used') {
+        Toast.fire({
+            title: "The disease name already used!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'update healthhistory failed') {
+        Toast.fire({
+            title: "You can't update health history because billing has finished!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'invoice status not allowed') {
+        Toast.fire({
+            title: "You can't create invoice because billing not finished yet!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'no row selected') {
+        Toast.fire({
+            title: "Please select at least one row with invoice status 'Unpaid'!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'marked paid successfully') {
+        Toast.fire({
+            title: "Invoices marked as paid successfully!",
+            icon: 'success'
+        });
+    } else if (flashdata == 'marked unpaid successfully') {
+        Toast.fire({
+            title: "Invoice marked as unpaid successfully!",
+            icon: 'success'
+        });
+    } else if (flashdata == 'only unpaid invoice can be marked') {
+        Toast.fire({
+            title: "Only unpaid invoice can be marked!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'news already exists') {
+        Toast.fire({
+            title: "News Name already exists!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'unknown news status') {
+        Toast.fire({
+            title: "News Status is not recognized! Please try again.",
+            icon: 'error'
+        });
+    } else if (flashdata == 'tagify max 100 chars') {
+        Toast.fire({
+            title: "News Tags cannot exceed 100 characters!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'tagify max 20 chars and only one value') {
+        Toast.fire({
+            title: "News Type must contain only one value and cannot exceed 20 characters!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'billing amount exceeded') {
+        Toast.fire({
+            title: "Sorry, the selected insurance amount exceeded the available balance!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'invalid billing amount') {
+        Toast.fire({
+            title: "Sorry, the input billing amount is less than the current billing usage, please input higher amount than the current usage",
+            icon: 'error'
+        });
+    } else if (flashdata == 'insurance amount exceeded') {
+        Toast.fire({
+            title: "Sorry, the selected insurance amount is lower than the current coverage!",
+            icon: 'error'
+        });
+    } else if (flashdata == 'news thumbnail required') {
+        Toast.fire({
+            title: "News thumbnail is required!",
+            icon: 'error'
+        });
     }
 }
 
+var profileFlashdata = $('#profileAlert').data('flashdata');
+var profileFlashdataError = $('#profileAlert').data('flashdata-msg');
+if (profileFlashdata) {
+    displayAlert(profileFlashdata, profileFlashdataError ?? null);
+}

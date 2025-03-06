@@ -7,36 +7,24 @@
     <table id="companiesTable" class="table" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Logo</th>
                 <th>Name</th>
-                <th>Admin Email</th>
-                <th>Address</th>
-                <th>Phone</th>
                 <th>Billing</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th>Admin Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>Logo</th>
-                <th>Name</th>
-                <th>Admin Email</th>
-                <th>Address</th>
-                <th>Phone</th>
-                <th>Billing</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
     </table>
 </div>
 
 
 <!-- Modal Add -->
-<div class="modal fade" id="addCompanyModal">
+<div class="modal fade" id="addCompanyModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <form id="addCompanyForm" enctype="multipart/form-data">
@@ -69,7 +57,7 @@
                             </div>
                         </div>
                         <div class="col-12 col-xl-8">
-                            <div class="input-group p-0">
+                            <div class="input-group p-0 flex-nowrap">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
@@ -107,7 +95,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="companyAddress">
+                                <textarea class="form-control" type="text" placeholder="Address" name="companyAddress"></textarea>
                             </div>
                         </div>
                         <div class="col-12">   
@@ -132,7 +120,7 @@
 
 
 <!-- Modal View -->
-<div class="modal fade" id="viewCompanyModal">
+<div class="modal fade" id="viewCompanyModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header border-0">
@@ -185,7 +173,7 @@
                                     <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Address">
                                         <i class="las la-map fs-4"></i>
                                     </span>
-                                    <input class="form-control" type="text" placeholder="Company Address" name="companyAddress" disabled>
+                                    <div class="form-control" id="companyAddress"></div>
                                 </div>
                             </div>
                             <div class="col-12">   
@@ -308,6 +296,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-12 d-flex justify-content-between flex-column flex-lg-row order-5">
+                        <small class="text-secondary">
+                            Created At: <span id="createdAt"></span>
+                        </small>
+                        <small class="text-secondary">
+                            Updated At: <span id="updatedAt"></span>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -316,7 +312,7 @@
 
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editCompanyModal">
+<div class="modal fade" id="editCompanyModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="editCompanyForm" enctype="multipart/form-data">
@@ -350,7 +346,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="input-group p-0">
+                            <div class="input-group p-0 flex-nowrap">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
@@ -385,10 +381,10 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Company Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="companyAddress">
+                                <textarea class="form-control" type="text" placeholder="Address" name="companyAddress"></textarea>
                             </div>
                         </div>
-                        <div class="col-12 d-flex justify-content-between w-100">
+                        <div class="col-12 d-flex justify-content-between flex-wrap w-100">
                             <div>
                                 <input class="form-check-input" type="checkbox" id="newBillingAmountCheck" data-bs-toggle="tooltip" data-bs-title="Change Billing Amount Checkbox">
                                 <label class="form-check-label">Change billing amount?</label>
@@ -429,7 +425,7 @@
 
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteCompanyModal" aria-hidden="true">
+<div class="modal fade" id="deleteCompanyModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="deleteCompanyForm">

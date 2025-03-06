@@ -4,37 +4,26 @@
         <i class="las la-plus-circle fs-4"></i>    
         ADD HOSPITAL
     </button>
-    <table id="hospitalsTable" class="table" style="width:100%">
+    <table id="hospitalsTable" class="table" style="width:100%;">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Logo</th>
                 <th>Name</th>
                 <th>Admin</th>
-                <th>Address</th>
-                <th>Phone</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>Logo</th>
-                <th>Name</th>
-                <th>Admin</th>
-                <th>Address</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
     </table>
 </div>
 
 
 <!-- Modal Add -->
-<div class="modal fade" id="addHospitalModal">
+<div class="modal fade" id="addHospitalModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="addHospitalForm" enctype="multipart/form-data">
@@ -75,7 +64,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="input-group p-0">
+                            <div class="input-group p-0 flex-nowrap">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
                                     <i class="las la-user-cog fs-4"></i>
                                 </span>
@@ -89,7 +78,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="hospitalAddress">
+                                <textarea class="form-control" type="text" placeholder="Address" name="hospitalAddress"></textarea>
                             </div>
                         </div>
                         <div class="col-12">   
@@ -114,15 +103,15 @@
 
 
 <!-- Modal View -->
-<div class="modal fade" id="viewHospitalModal">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+<div class="modal fade" id="viewHospitalModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
         <div class="modal-content">
             <div class="modal-header border-0">
                 <h1 class="modal-title fs-4">HOSPITAL DETAILS</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body border-0">
-                <div class="row">
+                <div class="row gy-4">
                     <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
                     <div class="row gy-4">
                         <div class="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -167,7 +156,7 @@
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="hospitalAddress" disabled>
+                                <div class="form-control" id="hospitalAddress"></div>
                             </div>
                         </div>
                         <div class="col-12">   
@@ -183,6 +172,81 @@
                     <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
                         <div id="map" class="w-100 h-100" style="min-height:300px"></div>
                     </div>
+                    <div class="col-12 order-1 order-lg-2">
+                        <div class="row g-4">
+                            <div class="col-12 col-lg-4">
+                                <div class="card bg-transparent box-total">
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <h5 class="card-title text-center">TOTAL DOCTORS</h5>
+                                        <h1 class="text-center fw-bold" id="totalDoctors">0</h1>
+                                        <div class="card-text text-center">
+                                            <hr>
+                                            <div class="d-flex justify-content-around">
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Active">
+                                                    <i class="las la-stethoscope text-success fs-4"></i>
+                                                    <span id="totalActiveDoctors">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Disabled">
+                                                    <i class="las la-stethoscope text-secondary fs-4"></i>
+                                                    <span id="totalDisabledDoctors">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <div class="card bg-transparent box-total">
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <h5 class="card-title text-center">TREATMENTS THIS MONTH</h5>
+                                        <h1 class="text-center fw-bold" id="totalTreatmentsThisMonth">0</h1>
+                                        <div class="card-text text-center">
+                                            <hr>
+                                            <div class="d-flex justify-content-around">
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billed">
+                                                    <i class="las la-file-medical-alt text-success fs-4"></i>
+                                                    <span id="totalBilledTreatmentsThisMonth">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Referred">
+                                                    <i class="las la-file-medical-alt text-info fs-4"></i>
+                                                    <span id="totalReferredTreatmentsThisMonth">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Free">
+                                                    <i class="las la-file-medical-alt text-secondary-subtl fs-4"></i>
+                                                    <span id="totalFreeTreatmentsThisMonth">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <div class="card bg-transparent box-total">
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <h5 class="card-title text-center">TOTAL TREATMENTS</h5>
+                                        <h1 class="text-center fw-bold" id="totalTreatments">0</h1>
+                                        <div class="card-text text-center">
+                                            <hr>
+                                            <div class="d-flex justify-content-around">
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Billed">
+                                                    <i class="las la-file-medical-alt text-success fs-4"></i>
+                                                    <span id="totalBilledTreatments">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Referred">
+                                                    <i class="las la-file-medical-alt text-info fs-4"></i>
+                                                    <span id="totalReferredTreatments">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Free">
+                                                    <i class="las la-file-medical-alt text-secondary-subtl fs-4"></i>
+                                                    <span id="totalFreeTreatments">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -191,7 +255,7 @@
 
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editHospitalModal">
+<div class="modal fade" id="editHospitalModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="editHospitalForm" enctype="multipart/form-data">
@@ -224,6 +288,16 @@
                                 <input class="form-control" type="text" placeholder="Name" name="hospitalName">
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="input-group p-0 flex-nowrap">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
+                                    <i class="las la-user-cog fs-4"></i>
+                                </span>
+                                <select class="form-control" data-live-search="true" title="Choose Admin" name="adminId">
+                                    <option hidden></option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12 col-lg-6">   
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Phone">
@@ -242,22 +316,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Account">
-                                    <i class="las la-user-cog fs-4"></i>
-                                </span>
-                                <select class="form-control" data-live-search="true" title="Choose Admin" name="adminId">
-                                    <option hidden></option>
-                                </select>
-                            </div>
-                        </div>
                         <div class="col-12">   
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Hospital Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="hospitalAddress">
+                                <textarea class="form-control" type="text" placeholder="Address" name="hospitalAddress"></textarea>
                             </div>
                         </div>
                         <div class="col-12">
@@ -285,7 +349,7 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteHospitalModal" aria-hidden="true">
+<div class="modal fade" id="deleteHospitalModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="deleteHospitalForm">

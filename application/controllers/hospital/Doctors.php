@@ -7,20 +7,19 @@ class Doctors extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != ('hospital')) {
-            redirect('dashboard');
+        if ($this->session->userdata('adminRole') != 'hospital') {
+            redirect('dashboard/login');
         }
 
         $this->load->model('M_doctors');
         $this->load->model('M_hospitals');
-        $this->load->model('M_admins');
     }    
 
     public function index()
     {
         $datas = array(
-            'title' => 'BMMC Hospital | Doctor',
-            'subtitle' => 'Doctor',
+            'title' => 'BMMC Hospital | Doctors',
+            'subtitle' => 'Doctors',
             'contentType' => 'dashboard'
         );
 
@@ -30,7 +29,6 @@ class Doctors extends CI_Controller {
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'hospital/doctors',
-            'footer' => 'partials/hospital/footer',
             'script' => 'partials/script'
         );
 
@@ -38,68 +36,51 @@ class Doctors extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getHospitalDoctorsDatas() {
-        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
-        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
+    public function getAllDoctorsByHospitalId() {
+        $hospitalId = $this->input->get('id') ?: $this->session->userdata('hospitalId');
+        $doctorDatas = $this->M_doctors->getAllDoctorsByHospitalId($hospitalId);
+        $datas = array(
+            'data' => $doctorDatas
+        );
 
-        if ($hospitalDatas) {
-            $doctorDatas = $this->M_doctors->getHospitalDoctorsDatas('hospitalId', $hospitalDatas['hospitalId']);
-            $datas = array(
-                'data' => $doctorDatas
-            );
-            echo json_encode($datas);
-        } else {
-            echo json_encode(['data' => []]);
-        }
+        echo json_encode($datas);
     }
 
-    public function getActiveHospitalDoctorDatas() {
-        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
-        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
-    
-        if ($hospitalDatas) {
-            $doctorDatas = $this->M_doctors->getActiveHospitalDoctorDatas('hospitalId', $hospitalDatas['hospitalId']);
-            $datas = array(
-                'data' => $doctorDatas
-            );
-            echo json_encode($datas);
-        } else {
-            echo json_encode(['data' => []]);
-        }
+    public function getAllDoctorSpecialization() {
+        $hospitalId = $this->input->get('id') ?: $this->session->userdata('hospitalId');
+        $specializationDatas = array_unique(explode(', ', $this->M_doctors->getAllDoctorSpecialization($hospitalId)));
+        $datas = array(
+            'data' => array_values($specializationDatas)
+        );
+
+        echo json_encode($datas);
     }
 
     public function addDoctor() {
-        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
-        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
         $validate = array(
             array(
                 'field' => 'doctorName',
-                'label' => 'Name apt',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
+                'label' => 'Name',
+                'rules' => 'required|trim',
                 'errors' => array(
                     'required' => 'Doctor should provide a %s.',
-                    'regex_match' => '%s can only contain letters, spaces, hyphens, and apostrophes.'
                 )
             ),
             array(
                 'field' => 'doctorDateOfBirth',
                 'label' => 'Date of Birth',
-                'rules' => 'required|less_than_or_equal_to_date['.date('Y-m-d').']',
+                'rules' => 'less_than_or_equal_to_date['.date('Y-m-d').']',
                 'errors' => array(
-                    'required' => '%s is required.',
                     'less_than_or_equal_to_date' => '%s must not be later than today.',
                 )
             ),
             array(
                 'field' => 'doctorAddress',
                 'label' => 'Address',
-                'rules' => 'required|trim',
-                'errors' => array(
-                    'required' => 'Doctor should provide a %s.'
-                )
+                'rules' => 'trim',
             ),
             array(
-                'field' => 'doctorSpecialization',
+                'field' => 'doctorSpecialization[]',
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -122,31 +103,30 @@ class Doctors extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
+            $doctorSpecialization = $this->input->post('doctorSpecialization');
+            $specializations = htmlspecialchars(implode(', ', $doctorSpecialization));
             $doctorDatas = array(
-                'hospitalId' => $hospitalDatas['hospitalId'],
-                'doctorName' => $this->input->post('doctorName'),
-                'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress')),
-                'doctorDateOfBirth' => $this->input->post('doctorDateOfBirth'),
-                'doctorSpecialization' => htmlspecialchars($this->input->post('doctorSpecialization')),
-                'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus'))
+                'hospitalId' => $this->session->userdata('hospitalId'),
+                'doctorName' => htmlspecialchars($this->input->post('doctorName'), ENT_COMPAT),
+                'doctorSpecialization' => $specializations,
+                'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus')),
+                'doctorDateOfBirth' => htmlspecialchars($this->input->post('doctorDateOfBirth') ?: '') ?: NULL,
+                'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress') ?: '', ENT_NOQUOTES) ?: NULL
             );
-            $this->M_doctors->insertDoctor($doctorDatas);
 
+            $this->M_doctors->insertDoctor($doctorDatas);
             echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }
 
     public function editDoctor() {
-        $adminDatas = $this->M_admins->checkAdmin('adminEmail', $this->session->userdata('adminEmail'));
-        $hospitalDatas = $this->M_hospitals->checkHospital('adminId', $adminDatas['adminId']);
         $validate = array(
             array(
                 'field' => 'doctorName',
                 'label' => 'Name',
-                'rules' => 'required|trim|regex_match[/^[a-zA-Z\s\'-]+$/]',
+                'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Doctor should provide a %s.',
-                    'regex_match' => '%s can only contain letters, spaces, hyphens, and apostrophes.'
+                    'required' => 'Doctor should provide a %s.'
                 )
             ),
             array(
@@ -167,7 +147,7 @@ class Doctors extends CI_Controller {
                 )
             ),
             array(
-                'field' => 'doctorSpecialization',
+                'field' => 'doctorSpecialization[]',
                 'label' => 'Specialize',
                 'rules' => 'required|trim',
                 'errors' => array(
@@ -190,15 +170,19 @@ class Doctors extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
+            $doctorSpecialization = $this->input->post('doctorSpecialization');
+            $specializations = htmlspecialchars(implode(', ', $doctorSpecialization), ENT_COMPAT);
             $doctorDatas = array(
-                'hospitalId' => $hospitalDatas['hospitalId'],
-                'doctorName' => $this->input->post('doctorName'),
-                'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress')),
-                'doctorDateOfBirth' => $this->input->post('doctorDateOfBirth'),
-                'doctorSpecialization' => htmlspecialchars($this->input->post('doctorSpecialization')),
-                'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus'))
+                'hospitalId' => $this->session->userdata('hospitalId'),
+                'doctorName' => htmlspecialchars($this->input->post('doctorName'), ENT_COMPAT),
+                'doctorSpecialization' => $specializations,
+                'doctorStatus' => htmlspecialchars($this->input->post('doctorStatus')),
+                'doctorDateOfBirth' => htmlspecialchars($this->input->post('doctorDateOfBirth') ?: '') ?: NULL,
+                'doctorAddress' => htmlspecialchars($this->input->post('doctorAddress') ?: '', ENT_NOQUOTES) ?: NULL
             );
-            $this->M_doctors->updateDoctor($this->input->post('doctorId'), $doctorDatas);
+
+            $doctorId = htmlspecialchars($this->input->post('doctorId'));
+            $this->M_doctors->updateDoctor($doctorId, $doctorDatas);
 
             echo json_encode(array('status' => 'success', 'data' => $doctorDatas, 'csrfToken' => $this->security->get_csrf_hash()));
         }

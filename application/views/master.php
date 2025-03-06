@@ -3,9 +3,11 @@
 <head>
     <?php $this->load->view($head); ?>
 </head>
-<body class="<?= $contentType == 'dashboard'?'dashboard':''; ?> <?= isset($_COOKIE['colorPreference'])?$_COOKIE['colorPreference']:'' ?>">
+<body class="
+    <?= $contentType == 'dashboard' ? 'dashboard' : ''; ?> 
+    <?= isset($_COOKIE['colorPreference']) ? $_COOKIE['colorPreference'] : '' ?>">
 
-<?php if ($contentType == 'dashboard') { ?>
+<?php if ($contentType == 'dashboard'): ?>
 
     <?php $this->load->view($sidebar); ?>
 
@@ -19,37 +21,33 @@
                 <?php $this->load->view($contentBody); ?>
             </div>
         </main>
-
-        <?php $this->load->view($footer); ?>
     </div>
 
-<?php } else if ($contentType == 'user') { ?>
+<?php endif; ?>
 
-    <?php if ($subtitle == 'Profile') { ?>
-
-        <?php $this->load->view($content); ?>
-
-        <?php $this->load->view($footer); ?>
-
-    <?php } else { ?>
+<?php if ($contentType == 'user'): ?>
 
         <?php $this->load->view($navbar); ?>
 
-        <?php $this->load->view($content); ?>
+        <main>
+            <?php $this->load->view($content); ?>
+        </main>
 
         <?php $this->load->view($footer); ?>
-        
-    <?php } ?>
-    
-<?php } else if ($contentType == 'authentication') { ?>
+
+<?php endif; ?>
+
+<?php if ($contentType == 'authentication'): ?>
 
     <?php $this->load->view($content); ?>
 
-<?php } else if ($contentType == 'profile'){ ?>
+<?php endif; ?>
+
+<?php if ($contentType == 'profile'): ?>
 
     <?php $this->load->view($content); ?>
 
-<?php } ?>
+<?php endif; ?>
 
     <?php $this->load->view($script); ?>
 </body>

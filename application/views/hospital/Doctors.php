@@ -8,31 +8,19 @@
     <table id="doctorsTable" class="table" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Doctor Name</th>
-                <th>Address</th>
-                <th>Date of Birth</th>
                 <th>Specialization</th>
+                <th>Date of Birth</th>
                 <th>Doctor Status</th>
+                <th>Address</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>Doctor Name</th>
-                <th>Address</th>
-                <th>Date of Birth</th>
-                <th>Specialization</th>
-                <th>Doctor Status</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
     </table>
 </div>
 
 <!-- Modal Add -->
-<div class="modal fade" id="addDoctorModal">
+<div class="modal fade" id="addDoctorModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="addDoctorForm">
@@ -42,13 +30,24 @@
                 </div>
                 <div class="modal-body border-0">
                     <div class="row gy-4">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
                                     data-bs-title="Doctor Name">
-                                    <i class="las la-user-cog fs-4"></i>
+                                    <i class="las la-user-nurse fs-4"></i>
                                 </span>
                                 <input class="form-control" type="text" placeholder="Doctor Name" name="doctorName">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
+                                    data-bs-title="Specialization">
+                                    <i class="las la-stethoscope fs-4"></i>
+                                </span>
+                                <select class="form-control" name="doctorSpecialization[]" multiple>
+                                    <option hidden></option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -57,17 +56,17 @@
                                     data-bs-title="Doctor Date Of Birth">
                                     <i class="las la-calendar fs-4"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" title="Date" name="doctorDateOfBirth"/>
+                                <input type="date" class="form-control" placeholder="Date Of Birth" name="doctorDateOfBirth">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Specialization">
-                                    <i class="las la-stethoscope fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Status">
+                                    <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Doctor Specialization"
-                                    name="doctorSpecialization">
+                                <select class="form-control" name="doctorStatus">
+                                    <option hidden></option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -76,20 +75,7 @@
                                     data-bs-title="Doctor Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="doctorAddress">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Status">
-                                    <i class="las la-user-clock fs-4"></i>
-                                </span>
-                                <select class="form-control" id="doctorStatus" name="doctorStatus">
-                                    <option hidden ></option>
-                                    <option value="active">Active</option>
-                                    <option value="disabled">Disabled</option>
-                                </select>
+                                <textarea class="form-control" type="text" placeholder="Address" name="doctorAddress"></textarea>
                             </div>
                         </div>
                     </div>
@@ -106,7 +92,7 @@
 
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editDoctorModal">
+<div class="modal fade" id="editDoctorModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="editDoctorForm">
@@ -115,15 +101,26 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    <input type="text" id="doctorId" name="doctorId" hidden>
                     <div class="row gy-4">
-                        <div class="col-12 col-md-6">
+                        <input type="hidden" name="doctorId">
+                        <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
                                     data-bs-title="Doctor Name">
-                                    <i class="las la-user-cog fs-4"></i>
+                                    <i class="las la-user-nurse fs-4"></i>
                                 </span>
                                 <input class="form-control" type="text" placeholder="Doctor Name" name="doctorName">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
+                                    data-bs-title="Specialization">
+                                    <i class="las la-stethoscope fs-4"></i>
+                                </span>
+                                <select class="form-control" name="doctorSpecialization[]" multiple>
+                                    <option hidden></option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -132,17 +129,17 @@
                                     data-bs-title="Doctor Date Of Birth">
                                     <i class="las la-calendar fs-4"></i>
                                 </span>
-                                <input type="date" class="form-control" id="date" title="Date" name="doctorDateOfBirth"/>
+                                <input type="date" class="form-control" placeholder="Date Of Birth" name="doctorDateOfBirth">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Specialization">
-                                    <i class="las la-stethoscope fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Doctor Status">
+                                    <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Doctor Specialization"
-                                    name="doctorSpecialization">
+                                <select class="form-control" name="doctorStatus">
+                                    <option hidden></option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -151,20 +148,7 @@
                                     data-bs-title="Doctor Address">
                                     <i class="las la-map fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="doctorAddress">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip"
-                                    data-bs-title="Doctor Status">
-                                    <i class="las la-user-clock fs-4"></i>
-                                </span>
-                                <select class="form-control" id="doctorStatus" name="doctorStatus">
-                                    <option hidden></option>
-                                    <option value="active">Active</option>
-                                    <option value="disabled">Disabled</option>
-                                </select>
+                                <textarea class="form-control" type="text" placeholder="Address" name="doctorAddress"></textarea>
                             </div>
                         </div>
                     </div>
@@ -180,7 +164,7 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteDoctorModal" aria-hidden="true">
+<div class="modal fade" id="deleteDoctorModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="deleteDoctorForm">
@@ -191,8 +175,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body border-0">
-                    Are you sure want to delete <span class="fw-bold" id="doctorName"></span> account?
-                    <input type="text" id="doctorId" name="doctorId" hidden>
+                    Are you sure want to delete "<span class="fw-bold" id="doctorName"></span>" doctor?
+                    <input type="hidden" name="doctorId">
                 </div>
                 <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 <div class="modal-footer border-0">

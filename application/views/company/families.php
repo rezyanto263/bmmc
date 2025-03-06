@@ -7,37 +7,27 @@
     <table id="familiesTable" class="table" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
-                <th>NIK</th>
+                <th class="text-start">NIK</th>
                 <th>Name</th>
                 <th>Status</th>
                 <th>Gender</th>
+                <th>Relationship</th>
+                <th>Department</th>
+                <th>Band</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Date of Birth</th>
                 <th>Address</th>
+                <th class="text-start">Created At</th>
+                <th class="text-start">Updated At</th>
                 <th class="text-center">Actions</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>NIK</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Gender</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Date of Birth</th>
-                <th>Address</th>
-                <th class="text-center">Actions</th>
-            </tr>
-        </tfoot>
     </table>
 </div>
 
 <!-- Modal Add -->
-<div class="modal fade" id="addFamilyModal">    
+<div class="modal fade" id="addFamilyModal" data-bs-backdrop="static" data-bs-keyboard="false">    
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="addFamilyForm" enctype="multipart/form-data">
@@ -49,12 +39,12 @@
                     <div class="row gy-4">
                         <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                             <div class="imgContainer">
-                                <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
+                                <img class="object-fit-cover" src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
                             </div>
                             <label class="btn-warning mt-3 text-center w-50" for="addImgFile">UPLOAD PHOTO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="familyPhoto" class="imgFile" id="addImgFile" hidden>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-lg-8">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Employee">
                                     <i class="las la-user-tie fs-4"></i>
@@ -64,7 +54,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-4">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIK">
                                     <i class="las la-id-card fs-4"></i>
@@ -116,12 +106,25 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family Relationship">
+                                    <i class="las la-link fs-4"></i>
+                                </span>
+                                <select class="form-control" name="familyRelationship">
+                                    <option hidden></option>
+                                    <option value="spouse">Spouse</option>
+                                    <option value="child">Child</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family Address">
-                                    <i class="las la-map fs-4"></i>
+                                    <i class="las la-map-marked-alt fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Family Address" name="familyAddress">
+                                <textarea class="form-control" type="text" placeholder="Family Address" name="familyAddress"></textarea>
                             </div>
                         </div>
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
@@ -137,7 +140,7 @@
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editFamilyModal">
+<div class="modal fade" id="editFamilyModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="editFamilyForm" enctype="multipart/form-data">
@@ -150,7 +153,7 @@
                         <input type="hidden" name="familyNIK" hidden>
                         <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                             <div class="imgContainer">
-                                <img src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
+                                <img class="object-fit-cover" src="<?= base_url('assets/images/user-placeholder.png'); ?>" data-originalsrc="<?= base_url('assets/images/user-placeholder.png'); ?>" alt="Family Photo" draggable="false" id="imgPreview" data-bs-toggle="tooltip" data-bs-title="Family Photo">
                             </div>
                             <label class="btn-warning mt-3 text-center w-50" for="editImgFile">UPLOAD PHOTO</label>
                             <input type="file" accept="image/jpg, image/jpeg, image/png" name="familyPhoto" class="imgFile" id="editImgFile" hidden>
@@ -165,18 +168,30 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12 d-flex justify-content-end w-100">
-                            <div>
-                                <input class="form-check-input" type="checkbox" id="newFamilyNIK" data-bs-toggle="tooltip" data-bs-title="Change Password Checkbox">
-                                <label class="form-check-label">Change NIK?</label>
-                            </div>
-                        </div>
                         <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family NIK">
                                     <i class="las la-id-card fs-4"></i>
                                 </span>
-                                <input class="form-control readonly" type="text" placeholder="Family NIK" name="familyNIK" readonly>
+                                <input class="form-control readonly" type="text" placeholder="Family NIK" name="familyNIK" readonly style="cursor: default;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Email">
+                                    <i class="las la-envelope fs-4"></i>
+                                </span>
+                                <input class="form-control readonly" type="email" placeholder="Email" name="familyEmail" disabled>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between w-100">
+                            <div>
+                                <input class="form-check-input" type="checkbox" id="newFamilyNIK" data-bs-toggle="tooltip" data-bs-title="Change Password Checkbox">
+                                <label class="form-check-label">Change NIK?</label>
+                            </div>
+                            <div>
+                                <input class="form-check-input" type="checkbox" id="newEmailCheck" data-bs-toggle="tooltip" data-bs-title="Change Email Checkbox">
+                                <label class="form-check-label">Change Email?</label>
                             </div>
                         </div>
                         <div class="col-12 col-lg-6"  id="newFamilyNIKInput" style="display: none;">
@@ -187,7 +202,15 @@
                                 <input class="form-control" type="text" placeholder="Change Family NIK" name="newFamilyNIK">
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6 changeEmailInput" style="display: none;">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Change Family Email">
+                                    <i class="las la-envelope fs-4"></i>
+                                </span>
+                                <input class="form-control" type="text" placeholder="Change Family Email" name="newFamilyEmail">
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Name">
                                     <i class="las la-user fs-4"></i>
@@ -195,16 +218,7 @@
                                 <input class="form-control" type="text" placeholder="Name" name="familyName">
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Email">
-                                    <i class="las la-envelope fs-4"></i>
-                                </span>
-                                <input class="form-control" type="email" placeholder="Email" name="familyEmail" id="editEmail">
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Phone">
                                     <i class="las la-phone fs-4"></i>
@@ -213,7 +227,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Birth Date">
                                     <i class="las la-calendar fs-4"></i>
@@ -222,7 +236,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Gender">
                                     <i class="las la-venus-mars fs-4"></i>
@@ -234,16 +248,21 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Address">
-                                    <i class="las la-map fs-4"></i>
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Family Relationship">
+                                    <i class="las la-link fs-4"></i>
                                 </span>
-                                <input class="form-control" type="text" placeholder="Address" name="familyAddress" id="editAddress">
+                                <select class="form-control" name="familyRelationship">
+                                    <option hidden></option>
+                                    <option value="spouse">Spouse</option>
+                                    <option value="child">Child</option>
+                                    <option value="other">Other</option>
+                                </select>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Status">
                                     <i class="las la-user-tag fs-4"></i>
@@ -255,6 +274,15 @@
                             <small class="warning-message text-warning px-0 lh-1" style="display: none">
                                 You can't change unverified status.
                             </small>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Address">
+                                    <i class="las la-map fs-4"></i>
+                                </span>
+                                <textarea class="form-control" type="text" placeholder="Address" name="familyAddress" id="editAddress"></textarea>
+                            </div>
                         </div>
 
                         <div class="col-12 d-flex justify-content-between w-100">
@@ -298,7 +326,7 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteFamilyModal">
+<div class="modal fade" id="deleteFamilyModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="deleteFamilyForm">

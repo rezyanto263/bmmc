@@ -26,7 +26,6 @@ class Hospitals extends CI_Controller {
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'dashboard/hospitals',
-            'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
 
@@ -43,10 +42,11 @@ class Hospitals extends CI_Controller {
         echo json_encode($datas);
     }
 
-    public function getPatientHistoryHealthDetailsByNIK($patientNIK) {
-        $historyhealthDatas = $this->M_hospitals->getPatientHistoryHealthDetailsByNIK($patientNIK);
+    public function getHospitalDetailsByHospitalId() {
+        $hospitalId = $this->input->get('id');
+        $hospitalDetailsDatas = $this->M_hospitals->getHospitalDetailsByHospitalId($hospitalId);
         $datas = array(
-            'data' => $historyhealthDatas
+            'data' => $hospitalDetailsDatas
         );
 
         echo json_encode($datas);
@@ -57,9 +57,10 @@ class Hospitals extends CI_Controller {
             array(
                 'field' => 'hospitalName',
                 'label' => 'Name',
-                'rules' => 'required|trim',
+                'rules' => 'required|trim|max_length[50]',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.'
+                    'required' => 'Hospital should provide a %s.',
+                    'max_length' => '%s max 50 characters in length.',
                 )
             ),
             array(
@@ -97,7 +98,7 @@ class Hospitals extends CI_Controller {
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $checkHospitalCoordinate = $this->M_hospitals->checkHospital('hospitalCoordinate', $this->input->post('hospitalCoordinate'));
-            if (!$checkHospitalCoordinate) {
+            if (empty($checkHospitalCoordinate)) {
                 $adminId = htmlspecialchars($this->input->post('adminId') ?: '');
                 $hospitalDatas = array(
                     'hospitalName' => htmlspecialchars($this->input->post('hospitalName'), ENT_COMPAT),
@@ -106,7 +107,7 @@ class Hospitals extends CI_Controller {
                     'hospitalCoordinate' => htmlspecialchars($this->input->post('hospitalCoordinate')),
                     'hospitalStatus' => 'unverified'
                 );
-                $adminId && $hospitalDatas['adminId'] = $adminId;
+                !empty($adminId) && $hospitalDatas['adminId'] = $adminId;
 
                 if ($_FILES['hospitalLogo']['name']) {
                     $fileName = strtoupper(trim(str_replace('.', ' ',$hospitalDatas['hospitalName']))).'-'.time();
@@ -127,6 +128,40 @@ class Hospitals extends CI_Controller {
                     } else {
                         echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $hospitalPhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
                         return;
+                    }
+                }
+
+                $adminId = htmlspecialchars($this->input->post('adminId') ?: '');
+                if (!empty($adminId)) {
+                    $this->load->model('M_admins');
+                    $checkAdmin = $this->M_admins->checkAdmin('adminId', $adminId);
+
+                    if(!empty($checkAdmin)) {
+                        $adminPassword = strtoupper(uniqid());
+                        $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
+                        $datas = array(
+                            'accountName' => $checkAdmin['adminName'],
+                            'accountEmail' => $checkAdmin['adminEmail'],
+                            'accountPassword' => $adminPassword,
+                            'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                        );
+
+                        $subject = 'Activate Your Hospital Account on BMMC Partner Website';
+                        $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                        $this->load->library('sendemail');
+                        if ($this->sendemail->send($checkAdmin['accountEmail'], $subject, $body)) {
+                            $this->M_admins->updateAdmin($adminId, array('adminPassword' => $hashedPassword));
+                            $hospitalDatas['adminId'] = $adminId;
+                        } else {
+                            echo json_encode(array(
+                                'status' => 'failed',
+                                'failedMsg' => 'send email failed',
+                                'csrfToken' => $this->security->get_csrf_hash()
+                            ));
+                            return;
+                        }
                     }
                 }
 
@@ -171,9 +206,10 @@ class Hospitals extends CI_Controller {
             array(
                 'field' => 'hospitalName',
                 'label' => 'Name',
-                'rules' => 'required|trim',
+                'rules' => 'required|trim|max_length[50]',
                 'errors' => array(
-                    'required' => 'Hospital should provide a %s.'
+                    'required' => 'Hospital should provide a %s.',
+                    'max_length' => '%s max 50 characters in length.',
                 )
             ),
             array(
@@ -209,18 +245,16 @@ class Hospitals extends CI_Controller {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
-            $hospitalCoordinate = htmlspecialchars($this->input->post('hospitalCoordinate'));
-            $hospitalStatus = htmlspecialchars($this->input->post('hospitalStatus') ?: '');
+            $hospitalCoordinate = htmlspecialchars($this->input->post('hospitalCoordinate') ?: '');
 
             $hospitalDatas = array(
                 'hospitalName' => htmlspecialchars($this->input->post('hospitalName'), ENT_COMPAT),
-                'adminId' => htmlspecialchars($this->input->post('adminId') ?: '') ?: NULL,
                 'hospitalPhone' => htmlspecialchars($this->input->post('hospitalPhone')),
                 'hospitalAddress' => htmlspecialchars($this->input->post('hospitalAddress'), ENT_COMPAT),
+                'hospitalStatus' => htmlspecialchars($this->input->post('hospitalStatus') ?: '')
             );
-            $hospitalStatus && $hospitalDatas['hospitalStatus'] = $hospitalStatus;
 
-            if ($hospitalCoordinate) {
+            if (!empty($hospitalCoordinate)) {
                 $checkHospitalCoordinate = $this->M_hospitals->checkHospital('hospitalCoordinate', $hospitalCoordinate);
                 if (!$checkHospitalCoordinate) {
                     $hospitalDatas['hospitalCoordinate'] = $hospitalCoordinate;
@@ -230,7 +264,7 @@ class Hospitals extends CI_Controller {
                 }
             }
 
-            if ($_FILES['hospitalLogo']['name']) {
+            if (!empty($_FILES['hospitalLogo']['name'])) {
                 $logoFileName = strtoupper(trim(str_replace('.', ' ', $hospitalDatas['hospitalName']))).'-'.time();
                 $hospitalLogo = $this->_uploadImage('hospitalLogo', array('file_name' => $logoFileName, 'upload_path' => FCPATH . 'uploads/logos/'));
                 if ($hospitalLogo['status']) {
@@ -242,7 +276,7 @@ class Hospitals extends CI_Controller {
                 }
             }
 
-            if ($_FILES['hospitalPhoto']['name']) {
+            if (!empty($_FILES['hospitalPhoto']['name'])) {
                 $photoFileName = strtoupper(trim(str_replace('.', ' ', $hospitalDatas['hospitalName']))).'-'.time();
                 $hospitalPhoto = $this->_uploadImage('hospitalPhoto', array('file_name' => $photoFileName, 'upload_path' => FCPATH . 'uploads/photos/'));
                 if ($hospitalPhoto['status']) {
@@ -252,6 +286,45 @@ class Hospitals extends CI_Controller {
                     echo json_encode(array('status' => 'failed', 'failedMsg' => 'upload failed', 'errorMsg' => $hospitalPhoto['error'], 'csrfToken' => $this->security->get_csrf_hash()));
                     return;
                 }
+            }
+
+            $adminId = htmlspecialchars($this->input->post('adminId') ?: '');
+            $checkHospital = $this->M_hospitals->checkHospital('hospitalId', $this->input->post('hospitalId'));
+            if (!empty($checkHospital) && !empty($adminId) && $adminId !== $checkHospital['adminId']) {
+                $this->load->model('M_admins');
+                $checkAdmin = $this->M_admins->checkAdmin('adminId', $adminId);
+
+                if (!empty($checkAdmin)) {
+                    $adminPassword = strtoupper(uniqid());
+                    $hashedPassword = password_hash($adminPassword, PASSWORD_DEFAULT);
+
+                    $datas = array(
+                        'accountName' => $checkAdmin['adminName'],
+                        'accountEmail' => $checkAdmin['adminEmail'],
+                        'accountPassword' => $adminPassword,
+                        'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                    );
+
+                    $subject = 'Activate Your Hospital Account on BMMC Partner Website';
+                    $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                    $this->load->library('sendemail');
+                    if ($this->sendemail->send($checkAdmin['adminEmail'], $subject, $body)) {
+                        $this->M_admins->updateAdmin($adminId, array('adminPassword' => $hashedPassword));
+                        $hospitalDatas['adminId'] = $adminId;
+                        $hospitalDatas['hospitalStatus'] = 'unverified';
+                    } else {
+                        echo json_encode(array(
+                            'status' => 'failed',
+                            'failedMsg' => 'send email failed',
+                            'csrfToken' => $this->security->get_csrf_hash()
+                        ));
+                        return;
+                    }
+                }
+            } else if (empty($adminId)) {
+                $hospitalDatas['adminId'] = NULL;
+                $hospitalDatas['hospitalStatus'] = 'independent';
             }
 
             $this->M_hospitals->updateHospital($this->input->post('hospitalId'), $hospitalDatas);

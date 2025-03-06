@@ -8,12 +8,5 @@
                 <th>Disease Information</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>Disease Name</th>
-                <th>Disease Information</th>
-            </tr>
-        </tfoot>
     </table>
 </div>

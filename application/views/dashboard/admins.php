@@ -7,29 +7,20 @@
     <table id="adminsTable" class="table" style="width:100%">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Partner Status</th>
-                <th>Actions</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Partner Status</th>
-                <th>Actions</th>
-            </tr>
-        </tfoot>
     </table>
 </div>
 
 <!-- Modal Add -->
-<div class="modal fade" id="addAdminModal" aria-hidden="true">
+<div class="modal fade" id="addAdminModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="addAdminForm">
@@ -71,28 +62,6 @@
                                 <input class="form-control" type="text" placeholder="Email" name="adminEmail">
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Password">
-                                    <i class="las la-key fs-4"></i>
-                                </span>
-                                <input type="password" class="form-control" placeholder="Password" name="adminPassword">
-                                <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
-                                    <i class="las la-eye-slash fs-4"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Password Confirmation">
-                                    <i class="las la-key fs-4"></i>
-                                </span>
-                                <input type="password" class="form-control" placeholder="Password Confirmation" name="confirmPassword">
-                                <span type="button" class="input-group-text bg-transparent" id="btnShowPassword" data-bs-toggle="tooltip" data-bs-title="Show/Hide Password">
-                                    <i class="las la-eye-slash fs-4"></i>
-                                </span>
-                            </div>
-                        </div>
                     </div>
                     <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
                 </div>
@@ -106,7 +75,7 @@
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editAdminModal" aria-hidden="true">
+<div class="modal fade" id="editAdminModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="editAdminForm">
@@ -127,33 +96,35 @@
                         </div>
                         <div class="col-12">
                             <div class="input-group p-0">
+                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Email">
+                                    <i class="las la-envelope fs-4"></i>
+                                </span>
+                                <input class="form-control readonly" type="text" placeholder="Email" name="adminEmail" disabled>
+                            </div>
+                            <small class="text-warning px-0 lh-1">
+                                Admin email cannot be changed.
+                            </small>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group p-0">
                                 <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin Role">
                                     <i class="las la-user-tag fs-4"></i>
                                 </span>
-                                <select class="form-select" name="adminRole">
+                                <select class="form-control" name="adminRole">
                                     <option hidden></option>
                                     <option value="admin">Admin</option>
                                     <option value="hospital">Hospital</option>
                                     <option value="company">Company</option>
                                 </select>
                             </div>
+                            <small class="warning-message text-warning px-0 lh-1" style="display: none">
+                                Role change is not allowed for linked admins.
+                            </small>
                         </div>
-                        <div class="col-12 d-flex justify-content-between w-100">
-                            <div>
-                                <input class="form-check-input" type="checkbox" id="newEmailCheck" data-bs-toggle="tooltip" data-bs-title="Change Email Checkbox">
-                                <label class="form-check-label">Change email?</label>
-                            </div>
+                        <div class="col-12 d-flex w-100">
                             <div>
                                 <input class="form-check-input" type="checkbox" id="newPasswordCheck" data-bs-toggle="tooltip" data-bs-title="Change Password Checkbox">
                                 <label class="form-check-label">Change password?</label>
-                            </div>
-                        </div>
-                        <div class="col-12 changeEmailInput">   
-                            <div class="input-group p-0">
-                                <span class="input-group-text bg-transparent" data-bs-toggle="tooltip" data-bs-title="Admin New Email">
-                                    <i class="las la-envelope fs-4"></i>
-                                </span>
-                                <input class="form-control" type="text" placeholder="Email" name="newEmail">
                             </div>
                         </div>
                         <div class="col-12 changePasswordInput">
@@ -191,7 +162,7 @@
 </div>
 
 <!-- Modal Delete -->
-<div class="modal fade" id="deleteAdminModal" aria-hidden="true">
+<div class="modal fade" id="deleteAdminModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <form id="deleteAdminForm">

@@ -30,7 +30,6 @@ class Admins extends CI_Controller {
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
             'contentBody' => 'dashboard/admins',
-            'footer' => 'partials/dashboard/footer',
             'script' => 'partials/script'
         );
 
@@ -117,26 +116,6 @@ class Admins extends CI_Controller {
                     'required' => 'You should provide an %s.',
                     'valid_email' => 'You must provide a valid %s.'
                 )
-            ),
-            array(
-                'field' => 'adminPassword',
-                'label' => 'Password',
-                'rules' => 'required|trim|min_length[8]|max_length[20]|regex_match[/^(?=.*[A-Z])(?=.*\d).+$/]',
-                'errors' => array(
-                    'required' => 'You should provide a %s.',
-                    'min_length' => '%s must be at least 8 characters in length.',
-                    'max_length' => '%s max 20 characters in length.',
-                    'regex_match' => '%s must contain at least one uppercase letter and one number.'
-                )
-            ),
-            array(
-                'field' => 'confirmPassword',
-                'label' => 'Password Confirmation',
-                'rules' => 'required|matches[adminPassword]',
-                'errors' => array(
-					'required' => 'You must provide a %s.',
-					'matches' => '%s does not match the Password.'
-				)
             )
         );
         $this->form_validation->set_rules($validate);
@@ -154,11 +133,36 @@ class Admins extends CI_Controller {
                     'adminId' => $uuid->toString(),
                     'adminName' => $this->input->post('adminName'),
                     'adminEmail' => htmlspecialchars($this->input->post('adminEmail')),
-                    'adminRole' => htmlspecialchars($this->input->post('adminRole')),
-                    'adminPassword' => password_hash(htmlspecialchars($this->input->post('adminPassword')), PASSWORD_DEFAULT)
+                    'adminRole' => htmlspecialchars($this->input->post('adminRole'))
                 );
-                $this->M_admins->insertAdmin($adminDatas);
+                
+                if ($adminDatas['adminRole'] === 'admin') {
+                    $adminPassword = strtoupper(uniqid());
+                    $adminDatas['adminPassword'] = password_hash($adminPassword, PASSWORD_DEFAULT);
+                    
+                    $this->load->library('sendemail');
 
+                    $datas = array(
+                        'accountName' => $adminDatas['adminName'],
+                        'accountEmail' => $adminDatas['adminEmail'],
+                        'accountPassword' => $adminPassword,
+                        'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                    );
+
+                    $subject = 'Activate your Admin Account and Reset your Password';
+                    $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                    if (!$this->sendemail->send($adminDatas['adminEmail'], $subject, $body)) {
+                        echo json_encode(array(
+                            'status' => 'failed',
+                            'failedMsg' => 'send email failed',
+                            'csrfToken' => $this->security->get_csrf_hash()
+                        ));
+                        return;
+                    }
+                }
+                
+                $this->M_admins->insertAdmin($adminDatas);
                 echo json_encode(array('status' => 'success', 'csrfToken' => $this->security->get_csrf_hash()));
             }
         }
@@ -179,7 +183,7 @@ class Admins extends CI_Controller {
             array(
                 'field' => 'adminRole',
                 'label' => 'Role',
-                'rules' => 'required|trim|in_list[admin,company,hospital]|regex_match[/^[a-zA-Z\s]+$/]',
+                'rules' => 'trim|in_list[admin,company,hospital]|regex_match[/^[a-zA-Z\s]+$/]',
                 'errors' => array(
                     'required' => 'You should provide a %s.',
                     'in_list' => 'Invalid selection. Please choose a valid option from the list.',
@@ -229,27 +233,45 @@ class Admins extends CI_Controller {
                 'adminName' => $this->input->post('adminName')
             );
 
-            $newEmail = htmlspecialchars($this->input->post('newEmail'));
-            if ($newEmail) {
-                $checkEmail = $this->M_admins->checkAdmin('adminEmail', $newEmail);
-                if ($checkEmail) {
-                    echo json_encode(array('status' => 'failed', 'failedMsg' => 'email used', 'csrfToken' => $this->security->get_csrf_hash()));
+            $newRole = htmlspecialchars($this->input->post('adminRole') ?: '');
+            if (!empty($newRole) && $newRole != $checkAdmin['adminRole']) {
+                $adminDatas['adminRole'] = $newRole;
+                if ($newRole === 'admin') {
+                    $adminPassword = strtoupper(uniqid());
+                    $adminDatas['adminPassword'] = password_hash($adminPassword, PASSWORD_DEFAULT);
+                    
+                    $this->load->library('sendemail');
+
+                    $datas = array(
+                        'accountName' => $adminDatas['adminName'],
+                        'accountEmail' => $checkAdmin['adminEmail'],
+                        'accountPassword' => $adminPassword,
+                        'supportEmail' => $_ENV['SUPPORT_EMAIL']
+                    );
+
+                    $subject = 'Activate your Admin Account and Reset your Password';
+                    $body = $this->load->view('email/newAccountEmail', $datas, TRUE);
+
+                    if ($this->sendemail->send($checkAdmin['adminEmail'], $subject, $body)) {
+                        $this->M_admins->updateAdmin($adminId, $adminDatas);
+                        echo json_encode(array('status' => 'success', 'data' => $adminDatas, 'csrfToken' => $this->security->get_csrf_hash()));
+                    } else {
+                        echo json_encode(array(
+                            'status' => 'failed',
+                            'failedMsg' => 'send email failed',
+                            'csrfToken' => $this->security->get_csrf_hash()
+                        ));
+                    }
                     return;
                 }
             }
 
-            $newPassword = htmlspecialchars($this->input->post('newPassword'));
-            if ($newPassword && !password_verify($newPassword, $checkAdmin['adminPassword'])) {
+            $newPassword = $this->input->post('newPassword');
+            if (!empty($newPassword)) {
                 $adminDatas['adminPassword'] = password_hash($newPassword, PASSWORD_DEFAULT);
             }
 
-            $newRole = htmlspecialchars($this->input->post('adminRole'));
-            if ($newRole != $checkAdmin['adminRole']) {
-                $adminDatas['adminRole'] = $newRole;
-            }
-
             $this->M_admins->updateAdmin($adminId, $adminDatas);
-
             echo json_encode(array('status' => 'success', 'data' => $adminDatas, 'csrfToken' => $this->security->get_csrf_hash()));
         }
     }

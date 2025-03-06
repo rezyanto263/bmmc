@@ -4,48 +4,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class AuthDashboard extends CI_Controller {
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
 
         $this->load->model('M_auth');
     }
 
-    public function index()
-    {
+    public function index() {
         // Check Cookie
         $adminLoginKey = $this->input->cookie('adminLoginKey', TRUE);
         $adminKeyReference = $this->input->cookie('adminKeyReference', TRUE);
-        if ($adminLoginKey) {
+        if (!empty($adminLoginKey) && !empty($adminKeyReference)) {
             $adminDatas = $this->M_auth->checkAdmin('adminId', $adminKeyReference);
             if ($adminLoginKey === hash('sha256', $adminDatas['adminEmail'])) {
-                $sessionDatas = array(
-                    'adminId' => $adminDatas['adminId'],
-                    'adminName' => $adminDatas['adminName'],
-                    'adminEmail' => $adminDatas['adminEmail'],
-                    'adminRole' => $adminDatas['adminRole']
-                );
-                $this->session->set_userdata($sessionDatas);
-
-                if ($adminDatas['adminRole'] === 'admin') {
-                    redirect('dashboard');
-                } else if ($adminDatas['adminRole'] === 'company') {
-                    redirect('company/dashboard');
-                } else if ($adminDatas['adminRole'] === 'hospital') {
-                    redirect('hospital/dashboard');
-                } 
+                $this->_initSession($adminDatas);
+                $adminDatas['adminRole'] === 'admin' 
+                    ? redirect('dashboard') 
+                    : redirect($adminDatas['adminRole'] . '/dashboard');
             }
         }
 
         // Check Session
         if ($this->session->userdata('adminRole')) {
-            if ($this->session->userdata('adminRole') === 'admin') {
-                redirect('dashboard');
-            } else if ($this->session->userdata('adminRole') === 'company') {
-                redirect('company/dashboard');
-            } else if ($this->session->userdata('adminRole') === 'hospital') {
-                redirect('hospital/dashboard');
-            }
+            $adminDatas['adminRole'] === 'admin' 
+                ? redirect('dashboard') 
+                : redirect($adminDatas['adminRole'] . '/dashboard');
         }
 
         $datas = array(
@@ -117,6 +100,11 @@ class AuthDashboard extends CI_Controller {
             redirect('dashboard/login');
         }
 
+        if (!empty($adminDatas) && $adminDatas['status'] === 'discontinued') {
+            $this->session->set_flashdata('flashdata', 'account discontinued');
+            redirect('dashboard/login');
+        }
+
         if (!empty($adminDatas) && !($adminDatas['adminRole'] !== 'admin' && $adminDatas['status'] == NULL)) {
             if (password_verify($adminPassword, $adminDatas['adminPassword'])) {
                 if ($rememberMe) {
@@ -128,20 +116,13 @@ class AuthDashboard extends CI_Controller {
                     $this->M_auth->updateUnverifiedAdmin($adminDatas['adminId'], $adminDatas['adminRole'], array($adminDatas['adminRole'].'Status' => 'active'));
                 }
     
-                // Set admin data in session
-                $sessionDatas = array(
-                    'adminId' => $adminDatas['adminId'],
-                    'adminName' => $adminDatas['adminName'],
-                    'adminEmail' => $adminDatas['adminEmail'],
-                    'adminRole' => $adminDatas['adminRole']
-                );
-                $this->session->set_userdata($sessionDatas);
-    
-                if ($this->session->adminRole == 'admin') {
+                $this->_initSession($adminDatas);
+                $adminRole = $this->session->userdata('adminRole');
+                if ($adminRole == 'admin') {
                     redirect('dashboard');
-                } elseif ($this->session->adminRole == 'company') {
+                } elseif ($adminRole == 'company') {
                     redirect('company/dashboard');
-                } elseif ($this->session->adminRole == 'hospital') {
+                } elseif ($adminRole == 'hospital') {
                     redirect('hospital/dashboard');
                 }
             } else {
@@ -154,14 +135,52 @@ class AuthDashboard extends CI_Controller {
         }
     }
 
+    private function _initSession($adminDatas) {
+        $sessionData = array(
+            'adminId'    => $adminDatas['adminId'],
+            'adminName'  => $adminDatas['adminName'],
+            'adminEmail' => $adminDatas['adminEmail'],
+            'adminRole'  => $adminDatas['adminRole']
+        );
+    
+        if ($adminDatas['adminRole'] === 'company') {
+            $this->load->model('M_companies');
+            $companyData = $this->M_companies->getCompanyByAdminId($adminDatas['adminId']);
+    
+            $sessionData = array_merge($sessionData, array(
+                'companyLogo'      => $companyData['companyLogo'] ? base_url('uploads/logos/' . $companyData['companyLogo']) : base_url('assets/images/company-placeholder.jpg'),
+                'companyPhoto'     => $companyData['companyPhoto'] ? base_url('uploads/photos/' . $companyData['companyPhoto']) : base_url('assets/images/company-placeholder.jpg'),
+                'companyId'        => $companyData['companyId'],
+                'companyName'      => $companyData['companyName'],
+                'companyPhone'     => $companyData['companyPhone'],
+                'companyAddress'   => $companyData['companyAddress'],
+                'companyStatus'    => $companyData['companyStatus'],
+                'companyCoordinate'=> $companyData['companyCoordinate']
+            ));
+        } elseif ($adminDatas['adminRole'] === 'hospital') {
+            $this->load->model('M_hospitals');
+            $hospitalData = $this->M_hospitals->getHospitalByAdminId($adminDatas['adminId']);
+    
+            $sessionData = array_merge($sessionData, array(
+                'hospitalLogo'      => $hospitalData['hospitalLogo'] ? base_url('uploads/logos/' . $hospitalData['hospitalLogo']) : base_url('assets/images/hospital-placeholder.jpg'),
+                'hospitalPhoto'     => $hospitalData['hospitalPhoto'] ? base_url('uploads/photos/' . $hospitalData['hospitalPhoto']) : base_url('assets/images/hospital-placeholder.jpg'),
+                'hospitalId'        => $hospitalData['hospitalId'],
+                'hospitalName'      => $hospitalData['hospitalName'],
+                'hospitalPhone'     => $hospitalData['hospitalPhone'],
+                'hospitalAddress'   => $hospitalData['hospitalAddress'],
+                'hospitalStatus'    => $hospitalData['hospitalStatus'],
+                'hospitalCoordinate'=> $hospitalData['hospitalCoordinate']
+            ));
+        }
+    
+        $this->session->set_userdata($sessionData);
+    }
+
     public function logoutDashboard() {
         delete_cookie('adminLoginKey');
         delete_cookie('adminKeyReference');
 
-        $sessionDatas = array('adminId', 'adminName', 'adminEmail', 'adminRole');
-        $this->session->unset_userdata($sessionDatas);
-
-        session_destroy();
+        $this->session->sess_destroy();
 
         redirect('dashboard/login');
     }
@@ -206,19 +225,20 @@ class AuthDashboard extends CI_Controller {
             if (!empty($adminDatas)) {
                 $this->load->library('sendemail');
 
+                $token = base64_encode(random_bytes(16).'~'.date('d-m-Y H:i:s', strtotime('+1 days')));
                 $datas = array(
                     'name' => $adminDatas['adminName'],
-                    'token' => base64_encode(random_bytes(16).'~'.date('d-m-Y H:i:s', strtotime('+1 days')))
+                    'url' => base_url('dashboard/resetpassword?token='. urlencode($token))
                 );
                 $subject = 'Reset Account Password';
-                $body = $this->load->view('dashboard/forgotPassEmail', $datas, TRUE);
+                $body = $this->load->view('email/forgotPassEmail', $datas, TRUE);
 
                 if (!$this->sendemail->send($adminEmail, $subject, $body)) {
                     $this->session->set_flashdata('flashdata', 'send email failed');
                     $this->session->set_flashdata('errorflashdata', "Sorry, we can't send you an email right now");
                     redirect('dashboard/forgotpassword');
                 } else {
-                    $this->M_auth->setAdminToken($adminDatas['adminEmail'], $datas['token']);
+                    $this->M_auth->setAdminToken($adminDatas['adminEmail'], $token);
                     $this->session->set_flashdata('flashdata', 'forgot password');
                     redirect('dashboard/forgotpassword');
                 }

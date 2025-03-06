@@ -1,87 +1,3 @@
-// Theme Mode
-userColorPreference();
-function userColorPreference() {
-    var colorPreference = $.cookie('colorPreference');
-    if (colorPreference) {
-        if (colorPreference === 'dark') {
-            $('body:not(.dark)').addClass('dark');
-            $('#btn-mode i:not(.las.la-sun)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close:not(.btn-close-white)').each(function() {
-                $(this).addClass('btn-close-white');
-            });
-            toggleFlatpickrTheme(true);
-        } else if (colorPreference === 'light') {
-            $('body').removeClass('dark');
-            $('#btn-mode i:not(.las.la-moon)').toggleClass('las la-sun las la-moon');
-            $('.modal .btn-close').each(function() {
-                $(this).removeClass('btn-close-white');
-            });
-            toggleFlatpickrTheme(false);
-        }
-    } else {
-        var userColorSchema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        $.cookie('colorPreference', userColorSchema, {path: '/'});
-        userColorPreference();
-    }
-}
-
-// Button Mode
-$('#btn-mode').on('click', function() {
-    $('body').toggleClass('dark');
-    var colorPreference = $.cookie('colorPreference') == 'dark'? 'light':'dark';
-    $.cookie('colorPreference', colorPreference, {path: '/'});
-    userColorPreference();
-});
-
-
-// Sidebar Maximize Minimize
-function sidebarSize() {
-    var sidebarSize = $.cookie('sidebarSize');
-    if (sidebarSize) {
-        if (sidebarSize == 'maximize') {
-            $('aside').hasClass('minimize') && $('aside').toggleClass('minimize maximize');
-        } else if (sidebarSize == 'minimize') {
-            $('aside').hasClass('maximize') && $('aside').toggleClass('minimize maximize');
-        }
-    } else {
-        $.cookie('sidebarSize', 'maximize', {path: '/'});
-    }
-}
-sidebarSize();
-
-
-$('#btn-menu').on('click', function() {
-    $('aside').toggleClass('minimize maximize');
-    var sidebarSize = $.cookie('sidebarSize') == 'minimize'? 'maximize':'minimize';
-    $.cookie('sidebarSize', sidebarSize, {path: '/'});
-    floatingMenuHandler()
-});
-
-
-// Floating Menu Scroll
-$(window).on('scroll resize', floatingMenuHandler);
-floatingMenuHandler();
-
-function floatingMenuHandler() {
-    const isScrolled = $(window).scrollTop() > 10;
-    const isWideScreen = $(window).width() >= 992;
-    const isMinimized = $('aside').hasClass('minimize');
-    const isMaximized = $('aside').hasClass('maximize');
-
-    if (isScrolled) {
-        $('.floating-btn').css('opacity', 0.5).addClass('flex-column');
-    } else {
-        $('.floating-btn').css('opacity', 1);
-
-        if (isWideScreen || isMinimized) {
-            $('.floating-btn').removeClass('flex-column');
-        } else if (isMaximized) {
-            $('.floating-btn').addClass('flex-column');
-        }
-    }
-}
-
-
 // Show Password
 $('.input-group #btnShowPassword').on('click', function(event) {
     event.preventDefault();
@@ -145,85 +61,6 @@ $('.imgFile').on('change', function(e) {
     }
 });
 
-// Flatpickr
-$('input[type="date"]').each(function() {
-    $(this).flatpickr({
-        dateFormat: 'Y-m-d',
-        altInput: true,
-        altFormat: 'j F Y',
-        minDate: $(this).attr('min') || null,
-        maxDate: $(this).attr('max') || null,
-        disableMobile: true,
-    });
-});
-
-function toggleFlatpickrTheme(isDarkMode) {
-    if (isDarkMode) {
-        $('#flatpickr-theme').prop('disabled', false)
-    } else {
-        $('#flatpickr-theme').prop('disabled', true)
-    }
-}
-
-// Cleave (Input Rupiah Format)
-function formatCurrencyInput() {
-    $('.currency-input').each(function() {
-        const cleaveInstance = new Cleave(this, {
-            numeral: true,
-            numeralDecimalMark: ',',
-            delimiter: '.',
-            prefix: 'Rp ',
-            noImmediatePrefix: true,
-            rawValueTrimPrefix: true,
-        });
-    
-        $(this).data('cleave', cleaveInstance);
-    
-        $(this).on('blur', function() {
-            const rawValue = cleaveInstance.getRawValue();
-            if (rawValue === '') {
-                cleaveInstance.setRawValue('');
-                $(this).val('');
-            }
-        });
-    });
-}
-formatCurrencyInput();
-
-// Cleave (Input Indonesia Phone Number)
-function formatPhoneInput() {
-    $('.phone-input').each(function() {
-        const cleaveInstance = new Cleave(this, {
-            phone: true,
-            phoneRegionCode: 'ID',
-            prefix: '08',
-            delimiter: ' ',
-            noImmediatePrefix: true,
-        });
-    
-        $(this).data('cleave', cleaveInstance);
-    
-        $(this).on('blur', function() {
-            const rawValue = cleaveInstance.getRawValue();
-            if (rawValue === '08') {
-                cleaveInstance.setRawValue('');
-                $(this).val('');
-            }
-        });
-    });
-}
-formatPhoneInput();
-
-function removeCleaveFormat() {
-    $('.currency-input, .phone-input').each(function() {
-        const cleaveInstance = $(this).data('cleave');
-        if (cleaveInstance) {
-            const rawValue = cleaveInstance.getRawValue();
-            $(this).val(rawValue);
-        }
-    });    
-}
-
 // Status Color
 function statusColor(data) {
     switch (data) {
@@ -231,19 +68,23 @@ function statusColor(data) {
         case 'current':
         case 'in use':
         case 'published':
+        case 'billed':
         case 'paid':
             return 'bg-success';
 
         case 'free':
         case 'unverified':
-        case 'referred':
-        case 'draft':
             return 'bg-secondary-subtle';
 
         case 'on hold':
+        case 'pending':
             return 'bg-warning';
 
+        case 'referred':
+            return 'bg-info';
+
         case 'discontinued':
+        case 'disabled':
         case 'archived':
         case 'finished':
             return 'bg-secondary';
@@ -255,4 +96,11 @@ function statusColor(data) {
         default:
             return 'border-2 border-dashed border-secondary'
     }
+}
+
+function generateStatusData(statuses) {
+    return statuses.map(status => ({
+        id: status.toLowerCase(),
+        text: `<div class="${statusColor(status.toLowerCase())} status-circle"></div><span class="d-inline">${capitalizeWords(status)}</span>`
+    }));
 }

@@ -102,7 +102,7 @@ $config['charset'] = 'UTF-8';
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
+$config['enable_hooks'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
@@ -225,7 +225,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,7 +326,9 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/userguide3/libraries/encryption.html
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = $_ENV['QR_ENCRYPTION_KEY'];
+$config['encryption_cipher'] = 'aes-256';
+$config['encryption_mode'] = 'gcm';
 
 /*
 |--------------------------------------------------------------------------
@@ -498,6 +500,7 @@ $config['compress_output'] = FALSE;
 |
 */
 $config['time_reference'] = 'Asia/Makassar';
+date_default_timezone_set($config['time_reference']);
 
 /*
 |--------------------------------------------------------------------------
