@@ -42,11 +42,14 @@ class M_companies extends CI_Model {
             IFNULL(COUNT(DISTINCT i.invoiceId), 0) AS totalInvoices,
             IFNULL(SUM(CASE WHEN i.invoiceStatus = "paid" THEN 1 ELSE 0 END), 0) AS totalPaidInvoices,
             IFNULL(SUM(CASE WHEN i.invoiceStatus = "unpaid" THEN 1 ELSE 0 END), 0) AS totalUnpaidInvoices,
+            IFNULL(SUM(CASE WHEN i.invoiceStatus = "pending" THEN 1 ELSE 0 END), 0) AS totalPendingInvoices,
+    
             IFNULL(COUNT(DISTINCT e.employeeNIK), 0) AS totalEmployees,
-            IFNULL(SUM(CASE WHEN e.employeeStatus = "unverified" THEN 1 ELSE 0 END), 0) AS totalUnverifiedEmployees,
-            IFNULL(SUM(CASE WHEN e.employeeStatus = "active" THEN 1 ELSE 0 END), 0) AS totalActiveEmployees,
-            IFNULL(SUM(CASE WHEN e.employeeStatus = "on hold" THEN 1 ELSE 0 END), 0) AS totalOnHoldEmployees,
-            IFNULL(SUM(CASE WHEN e.employeeStatus = "discontinued" THEN 1 ELSE 0 END), 0) AS totalDiscontinuedEmployees,
+            IFNULL(SUM(CASE WHEN eh.employeehistoryStatus = "unverified" THEN 1 ELSE 0 END), 0) AS totalUnverifiedEmployees,
+            IFNULL(SUM(CASE WHEN eh.employeehistoryStatus = "active" THEN 1 ELSE 0 END), 0) AS totalActiveEmployees,
+            IFNULL(SUM(CASE WHEN eh.employeehistoryStatus = "on hold" THEN 1 ELSE 0 END), 0) AS totalOnHoldEmployees,
+            IFNULL(SUM(CASE WHEN eh.employeehistoryStatus = "discontinued" THEN 1 ELSE 0 END), 0) AS totalDiscontinuedEmployees,
+    
             IFNULL(COUNT(DISTINCT f.familyNIK), 0) AS totalFamilyMembers,
             IFNULL(SUM(CASE WHEN f.familyStatus = "unverified" THEN 1 ELSE 0 END), 0) AS totalUnverifiedFamilyMembers,
             IFNULL(SUM(CASE WHEN f.familyStatus = "active" THEN 1 ELSE 0 END), 0) AS totalActiveFamilyMembers,
@@ -54,23 +57,39 @@ class M_companies extends CI_Model {
             IFNULL(SUM(CASE WHEN f.familyStatus = "archived" THEN 1 ELSE 0 END), 0) AS totalArchivedFamilyMembers
         ');
         $this->db->from('company c');
-        $this->db->join('insurance ins', 'ins.companyId = c.companyId', 'left');
-        $this->db->join('employee e', 'e.insuranceId = ins.insuranceId', 'left');
+        $this->db->join(
+            '(SELECT eh1.*
+                FROM employeehistory eh1
+                JOIN (
+                    SELECT employeeNIK, companyId, MAX(employeehistoryStartedAt) AS latestHistory
+                    FROM employeehistory
+                    GROUP BY employeeNIK, companyId
+                ) latest 
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.companyId = latest.companyId 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory
+            ) eh',
+            'eh.companyId = c.companyId', 'left');
+        $this->db->join('employee e', 'e.employeeNIK = eh.employeeNIK', 'left');
         $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
-        $this->db->join('billing b', 'b.companyId = c.companyId', 'left');
-        $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
+        $this->db->join('invoice i', 'i.companyId = c.companyId', 'left');
         $this->db->where('c.companyId', $companyId);
+    
         return $this->db->get()->row_array();
     }
 
     public function countEmployeeByCompanyId($companyId) {
         $this->db->select('COUNT(e.employeeNIK) as count');
-        $this->db->from('company c');
-        $this->db->join('insurance i', 'i.companyId = c.companyId', 'left');
-        $this->db->join('employee e', 'e.insuranceId = i.insuranceId', 'left');
-        $this->db->where('c.companyId', $companyId);
-        $query = $this->db->get();
-        return $query->row()->count;
+        $this->db->from('employee e');
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK', 'left');
+        $this->db->where('eh.companyId', $companyId);
+        return $this->db->get()->row()->count;
     }
 
     public function getAllCompaniesLogo() {
@@ -86,12 +105,16 @@ class M_companies extends CI_Model {
     }
 
     public function getAllCompaniesInsuranceMembers() {
-        $this->db->select('SUM(CASE WHEN e.employeeNIK IS NOT NULL THEN 1 WHEN f.familyNIK IS NOT NULL THEN 1 ELSE 0 END) AS totalInsuranceMembers');
+        $this->db->select('
+            COUNT(DISTINCT e.employeeNIK) + COUNT(DISTINCT f.familyNIK) AS totalInsuranceMembers
+        ');
         $this->db->from('company c');
-        $this->db->join('insurance i', 'i.companyId = c.companyId', 'left');
-        $this->db->join('employee e', 'e.insuranceId = i.insuranceId', 'left');
-        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK', 'left');
-        return $this->db->get()->row_array()['totalInsuranceMembers'];
+        $this->db->join('employeehistory eh', 'eh.companyId = c.companyId AND eh.employeehistoryEndedAt IS NULL');
+        $this->db->join('employee e', 'e.employeeNIK = eh.employeeNIK', 'left');
+        $this->db->join('family f', 'f.employeeNIK = e.employeeNIK AND f.familyStatus != "archived"', 'left');
+        
+        $result = $this->db->get()->row_array();
+        return $result['totalInsuranceMembers'] ?? 0;
     }
 
     public function getAllActiveCompaniesMapData() {
@@ -103,7 +126,7 @@ class M_companies extends CI_Model {
             "company" AS partnerRole
         ');
         $this->db->from('company');
-        $this->db->where('companyStatus', 'active');
+        $this->db->where_in('companyStatus', ['active', 'on hold']);
         return $this->db->get()->result_array();
     }
 
@@ -137,6 +160,7 @@ class M_companies extends CI_Model {
 
         if (!empty($billingDatas) && $billingDatas['billingAmount'] != NULL) {
             $this->db->where('billingId', $billingDatas['billingId']);
+            $this->db->where('companyId', $companyId);
             $this->db->update('billing', array('billingAmount' => $billingDatas['billingAmount']));
         }
 

@@ -4,20 +4,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_insurances extends CI_Model {
 
-    public function getAllInsuranceByCompanyId($companyId) {
-        return $this->db->get_where('insurance', array('companyId' => $companyId))->result_array();
+    public function getAllInsurance() {
+        return $this->db->get('insurance')->result_array();
     }
 
     public function getInsuranceDetailsByEmployeeNIK($employeeNIK) {
         // Langkah 1: Buat temporary table/view untuk pasien
         $patients_query = $this->db->query("
-            SELECT employeeNIK AS patientNIK, insuranceId 
-            FROM employee 
-            WHERE employeeNIK = ?
+            SELECT e.employeeNIK AS patientNIK, eh.insuranceId, c.companyStatus
+            FROM employee e 
+            JOIN (SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh ON e.employeeNIK = eh.employeeNIK
+            JOIN company c ON c.companyId = eh.companyId
+            WHERE e.employeeNIK = ?
+
             UNION 
-            SELECT f.familyNIK AS patientNIK, e.insuranceId
+
+            SELECT f.familyNIK AS patientNIK, eh.insuranceId, c.companyStatus
             FROM family f
             JOIN employee e ON f.employeeNIK = e.employeeNIK
+            JOIN (SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh ON e.employeeNIK = eh.employeeNIK
+            JOIN company c ON c.companyId = eh.companyId
             WHERE f.employeeNIK = ?
         ", [$employeeNIK, $employeeNIK]);
         
@@ -44,10 +58,8 @@ class M_insurances extends CI_Model {
             SELECT 
                 i.insuranceId,
                 i.insuranceTier,
-                i.insuranceAmount,
-                c.companyStatus
+                i.insuranceAmount
             FROM insurance i
-            LEFT JOIN company c ON c.companyId = i.companyId
             WHERE i.insuranceId = ?
         ", [$insuranceId]);
         
@@ -114,15 +126,16 @@ class M_insurances extends CI_Model {
                 (
                     SELECT SUM(i.insuranceAmount) 
                     FROM employee e
-                    LEFT JOIN insurance i ON i.insuranceId = e.insuranceId
-                    WHERE i.companyId = c.companyId
+                    LEFT JOIN employeehistory eh ON eh.employeeNIK = e.employeeNIK
+                    LEFT JOIN insurance i ON i.insuranceId = eh.insuranceId
+                    WHERE eh.companyId = c.companyId
                 ), 0
             ) AS totalUnallocatedAmount
         ');
         $this->db->from('company c');
         $this->db->where('c.companyId', $companyId);
     
-        return $this->db->get()->row()->totalUnallocatedAmount;
+        return $this->db->get()->row()->totalUnallocatedAmount ?: 0;
     }
 
     public function getTotalAllocatedAmountByCompanyId($companyId) {

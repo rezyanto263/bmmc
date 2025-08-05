@@ -52,6 +52,15 @@ class Dashboard extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
+    public function checkUserNIKAvailability() {
+        $userNIK = $this->input->get('nik');
+
+        $this->load->model('M_dashboard');
+        $isNIKExist = $this->M_dashboard->checkUserNIKAvailability($userNIK);
+
+        echo json_encode(array('status' => $isNIKExist ? 'failed' : 'success', 'csrfToken' => $this->security->get_csrf_hash()));
+    }
+
     public function scanQR() {
         $this->load->library('encryption');
         $qrInput = $this->encryption->decrypt($this->input->post('qrData'));

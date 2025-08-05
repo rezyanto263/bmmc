@@ -17,8 +17,8 @@ class M_healthhistories extends CI_Model {
                     h.hospitalLogo,
                     h2.hospitalName AS referredHospitalName,
                     h2.hospitalLogo AS referredHospitalLogo,
-                    COALESCE(e.employeeDepartment, e2.employeeDepartment) AS patientDepartment,
-                    COALESCE(e.employeeBand, e2.employeeBand) AS patientBand,
+                    eh.employeehistoryDepartment AS patientDepartment,
+                    eh.employeehistoryBand AS patientBand,
                     IFNULL(e.employeeGender, f.familyGender) AS patientGender,
                     IFNULL(e.employeePhoto, f.familyPhoto) AS patientPhoto,
                     IFNULL(e.employeeName, f.familyName) AS patientName,
@@ -31,17 +31,23 @@ class M_healthhistories extends CI_Model {
                     END AS patientRelationship,
                     CASE 
                         WHEN hh.healthhistoryReferredTo IS NOT NULL THEN "referred"
-                        WHEN hh.healthhistoryTotalBill = 0 THEN "free"
+                        WHEN COALESCE(hh.healthhistoryTotalBill, 0) = 0 THEN "free"
                         ELSE "billed"
                     END AS status,
         ', false);
         $this->db->from('healthhistory hh');
         $this->db->join('employee e', 'e.employeeNIK = hh.patientNIK AND hh.patientRole = "employee"', 'left');
+        $this->db->join('(SELECT eh.* 
+                            FROM employeehistory eh
+                            JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory 
+                                    FROM employeehistory 
+                                    GROUP BY employeeNIK) latest 
+                            ON eh.employeeNIK = latest.employeeNIK
+                            AND eh.employeehistoryStartedAt = latest.latestHistory) eh', 'eh.employeeNIK = e.employeeNIK');
         $this->db->join('family f', 'f.familyNIK = hh.patientNIK AND hh.patientRole = "family"', 'left');
-        $this->db->join('employee e2', 'e2.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('billing b', 'b.billingId = hh.billingId', 'left');
-        $this->db->join('company c', 'c.companyId = b.companyId', 'left');
-        $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
+        $this->db->join('company c', 'c.companyId = hh.companyId', 'left');
+        $this->db->join('invoice i', 'i.billingId = hh.billingId', 'left');
         $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
         $this->db->join('hospital h2', 'h2.hospitalId = hh.healthhistoryReferredTo', 'left');
         $this->db->join('doctor d', 'd.doctorId = hh.doctorId', 'left');
@@ -64,8 +70,8 @@ class M_healthhistories extends CI_Model {
                     h.hospitalLogo,
                     h2.hospitalName AS referredHospitalName,
                     h2.hospitalLogo AS referredHospitalLogo,
-                    COALESCE(e.employeeDepartment, e2.employeeDepartment) AS patientDepartment,
-                    COALESCE(e.employeeBand, e2.employeeBand) AS patientBand,
+                    eh.employeehistoryDepartment AS patientDepartment,
+                    eh.employeehistoryBand AS patientBand,
                     IFNULL(e.employeeGender, f.familyGender) AS patientGender,
                     IFNULL(e.employeePhoto, f.familyPhoto) AS patientPhoto,
                     IFNULL(e.employeeName, f.familyName) AS patientName,
@@ -78,17 +84,24 @@ class M_healthhistories extends CI_Model {
                     END AS patientRelationship,
                     CASE 
                         WHEN hh.healthhistoryReferredTo IS NOT NULL THEN "referred"
-                        WHEN hh.healthhistoryTotalBill = 0 THEN "free"
+                        WHEN COALESCE(hh.healthhistoryTotalBill, 0) = 0 THEN "free"
                         ELSE "billed"
                     END AS status,
         ', false);
         $this->db->from('healthhistory hh');
         $this->db->join('employee e', 'e.employeeNIK = hh.patientNIK AND hh.patientRole = "employee"', 'left');
+        $this->db->join('(SELECT eh.* 
+                            FROM employeehistory eh
+                            JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory 
+                                    FROM employeehistory 
+                                    GROUP BY employeeNIK) latest 
+                            ON eh.employeeNIK = latest.employeeNIK
+                            AND eh.employeehistoryStartedAt = latest.latestHistory) eh
+                        ON eh.employeeNIK = e.employeeNIK');
         $this->db->join('family f', 'f.familyNIK = hh.patientNIK AND hh.patientRole = "family"', 'left');
-        $this->db->join('employee e2', 'e2.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('billing b', 'b.billingId = hh.billingId', 'left');
-        $this->db->join('company c', 'c.companyId = b.companyId', 'left');
-        $this->db->join('invoice i', 'i.billingId = b.billingId', 'left');
+        $this->db->join('company c', 'c.companyId = hh.companyId', 'left');
+        $this->db->join('invoice i', 'i.billingId = hh.billingId', 'left');
         $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
         $this->db->join('hospital h2', 'h2.hospitalId = hh.healthhistoryReferredTo', 'left');
         $this->db->join('doctor d', 'd.doctorId = hh.doctorId', 'left');
@@ -108,8 +121,8 @@ class M_healthhistories extends CI_Model {
                     h.hospitalLogo,
                     h2.hospitalName AS referredHospitalName,
                     h2.hospitalLogo AS referredHospitalLogo,
-                    COALESCE(e.employeeDepartment, e2.employeeDepartment) AS patientDepartment,
-                    COALESCE(e.employeeBand, e2.employeeBand) AS patientBand,
+                    eh.employeehistoryDepartment AS patientDepartment,
+                    eh.employeehistoryBand AS patientBand,
                     IFNULL(e.employeeGender, f.familyGender) AS patientGender,
                     IFNULL(e.employeePhoto, f.familyPhoto) AS patientPhoto,
                     IFNULL(e.employeeName, f.familyName) AS patientName,
@@ -127,8 +140,15 @@ class M_healthhistories extends CI_Model {
         ', false);
         $this->db->from('healthhistory hh');
         $this->db->join('employee e', 'e.employeeNIK = hh.patientNIK AND hh.patientRole = "employee"', 'left');
+        $this->db->join('(SELECT eh.* 
+                            FROM employeehistory eh
+                            JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory 
+                                    FROM employeehistory 
+                                    GROUP BY employeeNIK) latest 
+                            ON eh.employeeNIK = latest.employeeNIK
+                            AND eh.employeehistoryStartedAt = latest.latestHistory) eh
+                        ON eh.employeeNIK = e.employeeNIK');
         $this->db->join('family f', 'f.familyNIK = hh.patientNIK AND hh.patientRole = "family"', 'left');
-        $this->db->join('employee e2', 'e2.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('billing b', 'b.billingId = hh.billingId', 'left');
         $this->db->join('hospital h', 'h.hospitalId = hh.hospitalId', 'left');
         $this->db->join('hospital h2', 'h2.hospitalId = hh.healthhistoryReferredTo', 'left');
@@ -250,10 +270,10 @@ class M_healthhistories extends CI_Model {
 
     public function getAllPatientsData() {
         $this->db->select('
-            i.companyId,
+            eh.companyId,
             e.employeeNIK AS patientNIK,
             e.employeeName AS patientName,
-            e.employeeStatus AS patientStatus,
+            eh.employeehistoryStatus AS patientStatus,
             "employee" AS patientRole,
             "employee" AS patientRelationship,
             COALESCE(i.insuranceAmount - COALESCE((
@@ -267,12 +287,19 @@ class M_healthhistories extends CI_Model {
             ), 0), 0) AS totalBillingRemaining
         ', false);
         $this->db->from('employee e');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('(SELECT eh.* 
+                            FROM employeehistory eh
+                            JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory 
+                                    FROM employeehistory 
+                                    GROUP BY employeeNIK) latest 
+                            ON eh.employeeNIK = latest.employeeNIK
+                            AND eh.employeehistoryStartedAt = latest.latestHistory) eh', 'eh.employeeNIK = e.employeeNIK');
+        $this->db->join('insurance i', 'i.insuranceId = eh.insuranceId', 'left');
         $this->db->group_by('e.employeeNIK, i.insuranceAmount');
         $employee = $this->db->get()->result_array();
 
         $this->db->select('
-            i.companyId,
+            eh.companyId,
             f.familyNIK AS patientNIK,
             f.familyName AS patientName,
             f.familyStatus AS patientStatus,
@@ -290,7 +317,14 @@ class M_healthhistories extends CI_Model {
         ', false);
         $this->db->from('family f');
         $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'left');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
+        $this->db->join('(SELECT eh.* 
+                            FROM employeehistory eh
+                            JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory 
+                                    FROM employeehistory 
+                                    GROUP BY employeeNIK) latest 
+                            ON eh.employeeNIK = latest.employeeNIK
+                            AND eh.employeehistoryStartedAt = latest.latestHistory) eh', 'eh.employeeNIK = e.employeeNIK');
+        $this->db->join('insurance i', 'i.insuranceId = eh.insuranceId', 'left');
         $this->db->group_by('f.familyNIK, i.insuranceAmount');
         $family = $this->db->get()->result_array();
     

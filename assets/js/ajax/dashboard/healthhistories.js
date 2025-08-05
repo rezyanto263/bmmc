@@ -786,7 +786,8 @@ $('#healthhistoriesTable').on('click', '.btn-edit', function() {
             .filter(d => {
               const companyName = d.companyName.toLowerCase().includes(searchTerm);
               const companyStatus = d.companyStatus.toLowerCase().includes(searchTerm);
-              return companyName || companyStatus;
+              const render = `${companyName} | ${companyStatus}`.toLowerCase().includes(searchTerm);
+              return companyName || companyStatus || render;
             })
             .map(d => {
               let companyImg = `${d.companyLogo ? baseUrl + "uploads/logos/" + d.companyLogo : baseUrl + "assets/images/company-placeholder.jpg"}`;

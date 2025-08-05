@@ -1,6 +1,6 @@
 <!-- Sidebar Start -->
 <aside class="<?= isset($_COOKIE['sidebarSize']) ? $_COOKIE['sidebarSize'] : 'maximize'; ?> shadow-sm">
-    <div class="container-fluid p-0 d-flex flex-column justify-content-between">
+    <div class="container-fluid p-0 d-flex flex-column justify-content-between overflow-hidden">
         <div class="sidebar-header p-3 gap-3">
             <img src="<?= base_url('assets/images/logo.png') ?>" alt="" draggable="false">
             <div class="logo-text" draggable="false">
@@ -32,6 +32,24 @@
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Companies'?'active':''; ?>" href="<?= base_url('dashboard/companies') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Companies">
                         <i class="las la-building fs-4"></i>
                         <span>Companies</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Employees'?'active':''; ?>" href="<?= base_url('dashboard/employees') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Employees">
+                        <i class="las la-user-tie fs-4"></i>
+                        <span>Employees</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Families'?'active':''; ?>" href="<?= base_url('dashboard/families') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Families">
+                        <i class="las la-users fs-4"></i>
+                        <span>Families</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insurances'?'active':''; ?>" href="<?= base_url('dashboard/insurances') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insurances">
+                        <i class="las la-shield-alt fs-4"></i>
+                        <span>Insurances</span>
                     </a>
                 </li>
                 <li>

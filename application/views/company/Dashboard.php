@@ -98,6 +98,10 @@
                                         <i class="las la-file-invoice-dollar text-danger fs-4"></i>
                                         <span id="totalUnpaidInvoices"><?= $company['totalUnpaidInvoices']; ?></span>
                                     </div>
+                                    <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Pending">
+                                        <i class="las la-file-invoice-dollar text-warning fs-4"></i>
+                                        <span id="totalPendingInvoices"><?= $company['totalPendingInvoices']; ?></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

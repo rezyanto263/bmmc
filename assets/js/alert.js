@@ -115,7 +115,7 @@ function displayAlert(flashdata, message = null) {
         });
     } else if (flashdata == 'email used') {
         Toast.fire({
-            title: 'The email already used!',
+            title: 'The user email is already used!',
             icon: 'error'
         });
     } else if (flashdata == 'current password is incorrect') {
@@ -191,7 +191,7 @@ function displayAlert(flashdata, message = null) {
         });
     } else if (flashdata == 'nik used') {
         Toast.fire({
-            title: "The employee NIK already used!",
+            title: "The user NIK is already used!",
             icon: 'error'
         });
     } else if (flashdata == 'send email failed') {

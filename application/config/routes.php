@@ -87,6 +87,7 @@ $route['dashboard/resetpassword'] = 'AuthDashboard/resetPasswordPage';
 
 // Dashboard
 $route['dashboard/getPatientByNIK'] = 'dashboard/Dashboard/scanQR';
+$route['dashboard/checkUserNIKAvailability'] = 'dashboard/Dashboard/checkUserNIKAvailability';
 $route['dashboard/getAllAdminsDatas'] = 'dashboard/Admins/getAllAdminsDatas';
 $route['dashboard/getAllUnconnectedHospitalAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedHospitalAdminsDatas';
 $route['dashboard/getAllUnconnectedCompanyAdminsDatas'] = 'dashboard/Admins/getAllUnconnectedCompanyAdminsDatas';
@@ -96,6 +97,13 @@ $route['dashboard/getAllHospitalsDatas'] = 'dashboard/Hospitals/getAllHospitalsD
 $route['dashboard/getHospitalDetailsByHospitalId'] = 'dashboard/Hospitals/getHospitalDetailsByHospitalId';
 $route['dashboard/getAllCompaniesDatas'] = 'dashboard/Companies/getAllCompaniesDatas';
 $route['dashboard/getCompanyDetails'] = 'dashboard/Companies/getCompanyDetails';
+$route['dashboard/getAllInsurance'] = 'dashboard/Insurances/getAllInsurance';
+$route['dashboard/getAllEmployees'] = 'dashboard/Employees/getAllEmployees';
+$route['dashboard/getInsuranceDetailsByEmployeeNIK'] = 'dashboard/Employees/getInsuranceDetailsByEmployeeNIK';
+$route['dashboard/getAllDepartmentByCompanyId'] = 'dashboard/Employees/getAllDepartmentByCompanyId';
+$route['dashboard/getAllBandByCompanyId'] = 'dashboard/Employees/getAllBandByCompanyId';
+$route['dashboard/getAllFamilyDatas'] = 'dashboard/Families/getAllFamilyDatas';
+$route['dashboard/getFamiliesByEmployeeNIK'] = 'dashboard/Families/getFamiliesByEmployeeNIK';
 $route['dashboard/getAllCompanyInvoiceDatas'] = 'dashboard/Invoices/getAllCompanyInvoiceDatas';
 $route['dashboard/getDepartmentAllocationBillsByBillingId'] = 'dashboard/Invoices/getDepartmentAllocationBillsByBillingId';
 $route['dashboard/createInvoice'] = 'dashboard/Invoices/createInvoice';
@@ -114,12 +122,11 @@ $route['dashboard/getAllNewsTypes'] = 'dashboard/News/getAllNewsTypes';
 
 // Company
 $route['company/getPatientByNIK'] = 'company/Dashboard/scanQR';
-$route['company/getAllInsuranceByCompanyId'] = 'company/Insurance/getAllInsuranceByCompanyId';
 $route['company/getAllEmployeesByCompanyId'] = 'company/Employees/getAllEmployeesByCompanyId';
 $route['company/getInsuranceDetailsByEmployeeNIK'] = 'company/Employees/getInsuranceDetailsByEmployeeNIK';
 $route['company/getAllDepartmentByCompanyId'] = 'company/Employees/getAllDepartmentByCompanyId';
 $route['company/getAllBandByCompanyId'] = 'company/Employees/getAllBandByCompanyId';
-$route['company/getAllFamilyDatas'] = 'company/Families/getAllFamilyDatas';
+$route['company/getAllFamilyDatasByCompanyId'] = 'company/Families/getAllFamilyDatasByCompanyId';
 $route['company/getFamiliesByEmployeeNIK'] = 'company/Families/getFamiliesByEmployeeNIK';
 $route['company/getAllHealthHistoriesByCompanyId'] = 'company/HealthHistories/getAllHealthHistoriesByCompanyId';
 $route['company/getAllHealthHistoriesByBillingId'] = 'company/HealthHistories/getAllHealthHistoriesByBillingId';

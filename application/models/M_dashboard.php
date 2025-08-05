@@ -46,6 +46,18 @@ class M_dashboard extends CI_Model {
     return $query->num_rows() > 0 ? $query->row_array() : false;
   }
 
+  public function checkUserNIKAvailability($userNIK) {
+    $query = $this->db->query("
+        SELECT 'employee' AS source FROM employee 
+        WHERE employeeNIK = ?
+        UNION 
+        SELECT 'family' AS source FROM family 
+        WHERE familyNIK = ?
+    ", array($userNIK, $userNIK));
+
+    return $query->num_rows() > 0 ? $query->row_array() : false;
+  }
+
   public function checkAdminEmailAvailability($email) {
     $query = $this->db->query("
         SELECT 'admin' AS source FROM admin WHERE adminEmail = ? 

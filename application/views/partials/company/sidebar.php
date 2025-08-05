@@ -41,12 +41,6 @@
                     </a>
                 </li>
                 <li>
-                    <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Insurances'?'active':''; ?>" href="<?= base_url('company/insurance') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Insurances">
-                        <i class="las la-shield-alt fs-4"></i>
-                        <span>Insurances</span>
-                    </a>
-                </li>
-                <li>
                     <a class="d-flex align-items-center gap-3 ps-4 py-3 <?= $subtitle == 'Health Histories'?'active':''; ?>" href="<?= base_url('company/healthhistories') ?>" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Health Histories">
                         <i class="las la-file-medical-alt fs-4"></i>
                         <span>Health Histories</span>

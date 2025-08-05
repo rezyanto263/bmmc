@@ -14,6 +14,7 @@ function initializeMap(latitude, longitude, imageFile) {
             attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
             maxZoom: 20,
             minZoom: 8,
+            scrollWheelZoom: 0,
         }).addTo(map);
 
         // Tambahkan marker awal
@@ -29,6 +30,14 @@ function initializeMap(latitude, longitude, imageFile) {
         // Update koordinat jika peta sudah diinisialisasi
         updateMap(latitude, longitude, imageFile);
     }
+
+    map.getContainer().addEventListener('wheel', function (event) {
+        if (event.ctrlKey) {
+            map.scrollWheelZoom.enable(); // Aktifkan zoom jika Ctrl ditekan
+        } else {
+            map.scrollWheelZoom.disable(); // Matikan zoom jika Ctrl tidak ditekan
+        }
+    });
 }
 
 function updateMap(latitude, longitude, imageFile) {

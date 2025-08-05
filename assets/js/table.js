@@ -75,7 +75,7 @@ function displayFormValidation(formSelector, errors) {
 var htmlContent;
 var submitBtn;
 $.ajaxSetup({
-    beforeSend: function (jqXHR, settings) {
+    beforeSend: function (xhr, settings) {
         if (settings.type.toUpperCase() === "POST") {
             submitBtn = $('[type="submit"]:focus');
             htmlContent = submitBtn.html();
@@ -83,9 +83,9 @@ $.ajaxSetup({
             $('[data-bs-dismiss="modal"]').prop('disabled', true);
         }
     },
-    complete: function (jqXHR, settings) {
+    complete: function (xhr, settings) {
         if (submitBtn) {
-            var response = JSON.parse(jqXHR.responseText);
+            var response = JSON.parse(xhr.responseText);
             if (response.status) {
                 submitBtn.prop('disabled', false).html(htmlContent);
                 $('[data-bs-dismiss="modal"]').prop('disabled', false);
@@ -96,10 +96,13 @@ $.ajaxSetup({
         }
     },
     error: function(xhr, status, error) {
-        console.error('AJAX Error!');
-        console.error('Status:', status);
-        console.error('Error:', error);
-        console.error('Response:', xhr.responseText);
+        if (status !== 'abort' && error !== 'abort') {
+            console.error('AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('Response:', xhr.responseText);
+        }
+
         if (xhr.status === 403) {
             location.reload(true);
         }

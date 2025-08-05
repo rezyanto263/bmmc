@@ -62,9 +62,9 @@ class Families extends CI_Controller {
         $familyDatas[$field] && unlink($path . $familyDatas[$field]);
     }
     
-    public function getAllFamilyDatas() {
-        $companyId = $this->session->userdata('companyId');
-        $familyDatas = $this->M_families->getAllFamilyDatas($companyId);
+    public function getAllFamilyDatasByCompanyId() {
+        $companyId = $this->input->get('id') ?: $this->session->userdata('companyId');
+        $familyDatas = $this->M_families->getAllFamilyDatasByCompanyId($companyId);
         $datas = array(
             'data' => $familyDatas
         );

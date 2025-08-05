@@ -120,7 +120,7 @@ class M_hospitals extends CI_Model {
         $this->db->join('employee e', 'e.employeeNIK = q.patientNIK AND q.patientRole = "employee"', 'left');
         $this->db->join('employee e2', 'e2.employeeNIK = f.employeeNIK', 'left');
         $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
+        $this->db->join('company c', 'c.companyId = e.companyId', 'left');
         $this->db->where('q.hospitalId', $hospitalId);
         $this->db->order_by('q.createdAt', 'ASC');
         return $this->db->get()->result_array();
@@ -130,7 +130,7 @@ class M_hospitals extends CI_Model {
         if  ($patientRole === 'employee') {
 
             $this->db->select('
-                i.companyId,
+                e.companyId,
                 e.employeeNIK AS patientNIK,
                 e.employeeName AS patientName,
                 e.employeeStatus AS patientStatus,

@@ -201,11 +201,15 @@
                                             <div class="d-flex justify-content-around">
                                                 <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Paid">
                                                     <i class="las la-file-invoice-dollar text-success fs-4"></i>
-                                                    <span id="totalPaidInvoices">o</span>
+                                                    <span id="totalPaidInvoices">0</span>
                                                 </div>
                                                 <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Unpaid">
                                                     <i class="las la-file-invoice-dollar text-danger fs-4"></i>
                                                     <span id="totalUnpaidInvoices">0</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" data-bs-toggle="tooltip" data-bs-title="Pending">
+                                                    <i class="las la-file-invoice-dollar text-warning fs-4"></i>
+                                                    <span id="totalPendingInvoices">0</span>
                                                 </div>
                                             </div>
                                         </div>

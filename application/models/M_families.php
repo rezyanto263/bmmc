@@ -4,19 +4,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_families extends CI_Model {
 
-    public function getAllFamilyDatas($companyId) {
-        $this->db->select('f.*, e.employeeName, e.employeeDepartment, e.employeeBand');
+    public function getAllFamilyDatas() {
+        $this->db->select('f.*, e.employeeName, eh.employeehistoryDepartment AS employeeDepartment, eh.employeehistoryBand AS employeeBand');
         $this->db->from('family f');
         $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId');
-        $this->db->where('i.companyId', $companyId);
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK');
         return $this->db->get()->result_array();
     }
 
-    public function getCompanyByAdminId($adminId) {
-        $this->db->where('adminId', $adminId);
-        $query = $this->db->get('company');
-        return $query->row_array();
+    public function getAllFamilyDatasByCompanyId($companyId) {
+        $this->db->select('f.*, e.employeeName, eh.employeehistoryDepartment AS employeeDepartment, eh.employeehistoryBand AS employeeBand');
+        $this->db->from('family f');
+        $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK');
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK');
+        $this->db->where('eh.companyId', $companyId);
+        return $this->db->get()->result_array();
     }
 
     public function getFamiliesByEmployeeNIK($employeeNIK) {
@@ -66,8 +80,15 @@ class M_families extends CI_Model {
         ');
         $this->db->from('family f');
         $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'left');
-        $this->db->join('insurance i', 'i.insuranceId = e.insuranceId', 'left');
-        $this->db->join('company c', 'c.companyId = i.companyId', 'left');
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK');
+        $this->db->join('company c', 'c.companyId = eh.companyId', 'left');
+        $this->db->join('insurance i', 'i.insuranceId = eh.insuranceId', 'left');
         $this->db->where('f.familyNIK', $familyNIK);
         return $this->db->get()->row_array();
     }
@@ -82,9 +103,6 @@ class M_families extends CI_Model {
     
     public function updateFamily($familyNIK, $familyData) {
         $this->db->trans_start();
-
-        $this->db->where('familyNIK', $familyNIK);
-        $this->db->update('family', $familyData);
 
         if (!empty($familyData['familyNIK']) && $familyData['familyNIK'] !== $familyNIK) {
             $this->db->where('familyNIK', $familyData['familyNIK']);
@@ -104,6 +122,13 @@ class M_families extends CI_Model {
             }
         }
 
+        $this->db->where('familyNIK', $familyNIK);
+        $updateFamily = $this->db->update('family', $familyData);
+        if (!$updateFamily) {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
         $this->db->trans_complete();
         return $this->db->trans_status();
     }
@@ -111,19 +136,6 @@ class M_families extends CI_Model {
     public function deleteFamily($familyNIK) {
         $this->db->where('familyNIK', $familyNIK);
         return $this->db->delete('family');
-    }
-
-    public function getEmployeeNameByNIK($employeeNIK)
-    {
-        $this->db->select('employeeName'); // Asumsikan ada kolom 'employeeName'
-        $this->db->where('employeeNIK', $employeeNIK);
-        $query = $this->db->get('employee'); // Asumsikan tabelnya bernama 'employee'
-        
-        if ($query->num_rows() > 0) {
-            return $query->row()->employeeName;
-        }
-        
-        return null; // Jika tidak ada nama ditemukan
     }
 
 }

@@ -120,7 +120,7 @@
             <form id="deleteInsuranceForm">
                 <div class="modal-header border-0">
                     <h1 class="modal-title fs-4">
-                        DELETE Insurance
+                        DELETE INSURANCE
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

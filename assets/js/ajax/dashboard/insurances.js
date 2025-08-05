@@ -1,6 +1,6 @@
 // Insurances CRUD
 var insurancesTable = $('#insurancesTable').DataTable($.extend(true, {}, DataTableSettings, {
-  ajax: baseUrl + 'company/getAllInsuranceByCompanyId',
+  ajax: baseUrl + 'dashboard/getAllInsurance',
   columns: [
       {
           data: 'insuranceTier',
@@ -15,7 +15,17 @@ var insurancesTable = $('#insurancesTable').DataTable($.extend(true, {}, DataTab
       },
       {
           data: 'insuranceDescription',
-          className: 'text-start text-wrap'
+          className: 'text-wrap',
+          render: function(data, type) {
+              if (data) {
+                if (type === 'display' || type === 'filter') {
+                    return `<div class="text-2-row" style="width: 250px;">${data}</div>`;
+                }
+                return data;
+              } else {
+                return 'No Description';
+              }
+          }
       },
       {
         data: 'createdAt',
@@ -70,13 +80,10 @@ $('#addInsuranceButton, #editInsuranceButton, #deleteInsuranceButton').on('click
 $('#addInsuranceForm').on('submit', function(e) {
   e.preventDefault();
   removeCleaveFormat();
-  var formData = new FormData(this);
   $.ajax({
-      url: baseUrl + 'company/insurance/addInsurance',
+      url: baseUrl + 'dashboard/insurances/addInsurance',
       method: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
+      data: $(this).serialize(),
       success: function(response) {
           var res = JSON.parse(response);
           res.csrfToken && $(`input[name="${csrfName}"]`).val(res.csrfToken);
@@ -110,7 +117,7 @@ $('#editInsuranceForm').on('submit', function(e) {
   e.preventDefault();
   removeCleaveFormat();
   $.ajax({
-      url: baseUrl + 'company/insurance/editInsurance',
+      url: baseUrl + 'dashboard/insurances/editInsurance',
       method: 'POST',
       data: $(this).serialize(),
       success: function(response) {
@@ -142,7 +149,7 @@ $('#insurancesTable').on('click', '.btn-delete', function() {
 $('#deleteInsuranceForm').on('submit', function(e) {
   e.preventDefault();
   $.ajax({
-      url: baseUrl + 'company/insurance/deleteInsurance', // base URL diubah
+      url: baseUrl + 'dashboard/insurances/deleteInsurance',
       method: 'POST',
       data: $(this).serialize(),
       success: function(response) {

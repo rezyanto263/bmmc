@@ -6,7 +6,7 @@ var companiesTable = $("#companiesTable").DataTable(
 			{
 				data: "companyLogo",
 				className: "align-middle user-select-none no-export",
-				// orderable: false,
+				orderable: false,
 				render: function (data, type, row) {
 					let logo = data
 						? `${baseUrl}uploads/logos/${data}`
@@ -129,10 +129,8 @@ var companiesTable = $("#companiesTable").DataTable(
 			`,
 			},
 		],
-		columnDefs: [
-			{ width: "120px", target: 9 },
-			{ orderable: false, targets: 0 }
-		],
+		columnDefs: [{ width: "120px", target: 9 }],
+		order: []
 	})
 );
 

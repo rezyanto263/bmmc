@@ -55,64 +55,86 @@ class M_auth extends CI_Model {
     */
 
     public function checkUser($param, $value) {
-        // Gunakan query SQL manual untuk menghindari masalah escaping
-        $sql = "SELECT 
-                    employeeNIK, userNIK, insuranceId, userPhoto, userName, userEmail, userBirth, 
-                    userGender, userPhone, userAddress, userStatus, 
-                    userDepartment, userBand, userRole, userRelationship, userPassword
-                FROM (
-                    SELECT 
-                        employee.employeeNIK AS employeeNIK,
-                        employee.insuranceId AS insuranceId,
-                        employee.employeeNIK AS userNIK,
-                        employee.employeePhoto AS userPhoto,
-                        employee.employeeName AS userName,
-                        employee.employeeEmail AS userEmail,
-                        employee.employeeBirth AS userBirth,
-                        employee.employeeGender AS userGender,
-                        employee.employeePhone AS userPhone,
-                        employee.employeeAddress AS userAddress,
-                        employee.employeeStatus AS userStatus,
-                        employee.employeeDepartment AS userDepartment,
-                        employee.employeeBand AS userBand,
-                        'employee' AS userRole,
-                        'employee' AS userRelationship,
-                        employee.employeePassword AS userPassword,
-                        employee.employeeToken AS userToken
-                    FROM employee
-                    
-                    UNION ALL
-                    
-                    SELECT 
-                        family.employeeNIK AS employeeNIK,
-                        COALESCE(employee.insuranceId, '') AS insuranceId,
-                        family.familyNIK AS userNIK,
-                        family.familyPhoto AS userPhoto,
-                        family.familyName AS userName,
-                        family.familyEmail AS userEmail,
-                        family.familyBirth AS userBirth,
-                        family.familyGender AS userGender,
-                        family.familyPhone AS userPhone,
-                        family.familyAddress AS userAddress,
-                        family.familyStatus AS userStatus,
-                        COALESCE(employee.employeeDepartment, '') AS userDepartment,
-                        COALESCE(employee.employeeBand, '') AS userBand,
-                        'family' AS userRole,
-                        family.familyRelationship AS userRelationship,
-                        family.familyPassword AS userPassword,
-                        family.familyToken AS userToken
-                    FROM family
-                    LEFT JOIN employee ON employee.employeeNIK = family.employeeNIK
-                ) AS users
-                WHERE ".$this->db->protect_identifiers($param)." = ".$this->db->escape($value);
-        
-        $query = $this->db->query($sql);
-        return $query->row_array();
-    }
+        $this->db->select([
+            'eh.insuranceId AS insuranceId',
+            'e.employeeNIK AS employeeNIK',
+            'eh.employeehistoryStatus AS employeeStatus',
+            'COALESCE(c.companyStatus, "") AS companyStatus',
+            'e.employeeNIK AS userNIK',
+            'e.employeePhoto AS userPhoto',
+            'e.employeeName AS userName',
+            'e.employeeEmail AS userEmail',
+            'e.employeeBirth AS userBirth',
+            'e.employeeGender AS userGender',
+            'e.employeePhone AS userPhone',
+            'e.employeeAddress AS userAddress',
+            'eh.employeehistoryStatus AS userStatus',
+            'eh.employeehistoryDepartment AS userDepartment',
+            'eh.employeehistoryBand AS userBand',
+            "'employee' AS userRole",
+            "'employee' AS userRelationship",
+            'e.employeePassword AS userPassword',
+            'e.employeeToken AS userToken'
+        ]);
+        $this->db->from('employee e');
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('company c', 'c.companyId = eh.companyId', 'left');
+        $this->db->where($param, $value);
+
+        $subquery1 = $this->db->get_compiled_select();
+
+        $this->db->select([
+            'COALESCE(eh.insuranceId, 0) AS insuranceId',
+            'f.employeeNIK AS employeeNIK',
+            'eh.employeehistoryStatus AS employeeStatus',
+            'COALESCE(c.companyStatus, "") AS companyStatus',
+            'f.familyNIK AS userNIK',
+            'f.familyPhoto AS userPhoto',
+            'f.familyName AS userName',
+            'f.familyEmail AS userEmail',
+            'f.familyBirth AS userBirth',
+            'f.familyGender AS userGender',
+            'f.familyPhone AS userPhone',
+            'f.familyAddress AS userAddress',
+            'f.familyStatus AS userStatus',
+            'COALESCE(eh.employeehistoryDepartment, "") AS userDepartment',
+            'COALESCE(eh.employeehistoryBand, "") AS userBand',
+            "'family' AS userRole",
+            'f.familyRelationship AS userRelationship',
+            'f.familyPassword AS userPassword',
+            'f.familyToken AS userToken'
+        ]);
+        $this->db->from('family f');
+        $this->db->join('employee e', 'e.employeeNIK = f.employeeNIK', 'inner');
+        $this->db->join(
+            '(SELECT eh1.* FROM employeehistory eh1
+                JOIN (SELECT employeeNIK, MAX(employeehistoryStartedAt) AS latestHistory
+                        FROM employeehistory GROUP BY employeeNIK) latest
+                ON eh1.employeeNIK = latest.employeeNIK 
+                AND eh1.employeehistoryStartedAt = latest.latestHistory) eh',
+            'eh.employeeNIK = e.employeeNIK', 'left');
+        $this->db->join('company c', 'c.companyId = eh.companyId', 'left');
+        $this->db->where($param, $value);
     
+        $subquery2 = $this->db->get_compiled_select();
+    
+        return $this->db->query("$subquery1 UNION $subquery2")->row_array();
+    }
+
     public function updateUnverifiedUser($userNIK, $userRole, $status) {
         $this->db->where($userRole . 'NIK', $userNIK);
-        return $this->db->update($userRole, array($userRole . 'Status' => $status));
+        if ($userRole === 'employee') {
+            $this->db->where('employeehistoryEndedAt', NULL);
+            return $this->db->update('employeehistory', array('employeehistoryStatus' => $status));
+        } else {
+            return $this->db->update('family', array('familyStatus' => $status));
+        }
     }
 
     public function updateProfile($userNIK, $userRole, $userData) {

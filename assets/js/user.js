@@ -69,6 +69,7 @@ if ($('.splide.reverse').length) {
 // Partners Map
 let map;
 let markers = [];
+
 function initializeMap(centerLat, centerLng) {
     if (!map) {
         // Inisialisasi peta hanya sekali
@@ -80,6 +81,14 @@ function initializeMap(centerLat, centerLng) {
             minZoom: 8,
         }).addTo(map);
     }
+
+    map.getContainer().addEventListener('wheel', function (event) {
+        if (event.ctrlKey) {
+            map.scrollWheelZoom.enable(); // Aktifkan zoom jika Ctrl ditekan
+        } else {
+            map.scrollWheelZoom.disable(); // Matikan zoom jika Ctrl tidak ditekan
+        }
+    });
 }
 
 function addMarkersFromAjax(url) {

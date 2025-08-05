@@ -38,6 +38,19 @@ $('#btn-mode').on('click', function() {
 });
 
 
+// Sidebar Last Scroll Position
+var $sidebar = $(".sidebar-menu");
+var scrollPosition = sessionStorage.getItem("sidebarScrollPosition");
+
+if (scrollPosition) {
+    $sidebar.scrollTop(scrollPosition);
+}
+
+$sidebar.on("scroll", function () {
+    sessionStorage.setItem("sidebarScrollPosition", $sidebar.scrollTop());
+});
+
+
 // Sidebar Maximize Minimize
 function sidebarSize() {
     var sidebarSize = $.cookie('sidebarSize');
@@ -213,5 +226,5 @@ function removeCleaveFormat() {
             const rawValue = cleaveInstance.getRawValue();
             $(this).val(rawValue);
         }
-    });    
+    });
 }

@@ -99,7 +99,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Company',
                 'rules' => 'required|trim|numeric',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                 )
             ),
@@ -108,7 +108,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'NIK',
                 'rules' => 'required|trim|numeric|exact_length[16]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'exact_length' => 'The %s field must be exactly 16 characters long.'
                 ),
@@ -118,7 +118,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Hospital',
                 'rules' => 'required|trim|numeric',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                 )
             ),
@@ -143,7 +143,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Date',
                 'rules' => 'required|trim',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                 )
             ),
             'healthhistoryDescription' => array(
@@ -159,7 +159,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Doctor Fee',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 ),
@@ -169,7 +169,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Medicine Fee',  
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 ),
@@ -179,7 +179,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Lab Fee',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 ),
@@ -189,7 +189,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Action Fee',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 ),
@@ -208,7 +208,7 @@ class HealthHistories extends CI_Controller {
                 'label' => 'Total Bill',
                 'rules' => 'required|numeric|greater_than_equal_to[0]',
                 'errors' => array(
-                    'required' => 'Health History should provide a patient %s',
+                    'required' => 'Health History should provide a %s',
                     'numeric' => 'The %s field must contain only numbers.',
                     'greater_than_equal_to' => 'The %s must be a positive number.',
                 ), 
@@ -472,8 +472,8 @@ class HealthHistories extends CI_Controller {
             }
 
             $companyId = htmlspecialchars($this->input->post('companyId'));
-            $this->load->model('M_billings');
-            $checkBilling = $this->M_billings->checkCurrentBillingByCompanyId($companyId);
+            $this->load->model('M_invoices');
+            $checkBilling = $this->M_invoices->checkCurrentBillingByCompanyId($companyId);
             if (empty($checkBilling)) {
                 echo json_encode(array(
                     'status' => 'failed', 

@@ -4,12 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Ramsey\Uuid\Uuid;
 
-class Insurance extends CI_Controller {
+class Insurances extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('adminRole') != 'company') {
+        if ($this->session->userdata('adminRole') != 'admin') {
             redirect('dashboard/login');
         }
         
@@ -19,17 +19,17 @@ class Insurance extends CI_Controller {
     public function index()
     {
         $datas = array(
-            'title' => 'BMMC Company | Insurances',
+            'title' => 'BMMC Dashboard | Insurances',
             'subtitle' => 'Insurances',
             'contentType' => 'dashboard'
         );
 
         $partials = array(
             'head' => 'partials/head',
-            'sidebar' => 'partials/company/sidebar',
+            'sidebar' => 'partials/dashboard/sidebar',
             'floatingMenu' => 'partials/floatingMenu',
             'contentHeader' => 'partials/contentHeader',
-            'contentBody' => 'company/insurances',
+            'contentBody' => 'dashboard/insurances',
             'script' => 'partials/script'
         );
 
@@ -37,9 +37,8 @@ class Insurance extends CI_Controller {
         $this->load->view('master', $partials);
     }
 
-    public function getAllInsuranceByCompanyId() {
-        $companyId = $this->session->userdata('companyId');
-        $insuranceDatas = $this->M_insurances->getAllInsuranceByCompanyId($companyId);
+    public function getAllInsurance() {
+        $insuranceDatas = $this->M_insurances->getAllInsurance();
         $datas = array(
             'data' => $insuranceDatas,
             'csrfToken' => $this->security->get_csrf_hash()
@@ -50,38 +49,33 @@ class Insurance extends CI_Controller {
 
     public function addInsurance() {
         $validate = array(
-            // Aturan validasi untuk setiap field
             array(
                 'field' => 'insuranceTier',
-                'label' => 'Tingkat Asuransi',
+                'label' => 'Tier',
                 'rules' => 'required',
-                'errors' => array('required' => 'Anda harus memberikan %s.')
+                'errors' => array(
+                    'required' => 'Insurance should provide a %s name.'
+                )
             ),
             array(
                 'field' => 'insuranceAmount',
-                'label' => 'Jumlah Asuransi',
+                'label' => 'Amount',
                 'rules' => 'required|numeric',
-                'errors' => array('required' => 'Anda harus memberikan %s.', 'numeric' => '%s harus berupa angka.')
-            ),
-            array(
-                'field' => 'insuranceDescription',
-                'label' => 'Deskripsi Asuransi',
-                'rules' => 'required',
-                'errors' => array('required' => 'Anda harus memberikan %s.')
-            ),
+                'errors' => array(
+                    'required' => 'Insurance should provide an %s.', 
+                    'numeric' => '%s should be a number'
+                )
+            )
         );
         $this->form_validation->set_rules($validate);
-            
-        // Validasi form
+
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $uuid = Uuid::uuid7();
-            $companyId = $this->session->userdata('companyId');
             $insuranceData = array(
                 'insuranceId' => $uuid->toString(),
-                'companyId' => $companyId,
                 'insuranceTier' => $this->input->post('insuranceTier'),
                 'insuranceAmount' => $this->input->post('insuranceAmount'),
                 'insuranceDescription' => $this->input->post('insuranceDescription')
@@ -93,41 +87,39 @@ class Insurance extends CI_Controller {
 
     public function editInsurance() {
         $validate = array(
-            // Aturan validasi untuk setiap field
             array(
                 'field' => 'insuranceId',
-                'label' => 'ID Asuransi',
+                'label' => 'ID',
                 'rules' => 'required',
-                'errors' => array('required' => 'Anda harus memberikan %s.')
+                'errors' => array(
+                    'required' => 'Insurance should provide an %s.'
+                )
             ),
             array(
                 'field' => 'insuranceTier',
-                'label' => 'Tingkat Asuransi',
+                'label' => 'Tier',
                 'rules' => 'required',
-                'errors' => array('required' => 'Anda harus memberikan %s.')
+                'errors' => array(
+                    'required' => 'Insurance should provide a %s name.'
+                )
             ),
             array(
                 'field' => 'insuranceAmount',
-                'label' => 'Jumlah Asuransi',
+                'label' => 'Amount',
                 'rules' => 'required|numeric',
-                'errors' => array('required' => 'Anda harus memberikan %s.', 'numeric' => '%s harus berupa angka.')
-            ),
-            array(
-                'field' => 'insuranceDescription',
-                'label' => 'Deskripsi Asuransi',
-                'rules' => 'required',
-                'errors' => array('required' => 'Anda harus memberikan %s.')
-            ),
+                'errors' => array(
+                    'required' => 'Insurance should provide an %s.', 
+                    'numeric' => '%s should be a number'
+                )
+            )
         );
         $this->form_validation->set_rules($validate);
-    
-        // Validasi form
+
         if ($this->form_validation->run() == FALSE) {
             $errors = $this->form_validation->error_array();
             echo json_encode(array('status' => 'invalid', 'errors' => $errors, 'csrfToken' => $this->security->get_csrf_hash()));
         } else {
             $insuranceId = $this->input->post('insuranceId');
-            $companyId = $this->session->userdata('companyId');
             $insuranceData = array(
                 'insuranceTier' => $this->input->post('insuranceTier'),
                 'insuranceAmount' => $this->input->post('insuranceAmount'),
@@ -147,6 +139,6 @@ class Insurance extends CI_Controller {
 
 }
 
-/* End of file Insurance.php */
+/* End of file Insurances.php */
 
 ?>
